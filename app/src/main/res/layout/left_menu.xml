@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff3f3f3f">
+
+    <LinearLayout
+        android:id="@+id/User"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="105dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
+
+        <ecjtunet.com.demon.view.CycleImageView
+            android:id="@+id/UserImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:onClick="slidingMenuClickListen"
+            android:src="@drawable/userimage" />
+
+        <TextView
+            android:id="@+id/UserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:text="@string/UserName"
+            android:textColor="#fffffefa"
+            android:textSize="24dp" />
+
+        <TextView
+            android:id="@+id/UserID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/StudentID"
+            android:textColor="#bbbbbb" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/User"
+        android:layout_marginTop="15dp"
+        android:onClick="slidingMenuClickListen"
+        android:orientation="horizontal"
+        android:paddingLeft="45dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@drawable/score" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="24dp"
+            android:gravity="center"
+            android:text="@string/ScoreQuery"
+            android:textColor="#ffffffff"
+            android:textSize="@dimen/icon_text_size" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/classquery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/score"
+        android:layout_marginTop="15dp"
+        android:onClick="slidingMenuClickListen"
+        android:orientation="horizontal"
+        android:paddingLeft="45dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@drawable/classquery" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="24dp"
+            android:gravity="center"
+            android:text="@string/ClassQuery"
+            android:textColor="#ffffffff"
+            android:textSize="@dimen/icon_text_size" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/yktquery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/classquery"
+        android:layout_marginTop="15dp"
+        android:onClick="slidingMenuClickListen"
+        android:orientation="horizontal"
+        android:paddingLeft="45dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@drawable/ecard" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="24dp"
+            android:gravity="center"
+            android:text="@string/YKTQuery"
+            android:textColor="#ffffffff"
+            android:textSize="@dimen/icon_text_size" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bookquery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/yktquery"
+        android:layout_marginTop="15dp"
+        android:onClick="slidingMenuClickListen"
+        android:orientation="horizontal"
+        android:paddingLeft="45dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@drawable/book" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="24dp"
+            android:gravity="center"
+            android:text="@string/LibaryQuery"
+            android:textColor="#ffffffff"
+            android:textSize="@dimen/icon_text_size" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/moonModel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/bookquery"
+        android:layout_marginTop="15dp"
+        android:onClick="slidingMenuClickListen"
+        android:orientation="horizontal"
+        android:paddingLeft="45dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@drawable/moon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="24dp"
+            android:gravity="center"
+            android:text="@string/MoonModel"
+            android:textColor="#ffffffff"
+            android:textSize="@dimen/icon_text_size" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal"
+        android:paddingLeft="45dp">
+
+        <LinearLayout
+            android:id="@+id/setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="slidingMenuClickListen">
+
+            <ImageView
+                android:layout_width="@dimen/icon_width"
+                android:layout_height="@dimen/icon_height"
+                android:layout_gravity="bottom"
+                android:src="@drawable/setting" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="8dp"
+                android:gravity="center"
+                android:text="@string/setting"
+                android:textColor="#b2b2b2"
+                android:textSize="@dimen/icon_bottom_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/scran"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="slidingMenuClickListen">
+
+            <ImageView
+                android:layout_width="@dimen/icon_width"
+                android:layout_height="@dimen/icon_height"
+                android:layout_marginLeft="45dp"
+                android:src="@drawable/scan" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="8dp"
+                android:gravity="center"
+                android:text="@string/scan"
+                android:textColor="#b2b2b2"
+                android:textSize="@dimen/icon_bottom_size" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

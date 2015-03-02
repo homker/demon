@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">叫你妹妹的app</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="loginhint">Student ID (请输入您的学号)</string>
+    <string name="passwdhint">Password(默认密码为身份证后六位)</string>
+    <string name="title_activity_main">main</string>
+    <string name="UserName">你妹妹的点点</string>
+    <string name="StudentID">20122110120111</string>
+    <string name="ScoreQuery">成绩查询</string>
+    <string name="ClassQuery">课表查询</string>
+    <string name="YKTQuery">一卡通查询</string>
+    <string name="LibaryQuery">图书馆查询</string>
+    <string name="MoonModel">夜间模式</string>
+    <string name="setting">设置</string>
+    <string name="scan">扫一扫</string>
+    <string name="ActionBarTitle">我们都叫它什么鬼</string>
+    <string name="title_activity_newscontent">新闻内容</string>
+    <string name="newsContentTitle">点点你好</string>
+    <string name="newsContentTag">杂文  随笔</string>
+    <string name="newsContentAuthorTag">作者：</string>
+    <string name="newsContentAuthor">点点</string>
+    <string name="newsContentDateTag">发布日期：</string>
+    <string name="newsContentDate">2014-11-08</string>
+    <string name="title_activity_webview">花椒助手</string>
+    <string name="pull_refresh">下拉可以刷新！</string>
+    <string name="headImageInfo">这是你妹妹的点点</string>
+    <string name="title_activity_scan">scan</string>
+
+</resources>

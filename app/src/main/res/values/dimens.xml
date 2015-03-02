@@ -1,0 +1,16 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="UserName">24dp</dimen>
+    <dimen name="icon_width">30dp</dimen>
+    <dimen name="icon_height">30dp</dimen>
+    <dimen name="icon_text_size">18dp</dimen>
+    <dimen name="icon_bottom_size">16dp</dimen>
+    <dimen name="news_imga_width">66dp</dimen>
+    <dimen name="news_imga_height">66dp</dimen>
+    <dimen name="sling_margin_main">60dp</dimen>
+    <dimen name="news_content_title">24dp</dimen>
+    <dimen name="news_content_tag">12dp</dimen>
+    <dimen name="news_head_image_info">16dp</dimen>
+</resources>
