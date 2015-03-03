@@ -12,7 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -22,7 +23,6 @@ public class login extends Activity {
     public String loginNameText;
     private EditText loginName;
     private EditText password;
-    private LinearLayout login;
     private Handler handler = new Handler() {
 
         public void handleMessage(Message message) {
@@ -44,13 +44,14 @@ public class login extends Activity {
         super.onCreate(savedInstanceState);
         SharedPreUtil.initSharedPreference(getApplicationContext());
         setContentView(R.layout.login);
-        login = (LinearLayout) findViewById(R.id.login);
+        RelativeLayout loginBox = (RelativeLayout) findViewById(R.id.loginBox);
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        Log.i("tag", "----------------->" + String.valueOf(imageView));
+        Log.i("tag", "---------------------------------------->" + String.valueOf(loginBox));
         UserEntity user = SharedPreUtil.getInstance().getUser();
         Log.i("tag", "user:" + user.getStudentID() + "_____password" + user.getPassword());
-        if (TextUtils.isEmpty(user.getStudentID()) || TextUtils.isEmpty(user.getPassword())) {
-            Log.i("tag", "---------------------------------------->" + String.valueOf(login));
-            login.setVisibility(View.VISIBLE);
-        } else {
+        if (!TextUtils.isEmpty(user.getStudentID()) && !TextUtils.isEmpty(user.getPassword())) {
+            loginBox.setVisibility(View.GONE);
             String loginName = user.getStudentID();
             String passWord = user.getPassword();
             try {

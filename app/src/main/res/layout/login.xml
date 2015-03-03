@@ -20,14 +20,13 @@
         android:src="@drawable/app103" />
 
     <RelativeLayout
-        android:id="@+id/login"
+        android:id="@+id/loginBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/imageView"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
-        <RelativeLayout
+    <RelativeLayout
             android:id="@+id/relativeLayout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
