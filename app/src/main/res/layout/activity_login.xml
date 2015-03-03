@@ -106,5 +106,6 @@
             android:onClick="loginClick"
             android:text="@string/loginText"
             android:textColor="#ffffffff" />
+
     </RelativeLayout>
 </RelativeLayout>

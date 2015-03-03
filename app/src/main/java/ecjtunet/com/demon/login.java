@@ -43,7 +43,7 @@ public class login extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreUtil.initSharedPreference(getApplicationContext());
-        setContentView(R.layout.login);
+        setContentView(R.layout.activity_login);
         RelativeLayout loginBox = (RelativeLayout) findViewById(R.id.loginBox);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         Log.i("tag", "----------------->" + String.valueOf(imageView));
@@ -70,6 +70,7 @@ public class login extends Activity {
     }
 
     public void loginClick(View view) {
+        Log.i("tag", "---------------------------->works");
         logincheck();
     }
 
