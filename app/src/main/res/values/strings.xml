@@ -28,5 +28,8 @@
     <string name="pull_refresh">下拉可以刷新！</string>
     <string name="headImageInfo">这是你妹妹的点点</string>
     <string name="title_activity_scan">scan</string>
+    <string name="loginText">Login</string>
+    <string name="logoContentDescription">logo</string>
+    <string name="loginDescription">login name</string>
 
 </resources>

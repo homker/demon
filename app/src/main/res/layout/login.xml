@@ -16,9 +16,10 @@
         android:layout_height="160dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/logoContentDescription"
         android:src="@drawable/app103" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,6 +39,7 @@
                 android:id="@+id/lgNameImage"
                 android:layout_width="@dimen/icon_width"
                 android:layout_height="@dimen/icon_height"
+                android:contentDescription="@string/loginDescription"
                 android:src="@drawable/lock05" />
 
             <EditText
@@ -103,7 +105,7 @@
             android:alpha="0.55"
             android:background="#376b7a"
             android:onClick="loginClick"
-            android:text="Login"
+            android:text="@string/loginText"
             android:textColor="#ffffffff" />
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

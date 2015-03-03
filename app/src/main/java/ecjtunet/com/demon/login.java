@@ -11,8 +11,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -20,10 +20,9 @@ public class login extends Activity {
 
     public String url = "http://homker.sinaapp.com/app.php";
     public String loginNameText;
-    private Button loginButton;
     private EditText loginName;
     private EditText password;
-    private View login;
+    private LinearLayout login;
     private Handler handler = new Handler() {
 
         public void handleMessage(Message message) {
@@ -44,12 +43,12 @@ public class login extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreUtil.initSharedPreference(getApplicationContext());
-
         setContentView(R.layout.login);
-        login = findViewById(R.id.login);
+        login = (LinearLayout) findViewById(R.id.login);
         UserEntity user = SharedPreUtil.getInstance().getUser();
         Log.i("tag", "user:" + user.getStudentID() + "_____password" + user.getPassword());
         if (TextUtils.isEmpty(user.getStudentID()) || TextUtils.isEmpty(user.getPassword())) {
+            Log.i("tag", "---------------------------------------->" + String.valueOf(login));
             login.setVisibility(View.VISIBLE);
         } else {
             String loginName = user.getStudentID();
@@ -63,7 +62,6 @@ public class login extends Activity {
             new myThead(loginName, passWord, url).start();
         }
 
-        loginButton = (Button) findViewById(R.id.loginbutton);
         loginName = (EditText) findViewById(R.id.loginName);
         password = (EditText) findViewById(R.id.passWord);
 
@@ -130,7 +128,7 @@ public class login extends Activity {
             HttpHelper httpHelper = new HttpHelper(url);
             Message head = handler.obtainMessage();
             if (httpHelper.passwordcheck(username, password)) {
-                UserEntity userEntity = new UserEntity();
+                UserEntity userEntity;
                 userEntity = httpHelper.getUserContent(username);
                 head.obj = userEntity;
             } else {
