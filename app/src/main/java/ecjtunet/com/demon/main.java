@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.slidingmenu.lib.SlidingMenu;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
