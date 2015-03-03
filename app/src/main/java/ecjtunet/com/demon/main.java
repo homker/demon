@@ -189,13 +189,16 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
             case R.id.classquery:
                 url = "http://class.ecjtu.net/wClass.php?class=" + studentID;
                 break;
+            case R.id.scran:
+                turn2capturActivity();
+                break;
             default:
                 Toast.makeText(main.this, "什么鬼还在开发", Toast.LENGTH_SHORT).show();
             /*case R.id.yktquery:;break;
             case R.id.bookquery:;break;
             case R.id.moonModel:;break;
             case R.id.setting:;break;
-            case R.id.scran:;break;*/
+            */
         }
         if (url != null) {
             bundle.putString("url", url);
@@ -203,6 +206,12 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
             startActivity(intent);
         }
 
+    }
+
+    private void turn2capturActivity() {
+        Intent intent = new Intent();
+        intent.setClass(main.this, CaptureActivity.class);
+        startActivity(intent);
     }
 
     public void rightClick(View view) {
