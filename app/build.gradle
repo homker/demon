@@ -4,9 +4,9 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
-    packagingOptions{
+   /* packagingOptions{
         exclude 'res/layout/slidingmenumain.xml'
-    }
+    }*/
     defaultConfig {
         applicationId "ecjtunet.com.demon"
         minSdkVersion 15
