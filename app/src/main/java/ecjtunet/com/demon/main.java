@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -31,16 +33,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ecjtunet.com.demon.view.CycleImageView;
+import ecjtunet.com.demon.view.RefreshLayout;
 import ecjtunet.com.demon.view.newListView;
 
 
-public class main extends ActionBarActivity implements newListView.IReflashListener {
+public class main extends ActionBarActivity  {
 
     private static boolean isExit = false;
-    private newListView newslist;
+    private ListView newslist;
     private ViewFlipper flipper;
     private int windows_width; //屏幕的宽度
     private Newslistadapter newslistadapter;
+    RefreshLayout refreshLayout = null;
     /**
      * 更新新闻内容的的句柄
      */
@@ -55,11 +59,11 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
             }
             for (HashMap<String, Object> item : data) {
                 if (item.get("flag").equals("h")) {
-                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
-                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
+//                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
+//                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
                 }
             }
-            newslist.reflashComplete();
+
         }
     };
     private SlidingMenu sm;
@@ -79,6 +83,7 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
             Drawable drawable = (Drawable) hashMap.get("drawable");
             ImageView imageView = (ImageView) hashMap.get("imageView");
             imageView.setImageDrawable(drawable);
+            refreshLayout.setLoading(false);
         }
     };
 
@@ -87,11 +92,11 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
      * 点击事件监听
      */
     private void initView() {
-        newslist = (newListView) findViewById(R.id.newslist);
-        newslist.setContext(this);
-        newslist.setWindows_width(windows_width);
-        newslist.initHeadImage(this);
-        newslist.setReflashInterface(this);
+        newslist = (ListView) findViewById(R.id.newslist);
+//        newslist.setContext(this);
+//        newslist.setWindows_width(windows_width);
+//        newslist.initHeadImage(this);
+
         flipper = (ViewFlipper) findViewById(R.id.viewflipper);
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -139,12 +144,6 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
     /**
      * 下拉刷新的回调函数
      */
-    @Override
-    public void onReflash() {
-        //get new data
-        new getNewsList(url).start();
-
-    }
 
     private void turn2contentActivity(String ArticleID) {
         Intent intent = new Intent();
@@ -166,13 +165,35 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
             userName = userEntity.getUserName();
             headImage = userEntity.getHeadImage();
         }
-        newslist = (newListView) findViewById(R.id.newslist);
+
+        refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
+        newslist = (ListView) findViewById(R.id.newslist);
         setActionBarLayout(R.layout.action_bar);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         windows_width = displayMetrics.widthPixels;
         initView();
         initSildingmenu();
+        initReflash(refreshLayout);
+    }
+
+    private void initReflash(final RefreshLayout refreshLayout){
+        refreshLayout.setColorSchemeColors(R.color.link_text_material_light);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
+                new getNewsList(url).start();
+                refreshLayout.setLoading(false);
+            }
+        });
+        refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
+            @Override
+            public void onLoad() {
+                new getNewsList(url).start();
+                refreshLayout.setLoading(false);
+            }
+        });
     }
 
     public void toggleMenu(View view) {
@@ -267,7 +288,7 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
      * 测试用
      *
      * @return
-     *//*
+     *//*dsa
     private ArrayList<HashMap<String, Object>> getDate(){
         ArrayList<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
 

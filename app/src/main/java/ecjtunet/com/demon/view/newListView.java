@@ -224,6 +224,7 @@ public class newListView extends ListView {
 
 
     private void topPadding(int topPadding) {
+        Log.i("tag",String.valueOf(headView.getPaddingTop()));
         headView.setPadding(headView.getPaddingLeft(), topPadding,
                 headView.getPaddingRight(), headView.getPaddingBottom());
         headView.invalidate();
@@ -266,9 +267,10 @@ public class newListView extends ListView {
 //    final int RELESE = 2;// 提示释放状态；
 //    final int REFLASHING = 3;// 刷新状态；
 
-    @Override
+ /*   @Override
     public boolean onTouchEvent(MotionEvent ev) {
         Log.i("tag", "_+_+_+_+_+_+_+__+_+_+_+" + String.valueOf(isMove));
+        Log.i("tag",String.valueOf(headView.getPaddingTop()));
         int x = (int) ev.getX();
         int y = (int) ev.getY();
         int position = pointToPosition(x, y);
@@ -309,7 +311,7 @@ public class newListView extends ListView {
                 break;
         }
         return super.onTouchEvent(ev);
-    }
+    }*/
 
     private boolean horizontalMove(int startX, int startY, int endX, int endY) {
         if (Math.abs(startX*startX - endX*endX) > Math.abs(startY*startY - endY*endY)) {
@@ -402,6 +404,7 @@ public class newListView extends ListView {
      * 根据当前状态，改变界面显示；
      */
     private void reflashViewByState() {
+        Log.i("tag","@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         TextView tip = (TextView) headView.findViewById(R.id.tips);
         ImageView arrow = (ImageView) headView.findViewById(R.id.arrow);
         ProgressBar progress = (ProgressBar) headView.findViewById(R.id.pull_refresh_progress);

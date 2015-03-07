@@ -3,12 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ecjtunet.com.demon.main">
-
-    <ecjtunet.com.demon.view.newListView
-        android:id="@+id/newslist"
-        android:layout_width="match_parent"
+    <ecjtunet.com.demon.view.RefreshLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#ffffffff"
-        android:overScrollMode="never"></ecjtunet.com.demon.view.newListView>
+        android:id="@+id/fresh_layout"
+        >
+        <ListView
+            android:id="@+id/newslist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffffff"
+            android:overScrollMode="never"></ListView>
+    </ecjtunet.com.demon.view.RefreshLayout>
 
 </RelativeLayout>
