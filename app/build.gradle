@@ -29,6 +29,11 @@ dependencies {
     compile files('libs/slidingmenu.jar')
 }
 
-//dependencies {
-//    compile project(':slidingmenu')
-//}
+repositories {
+    jcenter()
+}
+
+
+dependencies {
+    compile project(':MaterialDesign')
+}
