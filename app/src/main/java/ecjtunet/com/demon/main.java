@@ -83,7 +83,10 @@ public class main extends ActionBarActivity  {
             Drawable drawable = (Drawable) hashMap.get("drawable");
             ImageView imageView = (ImageView) hashMap.get("imageView");
             imageView.setImageDrawable(drawable);
-            refreshLayout.setLoading(false);
+            Log.i("tag","==========@@@@@@@@=============");
+            if (newslist != null) {
+                refreshLayout.setLoading(false);
+            }
         }
     };
 
@@ -172,9 +175,10 @@ public class main extends ActionBarActivity  {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         windows_width = displayMetrics.widthPixels;
+        initReflash(refreshLayout);
         initView();
         initSildingmenu();
-        initReflash(refreshLayout);
+
     }
 
     private void initReflash(final RefreshLayout refreshLayout){
