@@ -194,6 +194,7 @@ public class main extends ActionBarActivity  {
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
+                Log.i("tag","it works");
                 new getNewsList(url).start();
                 refreshLayout.setLoading(false);
             }
