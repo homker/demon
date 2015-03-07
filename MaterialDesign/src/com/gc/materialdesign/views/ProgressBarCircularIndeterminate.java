@@ -1,7 +1,5 @@
 package com.gc.materialdesign.views;
 
-import com.gc.materialdesign.utils.Utils;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +9,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+
+import com.gc.materialdesign.utils.Utils;
 
 public class ProgressBarCircularIndeterminate extends CustomView {
 	
@@ -25,8 +25,12 @@ public class ProgressBarCircularIndeterminate extends CustomView {
 		setAttributes(attrs);
 		
 	}
-	
-	// Set atributtes of XML to View
+
+    public ProgressBarCircularIndeterminate(Context context) {
+        super(context);
+    }
+
+    // Set atributtes of XML to View
 		protected void setAttributes(AttributeSet attrs){
 			
 			setMinimumHeight(Utils.dpToPx(32, getResources()));

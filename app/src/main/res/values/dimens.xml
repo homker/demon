@@ -13,4 +13,6 @@
     <dimen name="news_content_title">24dp</dimen>
     <dimen name="news_content_tag">12dp</dimen>
     <dimen name="news_head_image_info">16dp</dimen>
+    <dimen name="news_content_image_width">480dp</dimen>
+    <dimen name="news_content_image_height">270dp</dimen>
 </resources>

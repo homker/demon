@@ -3,10 +3,6 @@ package ecjtunet.com.demon.view;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -16,8 +12,11 @@ import android.text.Html;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.net.URL;
@@ -33,20 +32,22 @@ public class articleView extends LinearLayout {
 
     private Context context;
     private TypedArray typedArray;
-    private LinearLayout.LayoutParams params;
-    private AnimationDrawable animationDrawable;
-    private Handler handler = new Handler() {
+    private LinearLayout.LayoutParams params , params_prograss;
+    private  ProgressBar progressBar;
+    private  Handler handler = new Handler() {
 
         public void handleMessage(Message message) {
             HashMap<String, Object> hashMap = (HashMap<String, Object>) message.obj;
             ImageView imageView = (ImageView) hashMap.get("imageView");
-            LayoutParams params1 = new LayoutParams(message.arg1, message.arg2);
+            LayoutParams params1 = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, message.arg2);
             params1.gravity = Gravity.CENTER_HORIZONTAL;
             imageView.setLayoutParams(params1);
             Drawable drawable = (Drawable) hashMap.get("drawable");
-            Log.i("tag", "nimei" + String.valueOf(drawable));
+            Log.i("tag", "nimei" + String.valueOf(imageView.getHeight())+"a:a"+String.valueOf(imageView.getWidth()));
             imageView.setImageDrawable(drawable);
-            animationDrawable.stop();
+
+            progressBar.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
         }
     };
 
@@ -82,18 +83,18 @@ public class articleView extends LinearLayout {
                     int imageHight = typedArray.getDimensionPixelOffset(R.styleable.articleView_image_height, 100);
                     int margin = typedArray.getDimensionPixelOffset(R.styleable.articleView_image_margin, 100);
                     ImageView imageView = new ImageView(context);
-                    params = new LinearLayout.LayoutParams(imageWidth, imageHight);
+                    progressBar = new ProgressBar(context);
+                    params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params_prograss = new LayoutParams(R.dimen.icon_width,R.dimen.icon_height);
                     params.gravity = Gravity.CENTER_HORIZONTAL;
                     params.setMargins(0, margin, 0, margin);
                     imageView.setScaleType(ImageView.ScaleType.FIT_START);
                     imageView.setLayoutParams(params);
-
-                    imageView.setBackgroundResource(R.drawable.loding);
+                    imageView.setVisibility(View.GONE);
+                    progressBar.setLayoutParams(params);
                     Log.i("tag", String.valueOf(imageView));
-                    animationDrawable = (AnimationDrawable) imageView.getBackground();
-                    if (animationDrawable != null) {
-                        animationDrawable.start();
-                    }
+                    Log.i("image", String.valueOf(imageView.getWidth())+":"+String.valueOf(imageView.getHeight()));
+                    addView(progressBar);
                     addView(imageView);
                     new DownLoadPicThread(imageView, hashMap.get("value"), windows_width).start();
                     break;
@@ -145,27 +146,13 @@ public class articleView extends LinearLayout {
             Message msg = handler.obtainMessage();
             HashMap<String, Object> hashMap = new HashMap<String, Object>();
             hashMap.put("imageView", imageView);
-            Bitmap bitmap = getImage(drawable, windowswidth);
-            Drawable bitmapDrawable = new BitmapDrawable(bitmap);
-            newImageWidth = bitmapDrawable.getIntrinsicWidth();
-            newImageHeight = bitmapDrawable.getIntrinsicHeight();
-            hashMap.put("drawable", bitmapDrawable);
+            hashMap.put("drawable", drawable);
+            Log.i("image", newImageWidth + "::::" + newImageHeight);
             msg.obj = hashMap;
-            msg.arg1 = newImageWidth;
-            msg.arg2 = newImageHeight;
+            assert drawable != null;
+            msg.arg1 = drawable.getIntrinsicWidth();
+            msg.arg2 = (int) (drawable.getIntrinsicHeight()*2.5);
             handler.sendMessage(msg);
-        }
-
-        public Bitmap getImage(Drawable drawable, int windows_width) {
-            Log.i("tag", "wwidth" + String.valueOf(windows_width));
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            Bitmap bitmap = bitmapDrawable.getBitmap();
-            int w = bitmap.getWidth();
-            int h = bitmap.getHeight();
-            Matrix matrix = new Matrix();
-            float scale = (float) windows_width / w;
-            matrix.postScale(scale, scale);
-            return Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
         }
     }
 

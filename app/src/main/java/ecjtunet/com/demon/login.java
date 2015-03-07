@@ -23,6 +23,7 @@ public class login extends Activity {
     public String loginNameText;
     private EditText loginName;
     private EditText password;
+    private RelativeLayout loginBox;
     private Handler handler = new Handler() {
 
         public void handleMessage(Message message) {
@@ -33,6 +34,7 @@ public class login extends Activity {
                 turn2mianActivity();
             } else {
                 Toast.makeText(login.this, "用户名和密码不匹配", Toast.LENGTH_SHORT).show();
+                loginBox.setVisibility(View.VISIBLE);
             }
             Log.i("tag", "he,it works");
         }
@@ -44,7 +46,7 @@ public class login extends Activity {
         super.onCreate(savedInstanceState);
         SharedPreUtil.initSharedPreference(getApplicationContext());
         setContentView(R.layout.activity_login);
-        RelativeLayout loginBox = (RelativeLayout) findViewById(R.id.loginBox);
+        loginBox = (RelativeLayout) findViewById(R.id.loginBox);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         Log.i("tag", "----------------->" + String.valueOf(imageView));
         Log.i("tag", "---------------------------------------->" + String.valueOf(loginBox));
@@ -127,6 +129,7 @@ public class login extends Activity {
 
         @Override
         public void run() {
+            super.run();
             HttpHelper httpHelper = new HttpHelper(url);
             Message head = handler.obtainMessage();
             if (httpHelper.passwordcheck(username, password)) {
@@ -137,7 +140,7 @@ public class login extends Activity {
                 head.obj = false;
             }
             handler.sendMessage(head);
-            super.run();
+
         }
     }
 
