@@ -8,7 +8,6 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -22,9 +21,9 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ecjtunet.com.demon.camera.CameraManager;
 import ecjtunet.com.demon.cameraDecode.CaptureActivityHandler;
@@ -185,16 +184,12 @@ public class CaptureActivity extends Activity implements Callback {
                     dialog.dismiss();
                     if (!isLegalUrl(resultString))   //如果url不合法
                     {
-                        Toast.makeText(getApplicationContext(), "该链接不是合法的URL", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CaptureActivity.this, "该链接不是合法的URL", Toast.LENGTH_SHORT).show();
                         if (handler != null)     //实现连续扫描
                             handler.restartPreviewAndDecode();
                         return;
                     }
-                    Intent intent = new Intent();      //打开链接
-                    intent.setAction("android.intent.action.VIEW");
-                    Uri content_url = Uri.parse(resultString);
-                    intent.setData(content_url);
-                    startActivity(intent);
+                    turn2webview(resultString);
                 }
             });
 
@@ -211,21 +206,23 @@ public class CaptureActivity extends Activity implements Callback {
         //CaptureActivity.this.finish();
     }
 
+    void turn2webview(String url){
+        Intent intent = new Intent();
+        intent.setClass(CaptureActivity.this,webview.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        this.finish();
+    }
+
     private boolean isLegalUrl(String resultString) {
-        URL url;
-        try {
-            url = new URL(resultString);
-            HttpURLConnection connt = (HttpURLConnection) url.openConnection();
-            connt.setRequestMethod("HEAD");
-            String strMessage = connt.getResponseMessage();
-            if (strMessage.compareTo("Not Found") == 0) {
-                return false;
-            }
-            connt.disconnect();
-        } catch (Exception e) {
-            return false;
+        Pattern p = Pattern.compile("^(http|www|ftp|)?(://)?(\\w+(-\\w+)*)(\\.(\\w+(-\\w+)*))*((:\\d+)?)(/(\\w+(-\\w+)*))*(\\.?(\\w)*)(\\?)?(((\\w*%)*(\\w*\\?)*(\\w*:)*(\\w*\\+)*(\\w*\\.)*(\\w*&)*(\\w*-)*(\\w*=)*(\\w*%)*(\\w*\\?)*(\\w*:)*(\\w*\\+)*(\\w*\\.)*(\\w*&)*(\\w*-)*(\\w*=)*)*(\\w*)*)$",Pattern.CASE_INSENSITIVE );
+        Matcher m = p.matcher(resultString);
+        if (m.find()){
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void initBeepSound() {

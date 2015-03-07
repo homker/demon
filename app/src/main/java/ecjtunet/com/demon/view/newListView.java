@@ -292,26 +292,27 @@ public class newListView extends ListView {
                 endY = (int) ev.getY();
                 if (position == 0 && horizontalMove(startX, startX, endX, endY)) {
                     headImageChange(startX, endX);
+                }else{
+                    if (state == RELESE) {
+                        state = REFLASHING;
+                        // 加载最新数据；
+                        reflashViewByState();
+                        iReflashListener.onReflash();
+                    } else if (state == PULL) {
+                        state = NONE;
+                        isRemark = false;
+                        reflashViewByState();
+                    }
+                    if (isMove) return true;
+                    isMove = false;
                 }
-                if (state == RELESE) {
-                    state = REFLASHING;
-                    // 加载最新数据；
-                    reflashViewByState();
-                    iReflashListener.onReflash();
-                } else if (state == PULL) {
-                    state = NONE;
-                    isRemark = false;
-                    reflashViewByState();
-                }
-                if (isMove) return true;
-                isMove = false;
                 break;
         }
         return super.onTouchEvent(ev);
     }
 
     private boolean horizontalMove(int startX, int startY, int endX, int endY) {
-        if (Math.abs(startX - endX) > Math.abs(startY - endY)) {
+        if (Math.abs(startX*startX - endX*endX) > Math.abs(startY*startY - endY*endY)) {
             return true;
         } else {
             return false;

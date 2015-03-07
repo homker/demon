@@ -117,7 +117,7 @@ public class main extends ActionBarActivity implements newListView.IReflashListe
      * 初始化silidingmenu
      */
     private void initSildingmenu() {
-        sm = new SlidingMenu(main.this);
+        sm = new SlidingMenu(main.this.getBaseContext());
         sm.setBehindOffsetRes(R.dimen.sling_margin_main);
         sm.setFadeEnabled(false);
         sm.setMode(SlidingMenu.LEFT);
