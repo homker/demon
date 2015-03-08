@@ -337,6 +337,7 @@ public class HttpHelper {
         ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
         int status;
         this.url = url + "?newslist=rx";
+        Log.i("url","@@!#!@#!@#!@#!@#!@"+url);
         String result = apacheGet();
         JSONTokener jsonTokener = new JSONTokener(result);
         try {

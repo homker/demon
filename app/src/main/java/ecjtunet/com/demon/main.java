@@ -1,5 +1,6 @@
 package ecjtunet.com.demon;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,12 +18,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,7 +40,7 @@ import ecjtunet.com.demon.view.newListView;
 public class main extends ActionBarActivity  {
 
     private static boolean isExit = false;
-    private ListView newslist;
+    private newListView newslist;
     private ViewFlipper flipper;
     private int windows_width; //屏幕的宽度
     private Newslistadapter newslistadapter;
@@ -59,11 +59,13 @@ public class main extends ActionBarActivity  {
             }
             for (HashMap<String, Object> item : data) {
                 if (item.get("flag").equals("h")) {
-//                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
-//                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
+                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
+                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
                 }
             }
-
+            Log.i("tag","@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###");
+            refreshLayout.setLoading(false);
+            refreshLayout.setRefreshing(false);
         }
     };
     private SlidingMenu sm;
@@ -83,10 +85,6 @@ public class main extends ActionBarActivity  {
             Drawable drawable = (Drawable) hashMap.get("drawable");
             ImageView imageView = (ImageView) hashMap.get("imageView");
             imageView.setImageDrawable(drawable);
-            Log.i("tag","==========@@@@@@@@=============");
-            if (newslist != null) {
-                refreshLayout.setLoading(false);
-            }
         }
     };
 
@@ -95,10 +93,10 @@ public class main extends ActionBarActivity  {
      * 点击事件监听
      */
     private void initView() {
-        newslist = (ListView) findViewById(R.id.newslist);
-//        newslist.setContext(this);
-//        newslist.setWindows_width(windows_width);
-//        newslist.initHeadImage(this);
+        newslist = (newListView) findViewById(R.id.newslist);
+        newslist.setContext(this);
+        newslist.setWindows_width(windows_width);
+        newslist.initHeadImage(this);
 
         flipper = (ViewFlipper) findViewById(R.id.viewflipper);
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -127,8 +125,8 @@ public class main extends ActionBarActivity  {
 
 
 
-    private void initSildingmenu() {
-        sm = new SlidingMenu(main.this.getBaseContext());
+    private void initSildingmenu(Context context) {
+        sm = new SlidingMenu(context);
         sm.setBehindOffsetRes(R.dimen.sling_margin_main);
         sm.setFadeEnabled(false);
         sm.setMode(SlidingMenu.LEFT);
@@ -141,7 +139,8 @@ public class main extends ActionBarActivity  {
         userNameView.setText(userName);
         headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
         new updateImageThread(headIamgeView, headImage).start();
-        sm.showContent();
+
+        //sm.showContent();
     }
 
     /**
@@ -170,15 +169,15 @@ public class main extends ActionBarActivity  {
         }
 
         refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
-        newslist = (ListView) findViewById(R.id.newslist);
+        newslist = (newListView) findViewById(R.id.newslist);
         setActionBarLayout(R.layout.action_bar);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         windows_width = displayMetrics.widthPixels;
         initReflash(refreshLayout);
         initView();
-        initSildingmenu();
-
+        initSildingmenu(this.getBaseContext());
+        refreshLayout.onTouchEvent();
     }
 
     private void initReflash(final RefreshLayout refreshLayout){
@@ -188,7 +187,6 @@ public class main extends ActionBarActivity  {
             public void onRefresh() {
                 Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
                 new getNewsList(url).start();
-                refreshLayout.setLoading(false);
             }
         });
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {

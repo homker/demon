@@ -99,6 +99,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        Log.i("touch","this work is done here");
         final int action = event.getAction();
 
         switch (action) {
@@ -195,12 +196,15 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                         int totalItemCount) {
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,int totalItemCount) {
         // 滚动时到了最底部也可以加载更多
         if (canLoad()) {
             loadData();
         }
+    }
+
+    public void onTouchEvent() {
+        Log.i("tag","really has be touch");
     }
 
     /**
