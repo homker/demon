@@ -16,5 +16,5 @@
     <dimen name="news_content_image_width">480dp</dimen>
     <dimen name="news_content_image_height">270dp</dimen>
     <dimen name="shawdow_width">15dp</dimen>
-    <dimen name="action_bar_right_margin">10dp</dimen>
+    <dimen name="action_bar_right_margin">15dp</dimen>
 </resources>
