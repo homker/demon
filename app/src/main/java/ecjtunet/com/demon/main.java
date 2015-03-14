@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import android.widget.ViewFlipper;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -130,7 +132,10 @@ public class main extends ActionBarActivity  {
         sm.setBehindOffsetRes(R.dimen.sling_margin_main);
         sm.setFadeEnabled(false);
         sm.setMode(SlidingMenu.LEFT);
+        sm.setBehindScrollScale(0);
         sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        sm.setShadowWidthRes(R.dimen.shawdow_width);
+        sm.setShadowDrawable(R.drawable.shadow);
         sm.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
         sm.setMenu(R.layout.left_menu);
         StudentID = (TextView) findViewById(R.id.UserID);
@@ -171,6 +176,7 @@ public class main extends ActionBarActivity  {
         refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
         newslist = (newListView) findViewById(R.id.newslist);
         setActionBarLayout(R.layout.action_bar);
+        setOverflowButtonDisplayAlways();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         windows_width = displayMetrics.widthPixels;
@@ -178,6 +184,18 @@ public class main extends ActionBarActivity  {
         initView();
         initSildingmenu(this.getBaseContext());
         refreshLayout.onTouchEvent();
+    }
+    private void setOverflowButtonDisplayAlways(){
+        ViewConfiguration viewConfiguration = ViewConfiguration.get(main.this);
+        try {
+            Field field = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            field.setAccessible(true);
+            field.setBoolean(viewConfiguration,false);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initReflash(final RefreshLayout refreshLayout){
