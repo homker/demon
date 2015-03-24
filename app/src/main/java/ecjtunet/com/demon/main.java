@@ -3,9 +3,11 @@ package ecjtunet.com.demon;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
@@ -19,9 +21,10 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
@@ -36,22 +39,23 @@ import java.util.TimerTask;
 
 import ecjtunet.com.demon.view.CycleImageView;
 import ecjtunet.com.demon.view.RefreshLayout;
-import ecjtunet.com.demon.view.newListView;
 
 
 public class main extends ActionBarActivity  {
 
     private static boolean isExit = false;
-    private newListView newslist;
-    private ViewFlipper flipper;
+    private ListView newslist;
+    private ViewPager flipper;
     private int windows_width; //屏幕的宽度
     private Newslistadapter newslistadapter;
+    private ProgressBar progressBarCircularIndeterminate;
     RefreshLayout refreshLayout = null;
     /**
      * 更新新闻内容的的句柄
      */
     private Handler getNewsData = new Handler() {
         public void handleMessage(Message message) {
+            progressBarCircularIndeterminate.setVisibility(View.GONE);
             ArrayList<HashMap<String, Object>> data = (ArrayList<HashMap<String, Object>>) message.obj;
             if (newslistadapter == null) {
                 newslistadapter = new Newslistadapter(main.this, data);
@@ -61,11 +65,12 @@ public class main extends ActionBarActivity  {
             }
             for (HashMap<String, Object> item : data) {
                 if (item.get("flag").equals("h")) {
-                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
-                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
+//                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
+//                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
                 }
             }
             Log.i("tag","@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###");
+            newslist.setVisibility(View.VISIBLE);
             refreshLayout.setLoading(false);
             refreshLayout.setRefreshing(false);
         }
@@ -95,26 +100,19 @@ public class main extends ActionBarActivity  {
      * 点击事件监听
      */
     private void initView() {
-        newslist = (newListView) findViewById(R.id.newslist);
-        newslist.setContext(this);
-        newslist.setWindows_width(windows_width);
-        newslist.initHeadImage(this);
+        newslist = (ListView) findViewById(R.id.newslist);
+//        newslist.setContext(main.this);
+//        newslist.setWindows_width(windows_width);
+//        newslist.initHeadView(main.this);
 
-        flipper = (ViewFlipper) findViewById(R.id.viewflipper);
+//        flipper = (ViewPager) findViewById(R.id.news_viewPager);
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (id > 0) {
                     TextView articleIDText = (TextView) view.findViewById(R.id.articleID);
                     String articleID = (String) articleIDText.getText();
                     turn2contentActivity(articleID);
 //                    Toast.makeText(main.this,"听说你被戳了"+articleID,Toast.LENGTH_SHORT).show();
-                } else {
-                    int index = newListView.getPageIndex(flipper.getCurrentView());
-                    String articleID = newListView.getArticleID(index);
-                    turn2contentActivity(articleID);
-//                    Toast.makeText(main.this,"image"+articleID,Toast.LENGTH_SHORT).show();
-                }
             }
         });
         //初始化listView
@@ -130,7 +128,7 @@ public class main extends ActionBarActivity  {
     private void initSildingmenu(Context context) {
         sm = new SlidingMenu(context);
         sm.setBehindOffsetRes(R.dimen.sling_margin_main);
-        sm.setFadeEnabled(false);
+        sm.setFadeEnabled(true);
         sm.setMode(SlidingMenu.LEFT);
         sm.setBehindScrollScale(0);
         sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
@@ -145,7 +143,7 @@ public class main extends ActionBarActivity  {
         headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
         new updateImageThread(headIamgeView, headImage).start();
 
-        //sm.showContent();
+        sm.showContent();
     }
 
     /**
@@ -165,6 +163,7 @@ public class main extends ActionBarActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreUtil.initSharedPreference(getApplicationContext());
+        HideBar();
         setContentView(R.layout.activity_main);
         UserEntity userEntity = SharedPreUtil.getInstance().getUser();
         if (!TextUtils.isEmpty(userEntity.getUserName())) {
@@ -172,9 +171,9 @@ public class main extends ActionBarActivity  {
             userName = userEntity.getUserName();
             headImage = userEntity.getHeadImage();
         }
-
         refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
-        newslist = (newListView) findViewById(R.id.newslist);
+        newslist = (ListView) findViewById(R.id.newslist);
+        progressBarCircularIndeterminate = (ProgressBar) findViewById(R.id.progressBarCircularIndetermininate);
         setActionBarLayout(R.layout.action_bar);
         setOverflowButtonDisplayAlways();
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -184,7 +183,15 @@ public class main extends ActionBarActivity  {
         initView();
         initSildingmenu(this.getBaseContext());
         refreshLayout.onTouchEvent();
+        //toggleHideBar();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        HideBar();
+    }
+
     private void setOverflowButtonDisplayAlways(){
         ViewConfiguration viewConfiguration = ViewConfiguration.get(main.this);
         try {
@@ -196,6 +203,20 @@ public class main extends ActionBarActivity  {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private void HideBar(){
+        int newOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        if (Build.VERSION.SDK_INT >= 14){
+            newOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        }
+        if (Build.VERSION.SDK_INT >= 16){
+            newOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        }
+        if (Build.VERSION.SDK_INT >= 18){
+            newOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+        getWindow().getDecorView().setSystemUiVisibility(newOptions);
     }
 
     private void initReflash(final RefreshLayout refreshLayout){
@@ -210,7 +231,6 @@ public class main extends ActionBarActivity  {
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
-                Log.i("tag","it works");
                 new getNewsList(url).start();
                 refreshLayout.setLoading(false);
             }
@@ -226,7 +246,6 @@ public class main extends ActionBarActivity  {
         intent.setClass(main.this, webview.class);
         Bundle bundle = new Bundle();
         String url = null;
-        Log.i("tag", String.valueOf(view.getId()));
         switch (view.getId()) {
             case R.id.score:
                 url = "http://score.ecjtu.net/";
@@ -259,9 +278,6 @@ public class main extends ActionBarActivity  {
         startActivity(intent);
     }
 
-    public void rightClick(View view) {
-        Toast.makeText(main.this, "我还不知道这是什么鬼", Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -272,13 +288,11 @@ public class main extends ActionBarActivity  {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i("touch", "touched");
         return super.onTouchEvent(event);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.i("touch", "nidi");
         return super.dispatchTouchEvent(ev);
     }
 
@@ -289,7 +303,6 @@ public class main extends ActionBarActivity  {
      */
     public void setActionBarLayout(int layoutID) {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        Log.i("tag", "2" + String.valueOf(actionBar));
         if (actionBar != null) {
             actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
@@ -390,7 +403,6 @@ public class main extends ActionBarActivity  {
 
         @Override
         public void run() {
-            Log.i("tag", "getnews thread works");
             Message message = getNewsData.obtainMessage();
             HttpHelper httpHelper = new HttpHelper(url);
             message.obj = httpHelper.getNewsList();

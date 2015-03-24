@@ -4,18 +4,33 @@
     android:layout_height="match_parent"
     tools:context="ecjtunet.com.demon.main">
 
+    <ProgressBar
+        android:layout_width="@dimen/progress_width"
+        android:layout_height="@dimen/progress_height"
+        android:id="@+id/progressBarCircularIndetermininate"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        >
+
+    </ProgressBar>
+
     <ecjtunet.com.demon.view.RefreshLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fresh_layout"
         >
 
-        <ecjtunet.com.demon.view.newListView
+        <ListView
+            android:visibility="gone"
             android:id="@+id/newslist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ffffffff"
-            android:overScrollMode="never"></ecjtunet.com.demon.view.newListView>
+            android:overScrollMode="never">
+
+            </ListView>
 
     </ecjtunet.com.demon.view.RefreshLayout>
 

@@ -68,11 +68,11 @@ public class HttpHelper {
                                     +"AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
             // 超时设置
 /* 从连接池中取连接的超时时间 */
-            ConnManagerParams.setTimeout(params, 1000);
+            ConnManagerParams.setTimeout(params, 2000);
             /* 连接超时 */
-            HttpConnectionParams.setConnectionTimeout(params, 2000);
+            HttpConnectionParams.setConnectionTimeout(params, 4000);
             /* 请求超时 */
-            HttpConnectionParams.setSoTimeout(params, 4000);
+            HttpConnectionParams.setSoTimeout(params, 6000);
 
             // 设置我们的HttpClient支持HTTP和HTTPS两种模式
             SchemeRegistry schReg =new SchemeRegistry();
@@ -127,7 +127,7 @@ public class HttpHelper {
      * @param datas
      * @return
      */
-    public String post(ArrayList<HashMap<String, String>> datas) {
+    public String Android_post(ArrayList<HashMap<String, String>> datas) {
         try {
             url1 = new URL(url);
             connection = (HttpURLConnection) url1.openConnection();
@@ -136,7 +136,10 @@ public class HttpHelper {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Charset", "utf-8");
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            Log.i("tag","get outputstream is"+String.valueOf(connection.getOutputStream()));
             DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+            Log.i("tag","it has been works on it");
             for (HashMap<String, String> hashMap : datas) {
                 String key = hashMap.get("key");
                 String value = hashMap.get("value");
@@ -145,7 +148,7 @@ public class HttpHelper {
             dataOutputStream.writeBytes("token=rx");
             dataOutputStream.flush();
             dataOutputStream.close();
-
+            Log.i("tag","content is some of:"+String.valueOf(connection.getInputStream()));
             in = new InputStreamReader(connection.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(in);
             StringBuffer stringBuffer = new StringBuffer();
@@ -214,6 +217,7 @@ public class HttpHelper {
      * @return
      */
     public String apachePost(ArrayList<HashMap<String, String>> datas) {
+        Log.i("Tag","apachePost is work");
         String result = null;
         BufferedReader reader = null;
         try {
@@ -267,6 +271,7 @@ public class HttpHelper {
      * @return
      */
     public boolean passwordcheck(String userName, String passWord) {
+        Log.i("tag","passwordchenck works");
         int statues = 0;
         boolean flag = false;
         ArrayList<HashMap<String, String>> datas = new ArrayList<HashMap<String, String>>();
@@ -279,6 +284,9 @@ public class HttpHelper {
         datas.add(hashMap);
         datas.add(hashMap1);
         String result = apachePost(datas);
+        if (result == null){
+            result = Android_post(datas);
+        }
         Log.i("tag", "result:" + result);
         try {
             JSONTokener jsonTokener = new JSONTokener(result);

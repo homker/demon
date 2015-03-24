@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="contents_text">#ff000000</color>
+    <color name="white">#ffffffff</color>
     <color name="encode_view">#ffffffff</color>
     <color name="help_button_view">#ffcccccc</color>
     <color name="help_view">#ff404040</color>

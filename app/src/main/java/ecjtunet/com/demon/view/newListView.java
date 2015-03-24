@@ -1,3 +1,4 @@
+/*
 package ecjtunet.com.demon.view;
 
 import android.content.Context;
@@ -6,13 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,9 +23,11 @@ import java.util.ArrayList;
 
 import ecjtunet.com.demon.R;
 
+*/
 /**
  * Created by homker on 2015/1/23.
- */
+ *//*
+
 public class newListView extends ListView {
 
 
@@ -56,7 +57,8 @@ public class newListView extends ListView {
     public newListView(final Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        mGestureDetector = new GestureDetector(context,new GestureDetector.OnGestureListener() {
+        */
+/*mGestureDetector = new GestureDetector(context,new GestureDetector.OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
                 flipper.setClickable(true);
@@ -113,14 +115,17 @@ public class newListView extends ListView {
                 }
                 return true;
             }
-        });
+        });*//*
+
     }
 
-    /**
+    */
+/**
      * 修改前面的那几个点。。。。还有就是修改同一条的info
      *
      * @param index
-     */
+     *//*
+
     public static void draw_point(int index) {
         String info;
         for (int i = 0; i < imageViews.size(); i++) {
@@ -135,12 +140,14 @@ public class newListView extends ListView {
         newsHeadImageInfo.setText(info);
     }
 
-    /**
+    */
+/**
      * 得到当前图片的标记
      *
      * @param view
      * @return *
-     */
+     *//*
+
     public static int getPageIndex(View view) {
         for (int i = 0; i < views.size(); i++) {
             if (view == views.get(i)) return i;
@@ -165,11 +172,13 @@ public class newListView extends ListView {
         this.articleIDs.add(articleID);
     }
 
-    /**
+    */
+/**
      * 通知父标签测量的宽高
      *
      * @param view
-     */
+     *//*
+
     private void measureHeadView(View view) {
         ViewGroup.LayoutParams p = view.getLayoutParams();
         if (p == null) {
@@ -186,9 +195,11 @@ public class newListView extends ListView {
         view.measure(width, height);
     }
 
-    /**
+    */
+/**
      * init point
-     */
+     *//*
+
     private void initPoint() {
         imageViews = new ArrayList<ImageView>();
         ImageView imageView;
@@ -207,10 +218,12 @@ public class newListView extends ListView {
         }
     }
 
-    /**
+    */
+/**
      * childview
      * 初始化轮播图片
-     */
+     *//*
+
     private void initChildView(ViewFlipper flipper) {
         views = new ArrayList<View>();
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -228,11 +241,13 @@ public class newListView extends ListView {
         initPoint();
     }
 
-    /**
+    */
+/**
      * 更新新闻头部图片,以及提示info
      *
      * @param drawable
-     */
+     *//*
+
     public void updateHeadImageViews(Drawable drawable) {
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         ImageView imageView1 = new ImageView(context);
@@ -246,13 +261,15 @@ public class newListView extends ListView {
         views.add(imageView1);
     }
 
-    /**
+    */
+/**
      * 图片处理，保证图片不会变形
      *
      * @param bitmap
      * @param width
      * @return
-     */
+     *//*
+
 
     public Bitmap getBitmap(Bitmap bitmap, int width) {
         int w = bitmap.getWidth();
@@ -265,17 +282,13 @@ public class newListView extends ListView {
     }
 
 
-    private void topPadding(int topPadding) {
-        Log.i("tag",String.valueOf(headView.getPaddingTop()));
-        headView.setPadding(headView.getPaddingLeft(), topPadding,
-                headView.getPaddingRight(), headView.getPaddingBottom());
-        headView.invalidate();
-    }
 
-    /**
+    */
+/**
      * 初始化headimg,headimage包括 一个 framelayout 一个viewflipper 一个linerlayout,其中framelayout用来布局
      * viewflipper用来承载图片，用linerlayout来布局半透明标题。还有那几个点。。
-     */
+     *//*
+
 
     public void initHeadImage(final Context context) {
 
@@ -323,7 +336,8 @@ public class newListView extends ListView {
 //    final int RELESE = 2;// 提示释放状态；
 //    final int REFLASHING = 3;// 刷新状态；
 
- /*   @Override
+ */
+/*   @Override
     public boolean onTouchEvent(MotionEvent ev) {
         Log.i("tag", "_+_+_+_+_+_+_+__+_+_+_+" + String.valueOf(isMove));
         Log.i("tag",String.valueOf(headView.getPaddingTop()));
@@ -367,24 +381,14 @@ public class newListView extends ListView {
                 break;
         }
         return super.onTouchEvent(ev);
-    }*/
-
-    private boolean horizontalMove(int startX, int startY, int endX, int endY) {
-        if (Math.abs(startX*startX - endX*endX) > Math.abs(startY*startY - endY*endY)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    }*//*
 
 
-    private void headImageChange(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-
-    }
 
 
 
 
 
 }
+*/
