@@ -12,7 +12,7 @@
         android:layout_marginTop="30dp"
         android:orientation="vertical">
 
-        <ecjtunet.com.demon.view.CycleImageView
+        <ecjtu.net.demon.view.CycleImageView
             android:id="@+id/UserImage"
             android:layout_width="100dp"
             android:layout_height="100dp"

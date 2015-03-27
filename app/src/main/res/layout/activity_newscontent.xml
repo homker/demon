@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ecjtunet.com.demon.newscontent">
+    tools:context="ecjtu.net.demon.newscontent">
 
     <TextView
         android:id="@+id/contet_title"
@@ -72,13 +72,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp">
 
-        <ecjtunet.com.demon.view.articleView
+        <ecjtu.net.demon.view.articleView
             android:id="@+id/news_article"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rx:image_height="100dp"
             rx:image_margin="10dp"
-            rx:image_width="350dp"></ecjtunet.com.demon.view.articleView>
+            rx:image_width="350dp"></ecjtu.net.demon.view.articleView>
     </ScrollView>
 
 

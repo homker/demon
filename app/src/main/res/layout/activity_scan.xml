@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ecjtunet.com.demon.CaptureActivity">
+    tools:context="ecjtu.net.demon.CaptureActivity">
 
     <SurfaceView
         android:id="@+id/preview_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ecjtunet.com.demon.view.ViewfinderView
+    <ecjtu.net.demon.view.ViewfinderView
         android:id="@+id/Viewfinder_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

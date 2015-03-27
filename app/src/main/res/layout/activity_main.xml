@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ecjtunet.com.demon.main">
+    tools:context="ecjtu.net.demon.main">
 
     <ProgressBar
         android:layout_width="@dimen/progress_width"
@@ -16,7 +16,7 @@
 
     </ProgressBar>
 
-    <ecjtunet.com.demon.view.RefreshLayout
+    <ecjtu.net.demon.view.RefreshLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fresh_layout"
@@ -32,6 +32,6 @@
 
             </ListView>
 
-    </ecjtunet.com.demon.view.RefreshLayout>
+    </ecjtu.net.demon.view.RefreshLayout>
 
 </RelativeLayout>

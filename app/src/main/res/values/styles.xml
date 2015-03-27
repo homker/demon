@@ -1,12 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="android:actionOverflowButtonStyle">@style/rxActionBarOverFlowerButtonStyle</item>
     </style>
 
-    <style name="rxActionBarOverFlowerButtonStyle">
+    <style name="rxActionBarOverFlowerButtonStyle" >
         <item name="android:src">@drawable/gruid</item>
         <item name="android:paddingRight">@dimen/action_bar_right_margin</item>
     </style>

@@ -4,13 +4,13 @@
         android:id="@+id/news_head_fl_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ecjtunet.com.demon.view.rxViewPager
+        <ecjtu.net.demon.view.rxViewPager
             android:id="@+id/news_viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
 
-            </ecjtunet.com.demon.view.rxViewPager>
+            </ecjtu.net.demon.view.rxViewPager>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,6 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_change"
+                android:background="@color/sbc_header_text"
                 />
             </LinearLayout>
     </FrameLayout>
