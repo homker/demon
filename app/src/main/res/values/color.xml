@@ -25,4 +25,7 @@
     <color name="viewfinder_frame">#ff000000</color>
     <color name="viewfinder_laser">#ffff0000</color>
     <color name="viewfinder_mask">#60000000</color>
+    <color name="action_bar_background">#259E92</color>
+    <color name="left_menu_background">#259E92</color>
 </resources>
+

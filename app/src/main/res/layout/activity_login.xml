@@ -23,8 +23,10 @@
         android:id="@+id/loginBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imageView"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        >
 
     <RelativeLayout
             android:id="@+id/relativeLayout"

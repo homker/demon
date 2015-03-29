@@ -38,17 +38,26 @@ public class Newslistadapter extends BaseAdapter {
         myTopView = new ArrayList<ImageView>();
         HashMap<String, Object> hashMap;
 //        if(!listItem.get(position).get("flag").equals("h")) {
+        Log.i("tag","the list.size()" + listitem.size());
         for (HashMap<String, Object> item : listItems) {
             if (!item.get("flag").equals("h")) {
                 hashMap = item;
                 listitem.add(hashMap);
+                Log.i("tag","the list.size()" + listitem.size());
             }
         }
         this.listItem = listitem;
+        Log.i("tag","the list.size()" + listitem.size());
+    }
+
+    private void getNewsList()
+    {
 
     }
 
+
     public void onDateChange(ArrayList<HashMap<String, Object>> listItems) {
+        Log.i("tag","onDAteChange has been work");
         ArrayList<HashMap<String, Object>> listitem = new ArrayList<>();
         HashMap<String, Object> hashMap;
         for (HashMap<String, Object> item : listItems) {
@@ -63,7 +72,7 @@ public class Newslistadapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return listItem.size();
+        return listItem.size() + 1;
     }
 
     @Override
@@ -115,12 +124,11 @@ public class Newslistadapter extends BaseAdapter {
         } else listItemView = (ListItemView) convertView.getTag();
 
 
-        listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position).get("imageDrawable"));
-        listItemView.title.setText((String) listItem.get(position).get("title"));
-        listItemView.info.setText((String) listItem.get(position).get("info"));
-        listItemView.articleID.setText((String) listItem.get(position).get("articleID"));
+        listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("imageDrawable"));
+        listItemView.title.setText((String) listItem.get(position - 1).get("title"));
+        listItemView.info.setText((String) listItem.get(position - 1).get("info"));
+        listItemView.articleID.setText((String) listItem.get(position - 1).get("articleID"));
 
-        Log.i("tag", "ok4");
         return convertView;
     }
 

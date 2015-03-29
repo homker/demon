@@ -73,7 +73,6 @@ public class main extends InstrumentedActivity {
 //                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
                 }
             }
-            Log.i("tag","@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@###");
             newslist.setVisibility(View.VISIBLE);
             refreshLayout.setLoading(false);
             refreshLayout.setRefreshing(false);
@@ -106,11 +105,6 @@ public class main extends InstrumentedActivity {
      */
     private void initView() {
         newslist = (ListView) findViewById(R.id.newslist);
-//        newslist.setContext(main.this);
-//        newslist.setWindows_width(windows_width);
-//        newslist.initHeadView(main.this);
-
-//        flipper = (ViewPager) findViewById(R.id.news_viewPager);
         TextView textView = new TextView(main.this);
         AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
         textView.setLayoutParams(layoutParams);
@@ -120,12 +114,10 @@ public class main extends InstrumentedActivity {
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("tag","==========================================>"+position);
-                if(position != newslist.getCount()) {
+                if(position != (newslist.getCount() - 1)) {
                     TextView articleIDText = (TextView) view.findViewById(R.id.articleID);
                     String articleID = (String) articleIDText.getText();
                     turn2contentActivity(articleID);
-//                    Toast.makeText(main.this,"听说你被戳了"+articleID,Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -181,7 +173,6 @@ public class main extends InstrumentedActivity {
         setContentView(main_view);
 
         UserEntity userEntity = SharedPreUtil.getInstance().getUser();
-        Log.i("tag",userEntity.getStudentID());
         if (!TextUtils.isEmpty(userEntity.getStudentID())) {
             studentID = userEntity.getStudentID();
             userName = userEntity.getUserName();
@@ -297,6 +288,7 @@ public class main extends InstrumentedActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.i("tag","the main class touchEvent has been work");
         return super.onTouchEvent(event);
     }
 
