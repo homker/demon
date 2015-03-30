@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">日新</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -32,6 +31,6 @@
     <string name="logoContentDescription">logo</string>
     <string name="loginDescription">login name</string>
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="load">加载。。。</string>
-    <string name="tab_change">我是一个不知道是什么的东西</string>
+    <string name="load">加载中...</string>
+    <string name="tab_change">测试滑动门</string>
 </resources>

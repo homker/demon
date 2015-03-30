@@ -27,5 +27,6 @@
     <color name="viewfinder_mask">#60000000</color>
     <color name="action_bar_background">#259E92</color>
     <color name="left_menu_background">#259E92</color>
+    <color name="news_head_text">#67000000</color>
 </resources>
 

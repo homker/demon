@@ -13,13 +13,17 @@
             </ecjtu.net.demon.view.rxViewPager>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:background="@color/news_head_text"
+            >
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center_vertical|left"
                 android:text="@string/tab_change"
-                android:background="@color/sbc_header_text"
+                android:textColor="@color/white"
                 />
             </LinearLayout>
     </FrameLayout>

@@ -53,6 +53,7 @@ public class main extends InstrumentedActivity {
     private Newslistadapter newslistadapter;
     private ProgressBar progressBarCircularIndeterminate;
     private View main_view;
+    private TextView upToLoad;
     RefreshLayout refreshLayout = null;
     /**
      * 更新新闻内容的的句柄
@@ -66,12 +67,6 @@ public class main extends InstrumentedActivity {
                 newslist.setAdapter(newslistadapter);
             } else {
                 newslistadapter.onDateChange(data);
-            }
-            for (HashMap<String, Object> item : data) {
-                if (item.get("flag").equals("h")) {
-//                    newslist.setInfos((String) item.get("title"), (String) item.get("articleID"));
-//                    newslist.updateHeadImageViews((Drawable) item.get("imageDrawable"));
-                }
             }
             newslist.setVisibility(View.VISIBLE);
             refreshLayout.setLoading(false);
@@ -105,12 +100,13 @@ public class main extends InstrumentedActivity {
      */
     private void initView() {
         newslist = (ListView) findViewById(R.id.newslist);
-        TextView textView = new TextView(main.this);
+//        newslist.setOnScrollListener();
+        upToLoad = new TextView(main.this);
         AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
-        textView.setLayoutParams(layoutParams);
-        textView.setGravity(Gravity.CENTER);
-        textView.setText("向上滑动加载更多");
-        newslist.addFooterView(textView);
+        upToLoad.setLayoutParams(layoutParams);
+        upToLoad.setGravity(Gravity.CENTER);
+        upToLoad.setText("向上滑动加载更多");
+        newslist.addFooterView(upToLoad);
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -188,9 +184,8 @@ public class main extends InstrumentedActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         windows_width = displayMetrics.widthPixels;
         initReflash(refreshLayout);
-
         initSildingmenu(this.getBaseContext());
-        refreshLayout.onTouchEvent();
+
     }
 
     @Override
@@ -220,19 +215,20 @@ public class main extends InstrumentedActivity {
 
 
     private void initReflash(final RefreshLayout refreshLayout){
+        refreshLayout.setmListView(newslist);
         refreshLayout.setColorSchemeColors(R.color.link_text_material_light);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
-                new getNewsList(url).start();
+                new getNewsList(url).start();//下拉刷新时调用
             }
         });
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
-                new getNewsList(url).start();
-                refreshLayout.setLoading(false);
+                newslist.removeFooterView(upToLoad);
+                new getNewsList(url).start();//向上滑动时调用
             }
         });
     }
@@ -289,6 +285,7 @@ public class main extends InstrumentedActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.i("tag","the main class touchEvent has been work");
+        refreshLayout.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 

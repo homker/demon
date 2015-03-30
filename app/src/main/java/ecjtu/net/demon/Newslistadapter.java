@@ -37,13 +37,10 @@ public class Newslistadapter extends BaseAdapter {
         ArrayList<HashMap<String, Object>> listitem = new ArrayList<>();
         myTopView = new ArrayList<ImageView>();
         HashMap<String, Object> hashMap;
-//        if(!listItem.get(position).get("flag").equals("h")) {
-        Log.i("tag","the list.size()" + listitem.size());
         for (HashMap<String, Object> item : listItems) {
             if (!item.get("flag").equals("h")) {
                 hashMap = item;
                 listitem.add(hashMap);
-                Log.i("tag","the list.size()" + listitem.size());
             }
         }
         this.listItem = listitem;
@@ -145,7 +142,7 @@ public class Newslistadapter extends BaseAdapter {
 //            imageView.setBackgroundColor(R.color.white);
             leftimageView.setBackgroundColor(context.getResources().getColor(R.color.white));
             leftimageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            leftimageView.setImageResource(R.drawable.img2);
+            leftimageView.setImageResource(R.drawable.a);
             leftimageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -156,7 +153,7 @@ public class Newslistadapter extends BaseAdapter {
             ImageView rightimageView = new ImageView(context);
             rightimageView.setBackgroundColor(context.getResources().getColor(R.color.white));
             rightimageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            rightimageView.setImageResource(R.drawable.img2);
+            rightimageView.setImageResource(R.drawable.b);
             Log.i("tag","wo cao ni mei mei "+ String.valueOf(lp.height));
             myTopView.add(leftimageView);
             myTopView.add(rightimageView);

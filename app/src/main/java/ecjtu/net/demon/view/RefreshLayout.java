@@ -51,6 +51,8 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
      */
     private boolean isLoading = false;
 
+
+
     /**
      * @param context
      */
@@ -65,7 +67,22 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
 
         mListViewFooter = LayoutInflater.from(context).inflate(R.layout.listview_footer, null,
                 false);
+        // 初始化ListView对象
+        if (mListView == null) {
+            getListView();
+        }
+
+
     }
+
+    public void setmListView(ListView newslist){
+        if (mListView == null) {
+            mListView = newslist;
+            mListView.setOnScrollListener(this);
+            Log.i("tag", "### 找到listview");
+        }
+    }
+
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -88,7 +105,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
                 mListView = (ListView) childView;
                 // 设置滚动监听器给ListView, 使得滚动的情况下也可以自动加载
                 mListView.setOnScrollListener(this);
-                Log.d(VIEW_LOG_TAG, "### 找到listview");
+                Log.d("tag", "### 找到listview");
             }
         }
     }
@@ -142,7 +159,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
 
         if (mListView != null && mListView.getAdapter() != null) {
 
-            Log.i("tag","it has been work");
+            Log.i("tag"," isBottom has been work!"+mListView.getLastVisiblePosition()+":"+mListView.getAdapter().getCount());
 
             return mListView.getLastVisiblePosition() == (mListView.getAdapter().getCount() - 1);
         }
@@ -163,9 +180,9 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
      */
     private void loadData() {
         if (mOnLoadListener != null) {
+            Log.i("tag","loadDate is work");
             // 设置状态
             setLoading(true);
-            //
             mOnLoadListener.onLoad();
         }
     }
@@ -175,8 +192,10 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
      */
     public void setLoading(boolean loading) {
         if (mListView != null){
+            Log.i("tag","setLoading is worked");
             isLoading = loading;
             if (isLoading) {
+                Log.i("tag","isloading is work");
                 mListView.addFooterView(mListViewFooter);
             } else {
                 mListView.removeFooterView(mListViewFooter);
@@ -207,11 +226,11 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
     }
 
     public void onTouchEvent() {
-        Log.i("tag","really has be touch");
+
     }
 
     /**
-     * 加载更多的监听器
+     * 上拉时加载更多的监听器
      *
      * @author mrsimple
      */

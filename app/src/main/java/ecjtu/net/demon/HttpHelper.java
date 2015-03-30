@@ -136,9 +136,7 @@ public class HttpHelper {
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Charset", "utf-8");
             connection.setRequestProperty("Connection", "Keep-Alive");
-            Log.i("tag","get outputstream is"+String.valueOf(connection.getOutputStream()));
             DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
-            Log.i("tag","it has been works on it");
             for (HashMap<String, String> hashMap : datas) {
                 String key = hashMap.get("key");
                 String value = hashMap.get("value");
@@ -147,7 +145,6 @@ public class HttpHelper {
             dataOutputStream.writeBytes("token=rx");
             dataOutputStream.flush();
             dataOutputStream.close();
-            Log.i("tag","content is some of:"+String.valueOf(connection.getInputStream()));
             in = new InputStreamReader(connection.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(in);
             StringBuffer stringBuffer = new StringBuffer();
@@ -216,7 +213,6 @@ public class HttpHelper {
      * @return
      */
     public String apachePost(ArrayList<HashMap<String, String>> datas,String url) {
-        Log.i("Tag","apachePost is work");
         String result = null;
         BufferedReader reader = null;
         try {
@@ -234,7 +230,6 @@ public class HttpHelper {
             UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(
                     postParameters);
             request.setEntity(formEntity);
-            Log.i("tag", String.valueOf(request));
             HttpResponse response = client.execute(request);
             reader = new BufferedReader(new InputStreamReader(response
                     .getEntity().getContent()));
@@ -272,7 +267,6 @@ public class HttpHelper {
      * @return
      */
     public String passwordcheck(String userName, String passWord,String url) {
-        Log.i("tag","passwordchenck works");
         String token = null;
         boolean flag = false;
         ArrayList<HashMap<String, String>> datas = new ArrayList<HashMap<String, String>>();
@@ -289,7 +283,6 @@ public class HttpHelper {
         if (result == null){
             result = Android_post(datas,url);
         }
-        Log.i("tag", "result:" + result);
         try {
             JSONTokener jsonTokener = new JSONTokener(result);
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
@@ -320,9 +313,7 @@ public class HttpHelper {
         boolean status = false;
         UserEntity userEntity = new UserEntity();
         url = url + "user/" + studentID + "?token="+token;
-        Log.i("tag","urls ====== "+url);
         String result = apacheGet(url);
-        Log.i("tag","===========<>"+result);
         JSONTokener jsonTokener = new JSONTokener(result);
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
@@ -330,14 +321,11 @@ public class HttpHelper {
             person = jsonObject.getJSONObject("user");
             userEntity.setStudentID(person.getString("student_id"));
             userEntity.setToken(token);
-            //userEntity.setPassword(person.getString("passWord"));
             userEntity.setUserName(person.getString("Name"));
             userEntity.setHeadImage(person.getString("url"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("tag", "url:" + url);
-        Log.i("tag", "result:" + String.valueOf(person));
         return userEntity;
     }
 
@@ -357,6 +345,7 @@ public class HttpHelper {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
             status = jsonObject.getInt("status");
             JSONArray jsonArray = jsonObject.getJSONArray("list");
+            Log.i("tag","the length of news list is:"+jsonArray.length());
             for (int i = 0; i < jsonArray.length(); i++) {
                 HashMap<String, Object> item = new HashMap<String, Object>();
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
