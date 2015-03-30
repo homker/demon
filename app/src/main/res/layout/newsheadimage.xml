@@ -11,19 +11,33 @@
             >
 
             </ecjtu.net.demon.view.rxViewPager>
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_gravity="bottom"
             android:background="@color/news_head_text"
             >
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_gravity="center_vertical|left"
+                android:layout_centerVertical="true"
                 android:text="@string/tab_change"
                 android:textColor="@color/white"
                 />
-            </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/point_view"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/indicator"
+
+                    />
+            </RelativeLayout>
     </FrameLayout>

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +29,9 @@ public class Newslistadapter extends BaseAdapter {
     private LayoutInflater listContainer;
     private View topView;
     private rxViewPager myViewPager;
+    private LinearLayout myPointView;//pointView 的容器
     private ArrayList<ImageView> myTopView; //顶部ViewPager image list
+    private ArrayList<ImageView> points;//标识点的list
 
 
     public Newslistadapter(Context context, ArrayList<HashMap<String, Object>> listItems) {
@@ -51,6 +54,7 @@ public class Newslistadapter extends BaseAdapter {
     {
 
     }
+
 
 
     public void onDateChange(ArrayList<HashMap<String, Object>> listItems) {
@@ -138,8 +142,12 @@ public class Newslistadapter extends BaseAdapter {
             myViewPager = (rxViewPager) topView.findViewById(R.id.news_viewPager);
             myViewPager.setLayoutParams(lp);
 
+            //得到pointView 的容器
+
+            myPointView = (LinearLayout) topView.findViewById(R.id.point_view);
+
+
             ImageView leftimageView = new ImageView(context);
-//            imageView.setBackgroundColor(R.color.white);
             leftimageView.setBackgroundColor(context.getResources().getColor(R.color.white));
             leftimageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             leftimageView.setImageResource(R.drawable.a);
@@ -150,11 +158,11 @@ public class Newslistadapter extends BaseAdapter {
                 }
             });
 
+
             ImageView rightimageView = new ImageView(context);
             rightimageView.setBackgroundColor(context.getResources().getColor(R.color.white));
             rightimageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             rightimageView.setImageResource(R.drawable.b);
-            Log.i("tag","wo cao ni mei mei "+ String.valueOf(lp.height));
             myTopView.add(leftimageView);
             myTopView.add(rightimageView);
             ecjtu.net.demon.newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopView);
@@ -163,7 +171,7 @@ public class Newslistadapter extends BaseAdapter {
             myViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                    draw_point(position);
                 }
 
                 @Override
@@ -176,9 +184,37 @@ public class Newslistadapter extends BaseAdapter {
 
                 }
             });
-
+            initPoint();//初始化pointView
         }
         return topView;
+    }
+
+
+    private void initPoint(){
+        points = new ArrayList<ImageView>();
+        ImageView imageView;
+        for (int i = 0 ; i < myTopView.size();i++){
+            imageView = new ImageView(context);
+            imageView.setImageResource(R.drawable.indicator);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    new ViewGroup.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    ));
+            layoutParams.leftMargin = 10;
+            layoutParams.rightMargin = 10;
+            myPointView.addView(imageView,layoutParams);
+            points.add(imageView);
+        }
+        draw_point(0);
+    }
+
+    private void draw_point(int position){
+        for (int i = 0; i<myTopView.size();i++){
+            points.get(i).setImageResource(R.drawable.indicator);
+        }
+        points.get(position).setImageResource(R.drawable.indicator_focused);
     }
 
     /**
