@@ -52,6 +52,12 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
     private boolean isLoading = false;
 
 
+    /**
+     * 滑动距离及坐标
+     */
+    private float xDistance, yDistance, xLast, yLast;
+
+
 
     /**
      * @param context
@@ -110,10 +116,34 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
         }
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                xDistance = yDistance = 0f;
+                xLast = ev.getX();
+                yLast = ev.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                final float curX = ev.getX();
+                final float curY = ev.getY();
+
+                xDistance += Math.abs(curX - xLast);
+                yDistance += Math.abs(curY - yLast);
+                xLast = curX;
+                yLast = curY;
+
+                if (xDistance > yDistance) {
+                    return false;   //表示向下传递事件
+                }
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
     /*
-     * (non-Javadoc)
-     * @see android.view.ViewGroup#dispatchTouchEvent(android.view.MotionEvent)
-     */
+         * (non-Javadoc)
+         * @see android.view.ViewGroup#dispatchTouchEvent(android.view.MotionEvent)
+         */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         Log.i("touch","this work is done here");
@@ -156,11 +186,7 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
      * 判断是否到了最底部
      */
     private boolean isBottom() {
-
         if (mListView != null && mListView.getAdapter() != null) {
-
-            Log.i("tag"," isBottom has been work!"+mListView.getLastVisiblePosition()+":"+mListView.getAdapter().getCount());
-
             return mListView.getLastVisiblePosition() == (mListView.getAdapter().getCount() - 1);
         }
         return false;

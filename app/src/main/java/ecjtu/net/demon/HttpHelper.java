@@ -334,32 +334,48 @@ public class HttpHelper {
      *
      * @return
      */
-    public ArrayList<HashMap<String, Object>> getNewsList(String url) {
-        ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+    public HashMap<String, Object> getNewsList(String url,String lastId) {
+        HashMap<String, Object> list = new HashMap<String, Object>();
         int status;
-        url = url + "?newslist=rx";
+        if(lastId != null){
+            url = url + "?until=" + lastId;
+        }
         Log.i("url","@@!#!@#!@#!@#!@#!@"+url);
         String result = apacheGet(url);
         JSONTokener jsonTokener = new JSONTokener(result);
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
             status = jsonObject.getInt("status");
-            JSONArray jsonArray = jsonObject.getJSONArray("list");
-            Log.i("tag","the length of news list is:"+jsonArray.length());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                HashMap<String, Object> item = new HashMap<String, Object>();
-                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                item.put("imageDrawable", getImage(jsonObject1.getString("image")));
-                item.put("title", jsonObject1.getString("title"));
-                item.put("info", jsonObject1.getString("info"));
-                item.put("flag", jsonObject1.getString("flag"));
-                item.put("articleID", jsonObject1.getString("articleID"));
-                list.add(item);
-            }
+            JSONObject slide_article = jsonObject.getJSONObject("slide_article");
+            JSONArray slide_articles = slide_article.getJSONArray("articles");
+            JSONObject normal_article = jsonObject.getJSONObject("normal_article");
+            JSONArray normal_articles = normal_article.getJSONArray("articles");
+            list.put("slide_articles",jsonArray2Arraylist(slide_articles));
+            list.put("normal_articles",jsonArray2Arraylist(normal_articles));
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return list;
+    }
+
+    private ArrayList<HashMap<String,Object>> jsonArray2Arraylist(JSONArray jsonArray){
+        ArrayList<HashMap<String,Object>> arrayList = new ArrayList<HashMap<String, Object>>();
+        for (int i = 0; i< jsonArray.length(); i++){
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                HashMap<String,Object> item = new HashMap<String,Object>();
+                item.put("id",jsonObject.getString("id"));
+                item.put("title",jsonObject.getString("title"));
+                item.put("updated_at",jsonObject.getString("updated_at"));
+                item.put("info",jsonObject.getString("info"));
+                String imageUrl = "http://app.ecjtu.net"+jsonObject.getString("thumb");
+                item.put("thumb",getImage(imageUrl));
+                arrayList.add(item);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return arrayList;
     }
 
     /**

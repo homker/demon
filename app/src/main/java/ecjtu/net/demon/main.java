@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -61,7 +60,7 @@ public class main extends InstrumentedActivity {
     private Handler getNewsData = new Handler() {
         public void handleMessage(Message message) {
             progressBarCircularIndeterminate.setVisibility(View.GONE);
-            ArrayList<HashMap<String, Object>> data = (ArrayList<HashMap<String, Object>>) message.obj;
+            HashMap<String, Object> data = (HashMap<String, Object>) message.obj;
             if (newslistadapter == null) {
                 newslistadapter = new Newslistadapter(main.this, data);
                 newslist.setAdapter(newslistadapter);
@@ -80,7 +79,7 @@ public class main extends InstrumentedActivity {
     private CycleImageView headIamgeView;
     private String userName;
     private String headImage;
-    private String url = "http://homker.sinaapp.com/app.php";
+    private String url = "http://app.ecjtu.net/api/v1/index";
     private String loginUrl = "http://user.ecjtu.net/api/login";
     /**
      * 更新头像的线程句柄
@@ -118,7 +117,7 @@ public class main extends InstrumentedActivity {
             }
         });
         //初始化listView
-        new getNewsList(url).start();
+        new getNewsList(url,null).start();
     }
 
     /**
@@ -221,14 +220,18 @@ public class main extends InstrumentedActivity {
             @Override
             public void onRefresh() {
                 Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
-                new getNewsList(url).start();//下拉刷新时调用
+                new getNewsList(url,null).start();//下拉刷新时调用
             }
         });
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
                 newslist.removeFooterView(upToLoad);
-                new getNewsList(url).start();//向上滑动时调用
+                Log.i("tag","the count is"+newslist.getCount());
+                HashMap<String,Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount()-3));
+                String articleId = (String) hashMap.get("id");
+                Log.i("tag","the articleId is "+articleId);
+                new getNewsList(url,articleId).start();//向上滑动时调用
             }
         });
     }
@@ -394,17 +397,22 @@ public class main extends InstrumentedActivity {
     private class getNewsList extends Thread {
 
         private String url;
+        private String articleId;
 
-        public getNewsList(String url) {
+        public getNewsList(String url,String articleId) {
             this.url = url;
+            this.articleId = articleId;
         }
 
         @Override
         public void run() {
             Message message = getNewsData.obtainMessage();
             HttpHelper httpHelper = new HttpHelper();
-            message.obj = httpHelper.getNewsList(url);
+            message.obj = httpHelper.getNewsList(url,articleId);
             getNewsData.sendMessage(message);
         }
     }
+
+
+
 }

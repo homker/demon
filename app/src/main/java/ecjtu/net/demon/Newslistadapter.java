@@ -25,7 +25,8 @@ import ecjtu.net.demon.view.rxViewPager;
 public class Newslistadapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<HashMap<String, Object>> listItem;
+    private ArrayList<HashMap<String, Object>> listItem;// 列表正文的的arraylist
+    private ArrayList<HashMap<String,Object>> slide_articles;// 轮转图的arralist
     private LayoutInflater listContainer;
     private View topView;
     private rxViewPager myViewPager;
@@ -34,20 +35,20 @@ public class Newslistadapter extends BaseAdapter {
     private ArrayList<ImageView> points;//标识点的list
 
 
-    public Newslistadapter(Context context, ArrayList<HashMap<String, Object>> listItems) {
+    public Newslistadapter(Context context, HashMap<String, Object> listItems) {
         this.context = context;
         listContainer = LayoutInflater.from(context);
-        ArrayList<HashMap<String, Object>> listitem = new ArrayList<>();
+        //ArrayList<HashMap<String, Object>> listitem = new ArrayList<>();
         myTopView = new ArrayList<ImageView>();
-        HashMap<String, Object> hashMap;
+        /*HashMap<String, Object> hashMap;
         for (HashMap<String, Object> item : listItems) {
             if (!item.get("flag").equals("h")) {
                 hashMap = item;
                 listitem.add(hashMap);
             }
-        }
-        this.listItem = listitem;
-        Log.i("tag","the list.size()" + listitem.size());
+        }*/
+        this.listItem = (ArrayList<HashMap<String, Object>>) listItems.get("normal_articles");
+        this.slide_articles = (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
     }
 
     private void getNewsList()
@@ -57,17 +58,10 @@ public class Newslistadapter extends BaseAdapter {
 
 
 
-    public void onDateChange(ArrayList<HashMap<String, Object>> listItems) {
+    public void onDateChange(HashMap<String, Object> listItems) {
         Log.i("tag","onDAteChange has been work");
-        ArrayList<HashMap<String, Object>> listitem = new ArrayList<>();
-        HashMap<String, Object> hashMap;
-        for (HashMap<String, Object> item : listItems) {
-            if (!item.get("flag").equals("h")) {
-                hashMap = item;
-                listitem.add(hashMap);
-            }
-        }
-        this.listItem = listitem;
+        this.listItem = (ArrayList<HashMap<String, Object>>) listItems.get("normal_articles");
+        this.slide_articles = (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
         this.notifyDataSetChanged();
     }
 
@@ -76,9 +70,10 @@ public class Newslistadapter extends BaseAdapter {
         return listItem.size() + 1;
     }
 
+
     @Override
     public Object getItem(int position) {
-        return null;
+        return listItem.get(position);
     }
 
     @Override
@@ -110,6 +105,8 @@ public class Newslistadapter extends BaseAdapter {
         }
     }
 
+
+
     private View getItemView(int position, View convertView){
         ListItemView listItemView = null;
 
@@ -125,10 +122,10 @@ public class Newslistadapter extends BaseAdapter {
         } else listItemView = (ListItemView) convertView.getTag();
 
 
-        listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("imageDrawable"));
+        listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("thumb"));
         listItemView.title.setText((String) listItem.get(position - 1).get("title"));
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
-        listItemView.articleID.setText((String) listItem.get(position - 1).get("articleID"));
+         listItemView.articleID.setText((String) listItem.get(position - 1).get("id"));
 
         return convertView;
     }
@@ -145,26 +142,16 @@ public class Newslistadapter extends BaseAdapter {
             //得到pointView 的容器
 
             myPointView = (LinearLayout) topView.findViewById(R.id.point_view);
+            ImageView imageView;
+            for(int i = 0; i<slide_articles.size();i++){
+                imageView = new ImageView(context);
+                imageView.setImageDrawable((android.graphics.drawable.Drawable) slide_articles.get(i).get("thumb"));
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                String id = (String) slide_articles.get(i).get("id");
+                imageView.setOnClickListener(new slidePageClickerListener(id));
+                myTopView.add(imageView);
+            }
 
-
-            ImageView leftimageView = new ImageView(context);
-            leftimageView.setBackgroundColor(context.getResources().getColor(R.color.white));
-            leftimageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            leftimageView.setImageResource(R.drawable.a);
-            leftimageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(context,"it has be click",Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-            ImageView rightimageView = new ImageView(context);
-            rightimageView.setBackgroundColor(context.getResources().getColor(R.color.white));
-            rightimageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            rightimageView.setImageResource(R.drawable.b);
-            myTopView.add(leftimageView);
-            myTopView.add(rightimageView);
             ecjtu.net.demon.newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopView);
             myViewPager.setAdapter(newsImageAdapter);
             myViewPager.setCurrentItem(0);
@@ -187,6 +174,20 @@ public class Newslistadapter extends BaseAdapter {
             initPoint();//初始化pointView
         }
         return topView;
+    }
+
+    private class slidePageClickerListener implements View.OnClickListener {
+
+        private String articleId;
+
+        public slidePageClickerListener(String articleId ){
+            this.articleId = articleId;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(context,"this is been click on"+ articleId,Toast.LENGTH_SHORT).show();
+        }
     }
 
 
