@@ -23,7 +23,8 @@ import android.widget.Toast;
 public class webview extends Activity {
 
     private WebView webView;
-    private String title;
+    public String title;
+    private String url;
     private ActionBar actionBar;
 
     @Override
@@ -34,12 +35,13 @@ public class webview extends Activity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         webView = (WebView) findViewById(R.id.webView);
         Intent intent = getIntent();
-        String url = intent.getStringExtra("url");
+        url = intent.getStringExtra("url");
         Log.i("tag", url);
         webView.loadUrl(url);
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onReceivedTitle(WebView view, String title) {
+                webview.this.title = title;
                 actionBar.setTitle(title);
                 super.onReceivedTitle(view, title);
             }
@@ -49,7 +51,6 @@ public class webview extends Activity {
         ws.setJavaScriptCanOpenWindowsAutomatically(true);
         ws.setUseWideViewPort(true);
         ws.setLoadWithOverviewMode(true);
-
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -95,11 +96,13 @@ public class webview extends Activity {
         }
         if (id == R.id.action_refresh) {
             webView.reload();
-            Toast.makeText(this, "haha", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "正在刷新", Toast.LENGTH_SHORT).show();
             return true;
         }
+        if (id == R.id.share){
+            share(url,title);
+        }
         if (id == R.id.homeAsUp) {
-            Log.i("tag", "nihao-------------------------------------------------------------------------->");
             finish();
             return true;
         }
@@ -116,14 +119,21 @@ public class webview extends Activity {
                 NavUtils.navigateUpTo(this, upIntent);
             }
 
-            Log.i("tag", "nihao-------------------------------------------------------------------------->");
             return true;
         }
-
-        Log.i("tag", String.valueOf(item.getNumericShortcut()));
-
         return super.onOptionsItemSelected(item);
     }
+
+    private void share(String url, String title){
+        Intent intent=new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+        intent.putExtra(Intent.EXTRA_TEXT, url);
+        intent.putExtra(Intent.EXTRA_TITLE, title);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(Intent.createChooser(intent, "分享到"));
+    }
+
 
     class myDownLoad implements DownloadListener {
 

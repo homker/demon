@@ -33,6 +33,7 @@ public class Newslistadapter extends BaseAdapter {
     private LinearLayout myPointView;//pointView 的容器
     private ArrayList<ImageView> myTopView; //顶部ViewPager image list
     private ArrayList<ImageView> points;//标识点的list
+    private TextView info;
 
 
     public Newslistadapter(Context context, HashMap<String, Object> listItems) {
@@ -60,8 +61,8 @@ public class Newslistadapter extends BaseAdapter {
 
     public void onDateChange(HashMap<String, Object> listItems) {
         Log.i("tag","onDAteChange has been work");
-        this.listItem = (ArrayList<HashMap<String, Object>>) listItems.get("normal_articles");
-        this.slide_articles = (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
+        this.listItem.addAll((ArrayList<HashMap<String, Object>>) listItems.get("normal_articles"));
+        this.slide_articles =  (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
         this.notifyDataSetChanged();
     }
 
@@ -137,6 +138,7 @@ public class Newslistadapter extends BaseAdapter {
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
             lp.gravity = Gravity.TOP;
             myViewPager = (rxViewPager) topView.findViewById(R.id.news_viewPager);
+            info = (TextView) topView.findViewById(R.id.news_info);
             myViewPager.setLayoutParams(lp);
 
             //得到pointView 的容器
@@ -159,6 +161,7 @@ public class Newslistadapter extends BaseAdapter {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     draw_point(position);
+
                 }
 
                 @Override
@@ -216,6 +219,8 @@ public class Newslistadapter extends BaseAdapter {
             points.get(i).setImageResource(R.drawable.indicator);
         }
         points.get(position).setImageResource(R.drawable.indicator_focused);
+        HashMap<String,Object> hashMap = slide_articles.get(position);
+        info.setText((String)hashMap.get("title"));
     }
 
     /**

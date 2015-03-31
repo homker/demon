@@ -150,10 +150,12 @@ public class main extends InstrumentedActivity {
 
 
     private void turn2contentActivity(String ArticleID) {
+        String articleUrl = "http://app.ecjtu.net/api/v1/article/"+ArticleID+"/view";
         Intent intent = new Intent();
-        intent.setClass(main.this, newscontent.class);
+        intent.setClass(main.this, webview.class);
         Bundle bundle = new Bundle();
-        bundle.putString("articleID", ArticleID);
+
+        bundle.putString("url", articleUrl);
         intent.putExtras(bundle);
         startActivity(intent);
     }

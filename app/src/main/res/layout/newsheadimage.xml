@@ -25,6 +25,7 @@
                 android:layout_centerVertical="true"
                 android:text="@string/tab_change"
                 android:textColor="@color/white"
+                android:id="@+id/news_info"
                 />
                 <LinearLayout
                     android:layout_width="wrap_content"
