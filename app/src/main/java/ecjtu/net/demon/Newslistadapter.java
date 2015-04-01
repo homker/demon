@@ -2,7 +2,6 @@ package ecjtu.net.demon;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +59,6 @@ public class Newslistadapter extends BaseAdapter {
 
 
     public void onDateChange(HashMap<String, Object> listItems) {
-        Log.i("tag","onDAteChange has been work");
         this.listItem.addAll((ArrayList<HashMap<String, Object>>) listItems.get("normal_articles"));
         this.slide_articles =  (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
         this.notifyDataSetChanged();
@@ -99,7 +97,6 @@ public class Newslistadapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (position == 0){
-            Log.i("tag","we do it works");
             return getTopView(convertView);
         }else{
             return getItemView(position,convertView);
@@ -124,7 +121,12 @@ public class Newslistadapter extends BaseAdapter {
 
 
         listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("thumb"));
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150 ,100);
+        listItemView.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        listItemView.image.setLayoutParams(layoutParams);
         listItemView.title.setText((String) listItem.get(position - 1).get("title"));
+        listItemView.title.setTextSize(20);
+        listItemView.title.setPadding(0,5,0,0);
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
          listItemView.articleID.setText((String) listItem.get(position - 1).get("id"));
 

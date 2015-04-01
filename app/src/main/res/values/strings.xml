@@ -34,4 +34,11 @@
     <string name="title_activity_main2">Main2Activity</string>
     <string name="load">加载中...</string>
     <string name="tab_change">测试滑动门</string>
+    <string name="title_activity_new_login">New_login</string>
+    <string name="soft_update_title">版本更新</string>
+    <string name="soft_update_info">我们有新版本了，快更新吧！</string>
+    <string name="soft_update_updatebtn">好的</string>
+    <string name="soft_update_later">稍后更新</string>
+    <string name="soft_updating">更新中。。。</string>
+    <string name="soft_update_cancel">取消</string>
 </resources>

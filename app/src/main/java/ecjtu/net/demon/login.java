@@ -1,3 +1,4 @@
+/*
 package ecjtu.net.demon;
 
 import android.app.Activity;
@@ -93,15 +94,12 @@ public class login extends Activity {
 
         content = (RelativeLayout) findViewById(R.id.content);
         if (Build.VERSION.SDK_INT < 17) {
-            content.setBackgroundDrawable(readBitMap(this, R.drawable.background));
-        }else content.setBackground(readBitMap(this, R.drawable.background));
+            content.setBackgroundDrawable(readBitMap(this, R.drawable.backgroud));
+        }else content.setBackground(readBitMap(this, R.drawable.backgroud));
 
         loginBox = (RelativeLayout) findViewById(R.id.loginBox);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        Log.i("tag", "----------------->" + String.valueOf(imageView));
-        Log.i("tag", "---------------------------------------->" + String.valueOf(loginBox));
         UserEntity user = SharedPreUtil.getInstance().getUser();
-        Log.i("tag", "user:" + user.getStudentID() + "_____password" + user.getToken());
         if (!TextUtils.isEmpty(user.getStudentID()) && !TextUtils.isEmpty(user.getToken())) {
             loginBox.setVisibility(View.GONE);
             String loginName = user.getStudentID();
@@ -122,7 +120,6 @@ public class login extends Activity {
     }
 
     public void loginClick(View view) {
-        Log.i("tag", "---------------------------->works");
         logincheck();
     }
 
@@ -133,11 +130,13 @@ public class login extends Activity {
         finish();
     }
 
-    /**
+    */
+/**
      * 登入检查，是否为空，是否正确
      *
      * @return boolean
-     */
+     *//*
+
 
     private boolean logincheck() {
         loginNameText = loginName.getText().toString();
@@ -186,7 +185,8 @@ public class login extends Activity {
         });
     }
 
-    /*private class myTask extends AsyncTask<Void,Integer,Boolean>{
+    */
+/*private class myTask extends AsyncTask<Void,Integer,Boolean>{
 
         private String userName;
         private String passWord;
@@ -218,7 +218,8 @@ public class login extends Activity {
             }
 
         }
-    }*/
+    }*//*
+
 
 
     private class myThead extends Thread {
@@ -258,3 +259,4 @@ public class login extends Activity {
     }
 
 }
+*/

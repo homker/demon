@@ -301,6 +301,27 @@ public class HttpHelper {
         }
     }
 
+
+    /**
+     * 获取最新的版本号
+     * @param url
+     * @return
+     */
+    public HashMap<String,Object> getVersion(String url){
+        HashMap<String,Object> version = new HashMap<String,Object>();
+        String result = apacheGet(url);
+        JSONTokener jsonTokener = new JSONTokener(result);
+        try {
+            JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
+            version.put("versionName",jsonObject.getString("version_name"));
+            version.put("versionCode",jsonObject.getInt("version_code"));
+            version.put("md5",jsonObject.getString("md5"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return version;
+    }
+
     /**
      * 获取用户信息
      *
