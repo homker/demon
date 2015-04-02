@@ -12,10 +12,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -60,29 +58,37 @@ public class main extends InstrumentedActivity {
 
     private static boolean isExit = false;
     private ListView newslist;
-    private ViewPager flipper;
-    private int windows_width; //屏幕的宽度
     private Newslistadapter newslistadapter;
     private ProgressBar progressBarCircularIndeterminate;
     private View main_view;
     private TextView upToLoad;
     RefreshLayout refreshLayout = null;
+
     /**
      * 更新新闻内容的的句柄
      */
     private Handler getNewsData = new Handler() {
         public void handleMessage(Message message) {
-            progressBarCircularIndeterminate.setVisibility(View.GONE);
-            HashMap<String, Object> data = (HashMap<String, Object>) message.obj;
-            if (newslistadapter == null) {
-                newslistadapter = new Newslistadapter(main.this, data);
-                newslist.setAdapter(newslistadapter);
-            } else {
-                newslistadapter.onDateChange(data);
+
+            if(message.obj != null){
+                progressBarCircularIndeterminate.setVisibility(View.GONE);
+                HashMap<String, Object> data = (HashMap<String, Object>) message.obj;
+                if (newslistadapter == null) {
+                    Log.i("tag","第一次的apdapter");
+                    newslistadapter = new Newslistadapter(main.this, data);
+                    newslist.setAdapter(newslistadapter);
+                } else {
+                    newslistadapter.onDateChange(data);
+                }
+                newslist.setVisibility(View.VISIBLE);
+                refreshLayout.setLoading(false);
+                refreshLayout.setRefreshing(false);
+            }else{
+                Toast.makeText(main.this,"网络不给力呀,去抽打一下小黑吧",Toast.LENGTH_SHORT).show();
             }
-            newslist.setVisibility(View.VISIBLE);
-            refreshLayout.setLoading(false);
-            refreshLayout.setRefreshing(false);
+            if (message.arg1 == 1){
+                initReflash.onRefresh();
+            }
         }
     };
     private SlidingMenu sm;
@@ -195,7 +201,7 @@ public class main extends InstrumentedActivity {
             }
         });
         //初始化listView
-        new getNewsList(url,null).start();
+        new getNewsList(url,null,true).start();
     }
 
     /**
@@ -218,7 +224,11 @@ public class main extends InstrumentedActivity {
         StudentID = (TextView) findViewById(R.id.UserID);
         StudentID.setText(studentID);
         userNameView = (TextView) findViewById(R.id.UserName);
-        userNameView.setText(userName);
+        if (userName != null){
+            userNameView.setText(userName);
+        }else{
+            userNameView.setText("登入修复中。。。");
+        }
         headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
         new updateImageThread(headIamgeView, headImage).start();
 
@@ -271,7 +281,7 @@ public class main extends InstrumentedActivity {
 
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle("更新中")//设置通知栏标题
-                //.setContentText("正在下载。。。") //设置通知栏显示内容
+                .setContentText("正在下载。。。") //设置通知栏显示内容
                 .setTicker("开始更新") //通知首次出现在通知栏，带上升动画效果的
                 .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示，一般是系统获取到的时间
                 .setPriority(Notification.PRIORITY_DEFAULT) //设置该通知优先级
@@ -316,13 +326,11 @@ public class main extends InstrumentedActivity {
         progressBarCircularIndeterminate = (ProgressBar) findViewById(R.id.progressBarCircularIndetermininate);
         setActionBarLayout(R.layout.action_bar);
         setOverflowButtonDisplayAlways();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        windows_width = displayMetrics.widthPixels;
         initReflash(refreshLayout);
         initSildingmenu(this.getBaseContext());
 
     }
+
 
     @Override
     protected void onResume() {
@@ -349,17 +357,19 @@ public class main extends InstrumentedActivity {
         }
     }
 
+    private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
+            new getNewsList(url,null,false).start();//下拉刷新时调用
+        }
+    };
+
 
     private void initReflash(final RefreshLayout refreshLayout){
         refreshLayout.setmListView(newslist);
         refreshLayout.setColorSchemeColors(R.color.link_text_material_light);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
-                new getNewsList(url,null).start();//下拉刷新时调用
-            }
-        });
+        refreshLayout.setOnRefreshListener(initReflash);
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
@@ -368,7 +378,7 @@ public class main extends InstrumentedActivity {
                 HashMap<String,Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount()-3));
                 String articleId = (String) hashMap.get("id");
                 Log.i("tag","the articleId is "+articleId);
-                new getNewsList(url,articleId).start();//向上滑动时调用
+                new getNewsList(url,articleId,false).start();//向上滑动时调用
             }
         });
     }
@@ -640,17 +650,24 @@ public class main extends InstrumentedActivity {
 
         private String url;
         private String articleId;
+        private Boolean isInit;
 
-        public getNewsList(String url,String articleId) {
+        public getNewsList(String url,String articleId,Boolean isInit) {
             this.url = url;
             this.articleId = articleId;
+            this.isInit = isInit;
         }
 
         @Override
         public void run() {
             Message message = getNewsData.obtainMessage();
             HttpHelper httpHelper = new HttpHelper();
-            message.obj = httpHelper.getNewsList(url,articleId);
+            message.obj = httpHelper.getNewsList(url,articleId,main.this,isInit);
+            if(isInit){
+                message.arg1 = 1;
+            }else{
+                message.arg1 = 0;
+            }
             getNewsData.sendMessage(message);
         }
     }

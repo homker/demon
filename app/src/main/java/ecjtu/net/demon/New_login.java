@@ -108,12 +108,7 @@ public class New_login extends ActionBarActivity {
         bottomLogo = (ImageView) findViewById(R.id.bottom_logo);
         new checkVersion(VersionUrl,this).start();
         propertyValuesHolder(site);
-/*        UserEntity user = SharedPreUtil.getInstance().getUser();
-        if (!TextUtils.isEmpty(user.getStudentID()) && !TextUtils.isEmpty(user.getToken())) {
-            String loginName = user.getStudentID();
-            String token = user.getToken();
-            new myThead(loginName, null, loginUrl , token).start();
-        }*/
+
     }
 
     public void propertyValuesHolder(View view)

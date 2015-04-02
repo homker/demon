@@ -1,5 +1,6 @@
 package ecjtu.net.demon;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -48,6 +49,7 @@ public class HttpHelper {
     private HttpURLConnection connection = null;
     private InputStreamReader in = null;
     public static HttpClient customerHttpClient;
+    private ACache newsListCache;
 
     public HttpHelper() {
 
@@ -286,9 +288,7 @@ public class HttpHelper {
         try {
             JSONTokener jsonTokener = new JSONTokener(result);
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-
             token = jsonObject.getString("token");
-
             flag = jsonObject.getBoolean("result");
 
         } catch (Exception e) {
@@ -310,16 +310,20 @@ public class HttpHelper {
     public HashMap<String,Object> getVersion(String url){
         HashMap<String,Object> version = new HashMap<String,Object>();
         String result = apacheGet(url);
-        JSONTokener jsonTokener = new JSONTokener(result);
-        try {
-            JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-            version.put("versionName",jsonObject.getString("version_name"));
-            version.put("versionCode",jsonObject.getInt("version_code"));
-            version.put("md5",jsonObject.getString("md5"));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(result != null){
+            try {
+                JSONTokener jsonTokener = new JSONTokener(result);
+                JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
+                version.put("versionName",jsonObject.getString("version_name"));
+                version.put("versionCode",jsonObject.getInt("version_code"));
+                version.put("md5",jsonObject.getString("md5"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return version;
+        }else{
+            return null;
         }
-        return version;
     }
 
     /**
@@ -335,19 +339,23 @@ public class HttpHelper {
         UserEntity userEntity = new UserEntity();
         url = url + "user/" + studentID + "?token="+token;
         String result = apacheGet(url);
-        JSONTokener jsonTokener = new JSONTokener(result);
-        try {
-            JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-            status = jsonObject.getBoolean("result");
-            person = jsonObject.getJSONObject("user");
-            userEntity.setStudentID(person.getString("student_id"));
-            userEntity.setToken(token);
-            userEntity.setUserName(person.getString("Name"));
-            userEntity.setHeadImage(person.getString("url"));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (result != null){
+            try {
+                JSONTokener jsonTokener = new JSONTokener(result);
+                JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
+                status = jsonObject.getBoolean("result");
+                person = jsonObject.getJSONObject("user");
+                userEntity.setStudentID(person.getString("student_id"));
+                userEntity.setToken(token);
+                userEntity.setUserName(person.getString("Name"));
+                userEntity.setHeadImage(person.getString("url"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return userEntity;
+        }else{
+            return null;
         }
-        return userEntity;
     }
 
     /**
@@ -355,30 +363,59 @@ public class HttpHelper {
      *
      * @return
      */
-    public HashMap<String, Object> getNewsList(String url,String lastId) {
+    public HashMap<String, Object> getNewsList(String url,String lastId,Context context,Boolean isInit) {
         HashMap<String, Object> list = new HashMap<String, Object>();
         int status;
         if(lastId != null){
             url = url + "?until=" + lastId;
         }
-        Log.i("url","@@!#!@#!@#!@#!@#!@"+url);
-        String result = apacheGet(url);
-        JSONTokener jsonTokener = new JSONTokener(result);
-        try {
-            JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-            status = jsonObject.getInt("status");
-            JSONObject slide_article = jsonObject.getJSONObject("slide_article");
-            JSONArray slide_articles = slide_article.getJSONArray("articles");
-            JSONObject normal_article = jsonObject.getJSONObject("normal_article");
-            JSONArray normal_articles = normal_article.getJSONArray("articles");
-            list.put("slide_articles",jsonArray2Arraylist(slide_articles));
-            list.put("normal_articles",jsonArray2Arraylist(normal_articles));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        newsListCache = ACache.get(context);
+        JSONObject cache = newsListCache.getAsJSONObject("newsList");
+        if(isInit&&cache != null){//判断是否是初始化
+            Log.i("tag","我们使用了缓存~！");
+            try {
+                JSONObject slide_article = cache.getJSONObject("slide_article");
+                JSONArray slide_articles = slide_article.getJSONArray("articles");
+                JSONObject normal_article = cache.getJSONObject("normal_article");
+                JSONArray normal_articles = normal_article.getJSONArray("articles");
+                list.put("slide_articles",jsonArray2Arraylist(slide_articles));
+                list.put("normal_articles",jsonArray2Arraylist(normal_articles));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return list;
         }
-        return list;
+        Log.i("tag","我们还是请求了");
+        String result = apacheGet(url);
+        if(result != null){
+            try {
+                JSONTokener jsonTokener = new JSONTokener(result);
+                JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
+                if (lastId == null){//只缓存最新的内容列表
+                    newsListCache.remove("newsList");
+                    newsListCache.put("newsList",jsonObject,7*ACache.TIME_DAY);
+                }
+                status = jsonObject.getInt("status");
+                JSONObject slide_article = jsonObject.getJSONObject("slide_article");
+                JSONArray slide_articles = slide_article.getJSONArray("articles");
+                JSONObject normal_article = jsonObject.getJSONObject("normal_article");
+                JSONArray normal_articles = normal_article.getJSONArray("articles");
+                list.put("slide_articles",jsonArray2Arraylist(slide_articles));
+                list.put("normal_articles",jsonArray2Arraylist(normal_articles));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return list;
+        }else{
+            return null;
+        }
     }
 
+    /**
+     * 将json数组变成arraylist
+     * @param jsonArray
+     * @return
+     */
     private ArrayList<HashMap<String,Object>> jsonArray2Arraylist(JSONArray jsonArray){
         ArrayList<HashMap<String,Object>> arrayList = new ArrayList<HashMap<String, Object>>();
         for (int i = 0; i< jsonArray.length(); i++){
@@ -390,7 +427,7 @@ public class HttpHelper {
                 item.put("updated_at",jsonObject.getString("updated_at"));
                 item.put("info",jsonObject.getString("info"));
                 String imageUrl = "http://app.ecjtu.net"+jsonObject.getString("thumb");
-                item.put("thumb",getImage(imageUrl));
+                item.put("thumb",imageUrl);
                 arrayList.add(item);
             } catch (JSONException e) {
                 e.printStackTrace();

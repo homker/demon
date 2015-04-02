@@ -8,7 +8,7 @@
     <dimen name="icon_height">30dp</dimen>
     <dimen name="icon_text_size">18dp</dimen>
     <dimen name="icon_bottom_size">16dp</dimen>
-    <dimen name="news_imga_width">66dp</dimen>
+    <dimen name="news_imga_width">76dp</dimen>
     <dimen name="news_imga_height">66dp</dimen>
     <dimen name="sling_margin_main">60dp</dimen>
     <dimen name="news_content_title">24dp</dimen>

@@ -1,7 +1,10 @@
 package ecjtu.net.demon;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +14,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import ecjtu.net.demon.view.rxViewPager;
 
@@ -33,35 +43,52 @@ public class Newslistadapter extends BaseAdapter {
     private ArrayList<ImageView> myTopView; //顶部ViewPager image list
     private ArrayList<ImageView> points;//标识点的list
     private TextView info;
+    private DisplayImageOptions options;
 
 
     public Newslistadapter(Context context, HashMap<String, Object> listItems) {
         this.context = context;
         listContainer = LayoutInflater.from(context);
-        //ArrayList<HashMap<String, Object>> listitem = new ArrayList<>();
         myTopView = new ArrayList<ImageView>();
-        /*HashMap<String, Object> hashMap;
-        for (HashMap<String, Object> item : listItems) {
-            if (!item.get("flag").equals("h")) {
-                hashMap = item;
-                listitem.add(hashMap);
-            }
-        }*/
+        ImageLoaderConfiguration configuration = ImageLoaderConfiguration
+                .createDefault(context);
+
+        //Initialize ImageLoader with configuration.
+        ImageLoader.getInstance().init(configuration);
+
+        options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.thumb_default)
+                .showImageOnFail(R.drawable.thumb_default)
+                .cacheInMemory(false)
+                .cacheOnDisk(true)
+                .build();
+
         this.listItem = (ArrayList<HashMap<String, Object>>) listItems.get("normal_articles");
         this.slide_articles = (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
     }
+    /** List order not maintained **/
 
-    private void getNewsList()
-    {
-
+    public static List removeDuplicateWithOrder(List list) {
+        Set set = new HashSet();
+        List newList = new ArrayList();
+        for (Iterator iter = list.iterator(); iter.hasNext();) {
+            Object element = iter.next();
+            if (set.add(element))
+                newList.add(element);
+        }
+        return newList;
     }
+
 
 
 
     public void onDateChange(HashMap<String, Object> listItems) {
+        Log.i("tag","onDateChange 被调用");
         this.listItem.addAll((ArrayList<HashMap<String, Object>>) listItems.get("normal_articles"));
+        this.listItem = (ArrayList<HashMap<String, Object>>) removeDuplicateWithOrder(this.listItem);
         this.slide_articles =  (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
         this.notifyDataSetChanged();
+
     }
 
     @Override
@@ -118,17 +145,13 @@ public class Newslistadapter extends BaseAdapter {
             listItemView.articleID = (TextView) convertView.findViewById(R.id.articleID);
             convertView.setTag(listItemView);
         } else listItemView = (ListItemView) convertView.getTag();
-
-
-        listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("thumb"));
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(150 ,100);
-        listItemView.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        listItemView.image.setLayoutParams(layoutParams);
+        //listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("thumb"));
+        String url = (String) listItem.get(position - 1).get("thumb");
+        listItemView.image.setImageResource(R.drawable.thumb_default);
+        ImageLoader.getInstance().displayImage(url,listItemView.image,options);
         listItemView.title.setText((String) listItem.get(position - 1).get("title"));
-        listItemView.title.setTextSize(20);
-        listItemView.title.setPadding(0,5,0,0);
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
-         listItemView.articleID.setText((String) listItem.get(position - 1).get("id"));
+        listItemView.articleID.setText((String) listItem.get(position - 1).get("id"));
 
         return convertView;
     }
@@ -149,10 +172,12 @@ public class Newslistadapter extends BaseAdapter {
             ImageView imageView;
             for(int i = 0; i<slide_articles.size();i++){
                 imageView = new ImageView(context);
-                imageView.setImageDrawable((android.graphics.drawable.Drawable) slide_articles.get(i).get("thumb"));
+                imageView.setImageResource(R.drawable.thumb_default);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 String id = (String) slide_articles.get(i).get("id");
                 imageView.setOnClickListener(new slidePageClickerListener(id));
+                String url = (String) slide_articles.get(i).get("thumb");
+                ImageLoader.getInstance().displayImage(url,imageView,options);
                 myTopView.add(imageView);
             }
 
@@ -191,8 +216,19 @@ public class Newslistadapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(context,"this is been click on"+ articleId,Toast.LENGTH_SHORT).show();
+            turn2contentActivity(articleId);
         }
+    }
+
+    private void turn2contentActivity(String ArticleID) {
+        String articleUrl = "http://app.ecjtu.net/api/v1/article/"+ArticleID+"/view";
+        Intent intent = new Intent();
+        intent.setClass(context, webview.class);
+        Bundle bundle = new Bundle();
+
+        bundle.putString("url", articleUrl);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
     }
 
 

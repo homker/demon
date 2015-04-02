@@ -85,7 +85,6 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
         if (mListView == null) {
             mListView = newslist;
             mListView.setOnScrollListener(this);
-            Log.i("tag", "### 找到listview");
         }
     }
 
@@ -218,10 +217,8 @@ public class RefreshLayout extends SwipeRefreshLayout implements AbsListView.OnS
      */
     public void setLoading(boolean loading) {
         if (mListView != null){
-            Log.i("tag","setLoading is worked");
             isLoading = loading;
             if (isLoading) {
-                Log.i("tag","isloading is work");
                 mListView.addFooterView(mListViewFooter);
             } else {
                 mListView.removeFooterView(mListViewFooter);
