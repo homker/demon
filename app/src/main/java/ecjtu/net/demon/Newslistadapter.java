@@ -161,7 +161,7 @@ public class Newslistadapter extends BaseAdapter {
         String url = (String) listItem.get(position - 1).get("thumb");
         listItemView.image.setImageResource(R.drawable.thumb_default);
         ImageLoader.getInstance().displayImage(url,listItemView.image,options);
-        listItemView.title.setText((String) listItem.get(position - 1).get("title"));
+        listItemView.title.setText((String) listItem.get(position - 1).get("title") + String.valueOf(listItem.get(position - 1).get("id")));
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
         listItemView.articleID.setText( String.valueOf(listItem.get(position - 1).get("id")));
 

@@ -397,35 +397,44 @@ public class main extends InstrumentedActivity {
         intent.setClass(main.this, webview.class);
         Bundle bundle = new Bundle();
         String url = null;
-        switch (view.getId()) {
-            case R.id.score:
-                url = "http://score.ecjtu.net/";
-                break;
-            case R.id.classquery:
-                url = "http://class.ecjtu.net/wClass.php?class=" + studentID;
-                break;
-            case R.id.scran:
-                turn2capturActivity();
-                break;
-            default:
-                Toast.makeText(main.this, "什么鬼还在开发", Toast.LENGTH_SHORT).show();
-            /*case R.id.yktquery:;break;
-            case R.id.bookquery:;break;
-            case R.id.moonModel:;break;
-            case R.id.setting:;break;
-            */
-        }
-        if (url != null) {
-            bundle.putString("url", url);
-            intent.putExtras(bundle);
-            startActivity(intent);
+        if(studentID != null){
+            switch (view.getId()) {
+                case R.id.score:
+                    url = "http://score.ecjtu.net/";
+                    break;
+                case R.id.classquery:
+                    url = "http://class.ecjtu.net/wClass.php?class=" + studentID;
+                    break;
+                case R.id.scran:
+                    turn2Activity(CaptureActivity.class);
+                    break;
+                case R.id.setting:
+                    turn2Activity(Setting.class);
+                    break;
+                default:
+                    Toast.makeText(main.this, "开发中。。。", Toast.LENGTH_SHORT).show();
+                /*case R.id.yktquery:;break;
+                case R.id.bookquery:;break;
+                case R.id.moonModel:;break;
+                case R.id.setting:;break;
+                */
+            }
+            if (url != null) {
+                bundle.putString("url", url);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        }else{
+            turn2Activity(LoginActivity.class);
+            Toast.makeText(main.this, "请先行登入", Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    private void turn2capturActivity() {
+
+    private void turn2Activity(Class activity) {
         Intent intent = new Intent();
-        intent.setClass(main.this, CaptureActivity.class);
+        intent.setClass(main.this, activity);
         startActivity(intent);
     }
 

@@ -29,5 +29,10 @@
     <color name="left_menu_background">#259E92</color>
     <color name="news_head_text">#67000000</color>
     <color name="login_text">#658890</color>
+    <color name="list_bg">#5d5d5d</color>
+    <color name="bg">#555555</color>
+    <color name="text">#b9b9b9</color>
+    <color name="btn_bg">#658890</color>
+    <color name="btn_text">#dedede</color>
 </resources>
 

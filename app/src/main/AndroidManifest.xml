@@ -81,6 +81,25 @@
                 android:value="ecjtu.net.demon.main" />
         </activity>
         <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:parentActivityName=".main"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ecjtu.net.demon.main" />
+        </activity>
+        <activity
+            android:name=".Setting"
+            android:label="@string/setting"
+            android:parentActivityName=".main"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ecjtu.net.demon.main" />
+        </activity>
+        <activity
             android:name=".CaptureActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_scan"
@@ -169,11 +188,7 @@
             android:name="JPUSH_APPKEY"
             android:value="1d70641588d99d929ffd92b3" /> <!-- </>值来自开发者平台取得的AppKey -->
 
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-        </activity>
+
     </application>
 
 </manifest>
