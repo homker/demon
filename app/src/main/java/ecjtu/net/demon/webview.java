@@ -108,7 +108,6 @@ public class webview extends Activity {
         }
         if (id == android.R.id.home) {
             Intent upIntent = NavUtils.getParentActivityIntent(webview.this);
-            Log.i("tag", String.valueOf(upIntent) + "-----------");
             if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
                 TaskStackBuilder.create(this)
                         .addNextIntentWithParentStack(upIntent)

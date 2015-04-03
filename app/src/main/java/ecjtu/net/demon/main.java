@@ -62,8 +62,30 @@ public class main extends InstrumentedActivity {
     private ProgressBar progressBarCircularIndeterminate;
     private View main_view;
     private TextView upToLoad;
-    RefreshLayout refreshLayout = null;
-
+    private RefreshLayout refreshLayout = null;
+    private SlidingMenu sm;
+    private TextView StudentID;
+    private String studentID;
+    private TextView userNameView;
+    private CycleImageView headIamgeView;
+    private String userName;
+    private String headImage;
+    private NotificationCompat.Builder mBuilder;
+    /* 下载中 */
+    private static final int DOWNLOAD = 1;
+    /* 下载结束 */
+    private static final int DOWNLOAD_FINISH = 2;
+    /* 下载保存路径 */
+    private String mSavePath;
+    /* 记录进度条数量 */
+    private int progress;
+    private final static String url = "http://app.ecjtu.net/api/v1/index";
+    private final static String apkUrl ="http://app.ecjtu.net/download";
+    private final static String rxApk = "rixin.apk";
+    private String md5 = null;
+    private boolean cancelUpdate = false;/* 是否取消更新 */
+    private boolean isLogin = false;
+    private NotificationManager mNotificationManager; //顶部通知栏的控制器
     /**
      * 更新新闻内容的的句柄
      */
@@ -91,32 +113,7 @@ public class main extends InstrumentedActivity {
             }
         }
     };
-    private SlidingMenu sm;
-    private TextView StudentID;
-    private String studentID;
-    private TextView userNameView;
-    private CycleImageView headIamgeView;
-    private String userName;
-    private String headImage;
-    private NotificationCompat.Builder mBuilder;
-    /* 下载中 */
-    private static final int DOWNLOAD = 1;
-    /* 下载结束 */
-    private static final int DOWNLOAD_FINISH = 2;
 
-    /* 下载保存路径 */
-    private String mSavePath;
-    /* 记录进度条数量 */
-    private int progress;
-    /* 是否取消更新 */
-    private boolean cancelUpdate = false;
-    private final static String url = "http://app.ecjtu.net/api/v1/index";
-    private final static String loginUrl = "http://user.ecjtu.net/api/login";
-    private final static String apkUrl ="http://app.ecjtu.net/download";
-    private final static String rxApk = "rixin.apk";
-    private String md5 = null;
-    private boolean isLogin = false;
-    private NotificationManager mNotificationManager; //顶部通知栏的控制器
     /**
      * 更新头像的线程句柄
      */
@@ -227,7 +224,15 @@ public class main extends InstrumentedActivity {
         if (userName != null){
             userNameView.setText(userName);
         }else{
-            userNameView.setText("登入修复中。。。");
+            userNameView.setText("点击登入");
+            userNameView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setClass(main.this,LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
         }
         headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
         new updateImageThread(headIamgeView, headImage).start();
@@ -452,6 +457,7 @@ public class main extends InstrumentedActivity {
     public void setActionBarLayout(int layoutID) {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);

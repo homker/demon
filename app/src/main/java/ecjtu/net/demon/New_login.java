@@ -234,6 +234,7 @@ public class New_login extends ActionBarActivity {
                         Log.i("tag","我们不需要更新");
                         message.obj = null;
                     }
+                    message.arg1 = 1;
                 }else{
                     message.arg1 = 0;
                 }

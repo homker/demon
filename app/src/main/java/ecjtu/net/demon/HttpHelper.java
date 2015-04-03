@@ -348,7 +348,7 @@ public class HttpHelper {
                 userEntity.setStudentID(person.getString("student_id"));
                 userEntity.setToken(token);
                 userEntity.setUserName(person.getString("Name"));
-                userEntity.setHeadImage(person.getString("url"));
+                //userEntity.setHeadImage(person.getString("url"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
