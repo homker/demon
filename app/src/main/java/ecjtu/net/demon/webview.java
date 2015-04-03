@@ -51,6 +51,15 @@ public class webview extends Activity {
         ws.setJavaScriptCanOpenWindowsAutomatically(true);
         ws.setUseWideViewPort(true);
         ws.setLoadWithOverviewMode(true);
+        ws.setCacheMode(WebSettings.LOAD_DEFAULT);
+        ws.setDomStorageEnabled(true);
+        ws.setDatabaseEnabled(true);
+        String cachepath = getFilesDir().getAbsolutePath()+"/ws/";
+        ws.setAppCachePath(cachepath);
+        ws.setAppCacheMaxSize(8*1024*1024);
+        ws.setDatabasePath(cachepath);
+        ws.setAppCacheEnabled(true);
+        ws.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override

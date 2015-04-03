@@ -283,7 +283,8 @@ public class main extends InstrumentedActivity {
         Log.i("tag","更新开始");
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
+        Notification notification = mBuilder.build();
+        notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle("更新中")//设置通知栏标题
                 .setContentText("正在下载。。。") //设置通知栏显示内容
@@ -291,7 +292,7 @@ public class main extends InstrumentedActivity {
                 .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示，一般是系统获取到的时间
                 .setPriority(Notification.PRIORITY_DEFAULT) //设置该通知优先级
                 .setOngoing(false)//ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
-                .setDefaults(Notification.DEFAULT_VIBRATE)//向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合
+                .setDefaults(Notification.DEFAULT_LIGHTS)//向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setProgress(100,0,false);
         mNotificationManager.notify(1, mBuilder.build());
