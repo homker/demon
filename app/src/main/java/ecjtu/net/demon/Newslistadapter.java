@@ -20,6 +20,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -68,7 +70,7 @@ public class Newslistadapter extends BaseAdapter {
     }
     /** List order not maintained **/
 
-    public static List removeDuplicateWithOrder(List list) {
+    public List removeDuplicateWithOrder(List list) {
         Set set = new HashSet();
         List newList = new ArrayList();
         for (Iterator iter = list.iterator(); iter.hasNext();) {
@@ -76,9 +78,19 @@ public class Newslistadapter extends BaseAdapter {
             if (set.add(element))
                 newList.add(element);
         }
+        Collections.sort(newList, comparable);
         return newList;
     }
 
+     private Comparator<HashMap<String,Object>> comparable = new Comparator<HashMap<String, Object>>() {
+
+        @Override
+        public int compare(HashMap<String, Object> lhs, HashMap<String, Object> rhs) {
+            int lhss = (int) lhs.get("id");
+            int rhss = (int) rhs.get("id");
+            return rhss - lhss;
+        }
+    };
 
 
 
@@ -151,7 +163,7 @@ public class Newslistadapter extends BaseAdapter {
         ImageLoader.getInstance().displayImage(url,listItemView.image,options);
         listItemView.title.setText((String) listItem.get(position - 1).get("title"));
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
-        listItemView.articleID.setText((String) listItem.get(position - 1).get("id"));
+        listItemView.articleID.setText( String.valueOf(listItem.get(position - 1).get("id")));
 
         return convertView;
     }
@@ -174,7 +186,7 @@ public class Newslistadapter extends BaseAdapter {
                 imageView = new ImageView(context);
                 imageView.setImageResource(R.drawable.thumb_default);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                String id = (String) slide_articles.get(i).get("id");
+                String id = String.valueOf(slide_articles.get(i).get("id"));
                 imageView.setOnClickListener(new slidePageClickerListener(id));
                 String url = (String) slide_articles.get(i).get("thumb");
                 ImageLoader.getInstance().displayImage(url,imageView,options);

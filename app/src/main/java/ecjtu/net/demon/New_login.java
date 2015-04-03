@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -69,7 +70,10 @@ public class New_login extends ActionBarActivity {
     };
     private Handler getVersionHandler = new Handler(){
       public void handleMessage(Message message){
-            if (message.obj != null){
+          if(message.arg1 == 0){
+              Toast.makeText(New_login.this,"网络链接错误,请稍后重试！",Toast.LENGTH_SHORT).show();
+          }
+          if (message.obj != null){
                 md5 = (String) message.obj;
                 showNoticeDialog();
             }else{
@@ -214,20 +218,24 @@ public class New_login extends ActionBarActivity {
             try {
                 Log.i("tag","版本检查开始");
                 HttpHelper getVersion = new HttpHelper();
-                HashMap<String,Object> version = getVersion.getVersion(url);
-                int versionCode = (int) version.get("versionCode");
-                Log.i("tag","得到的版本号是："+versionCode);
-                String versionName = (String) version.get("versionName");
-                String md5 = (String) version.get("md5");
-                int selfCode = getVersionCode();
                 Message message = getVersionHandler.obtainMessage();
-                Thread.sleep(3000);
-                if (versionCode > selfCode){
-                    Log.i("tag","我们需要更新");
-                    message.obj = md5;
+                HashMap<String,Object> version = getVersion.getVersion(url);
+                if(version != null){
+                    int versionCode = (int) version.get("versionCode");
+                    Log.i("tag","得到的版本号是："+versionCode);
+                    String versionName = (String) version.get("versionName");
+                    String md5 = (String) version.get("md5");
+                    int selfCode = getVersionCode();
+                    Thread.sleep(3000);
+                    if (versionCode > selfCode){
+                        Log.i("tag","我们需要更新");
+                        message.obj = md5;
+                    }else{
+                        Log.i("tag","我们不需要更新");
+                        message.obj = null;
+                    }
                 }else{
-                    Log.i("tag","我们不需要更新");
-                    message.obj = null;
+                    message.arg1 = 0;
                 }
                 getVersionHandler.sendMessage(message);
             } catch (InterruptedException e) {

@@ -422,7 +422,7 @@ public class HttpHelper {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 HashMap<String,Object> item = new HashMap<String,Object>();
-                item.put("id",jsonObject.getString("id"));
+                item.put("id",jsonObject.getInt("id"));
                 item.put("title",jsonObject.getString("title"));
                 item.put("updated_at",jsonObject.getString("updated_at"));
                 item.put("info",jsonObject.getString("info"));

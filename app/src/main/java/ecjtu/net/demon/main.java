@@ -83,11 +83,11 @@ public class main extends InstrumentedActivity {
                 newslist.setVisibility(View.VISIBLE);
                 refreshLayout.setLoading(false);
                 refreshLayout.setRefreshing(false);
+                if (message.arg1 == 1){
+                    initReflash.onRefresh();
+                }
             }else{
                 Toast.makeText(main.this,"网络不给力呀,去抽打一下小黑吧",Toast.LENGTH_SHORT).show();
-            }
-            if (message.arg1 == 1){
-                initReflash.onRefresh();
             }
         }
     };
@@ -193,11 +193,11 @@ public class main extends InstrumentedActivity {
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position != (newslist.getCount() - 1)) {
+               //if(position != (newslist.getCount() - 1)) {
                     TextView articleIDText = (TextView) view.findViewById(R.id.articleID);
                     String articleID = (String) articleIDText.getText();
                     turn2contentActivity(articleID);
-                }
+                //}
             }
         });
         //初始化listView
@@ -376,7 +376,7 @@ public class main extends InstrumentedActivity {
                 newslist.removeFooterView(upToLoad);
                 Log.i("tag","the count is"+newslist.getCount());
                 HashMap<String,Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount()-3));
-                String articleId = (String) hashMap.get("id");
+                String articleId = String.valueOf(hashMap.get("id"));
                 Log.i("tag","the articleId is "+articleId);
                 new getNewsList(url,articleId,false).start();//向上滑动时调用
             }
