@@ -1,5 +1,6 @@
 package ecjtu.net.demon;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
@@ -27,6 +28,13 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -35,40 +43,12 @@ import cn.jpush.android.api.JPushInterface;
 
 public class New_login extends ActionBarActivity {
 
-    private RelativeLayout background ;
     private ImageView site;
-    private ImageView bottomLogo;
-    /* 下载中 */
-    private static final int DOWNLOAD = 1;
-    /* 下载结束 */
-    private static final int DOWNLOAD_FINISH = 2;
-    /* 保存解析的XML信息 */
-    HashMap<String, String> mHashMap;
-    /* 下载保存路径 */
-    private String mSavePath;
-    /* 记录进度条数量 */
-    private int progress;
-    /* 是否取消更新 */
-    private boolean cancelUpdate = false;
-
-    private Context mContext;
-    /* 更新进度条 */
-    private ProgressBar mProgress;
-    private Dialog mDownloadDialog;
-    private String loginUrl = "http://user.ecjtu.net/api/";
-    private String VersionUrl = "http://app.ecjtu.net/api/v1/version";
+    private final static String VersionUrl = "http://app.ecjtu.net/api/v1/version";
     private String md5 = null;
-    private Handler handler = new Handler() {
+    private boolean update = false;
 
-        public void handleMessage(Message message) {
-                //本地化用户信息
-                SharedPreUtil.getInstance().putUser((UserEntity) message.obj);
-                //转跳到主界面
-               // turn2mianActivity();
-        }
-
-    };
-    private Handler getVersionHandler = new Handler(){
+/*    private Handler getVersionHandler = new Handler(){
       public void handleMessage(Message message){
           if(message.arg1 == 0){
               Toast.makeText(New_login.this,"网络链接错误,请稍后重试！",Toast.LENGTH_SHORT).show();
@@ -80,7 +60,7 @@ public class New_login extends ActionBarActivity {
                 turn2mianActivity(null);
             }
       }
-    };
+    };*/
 
     private void turn2mianActivity(Bundle bundle) {
         Intent intent = new Intent();
@@ -103,30 +83,78 @@ public class New_login extends ActionBarActivity {
         JPushInterface.setDebugMode(false);
         JPushInterface.init(this);
 
-        background = (RelativeLayout) findViewById(R.id.background);
+        RelativeLayout background = (RelativeLayout) findViewById(R.id.background);
 
         if (Build.VERSION.SDK_INT < 17) {        //兼容低版本
             background.setBackgroundDrawable(readBitMap(this, R.drawable.backgroud));
         }else background.setBackground(readBitMap(this, R.drawable.backgroud));
         site = (ImageView) findViewById(R.id.site);
-        bottomLogo = (ImageView) findViewById(R.id.bottom_logo);
-        new checkVersion(VersionUrl,this).start();
         propertyValuesHolder(site);
-
     }
 
-    public void propertyValuesHolder(View view)
-    {
+    private void checkVersionAsync(){
+        HttpAsync.get(VersionUrl,new JsonHttpResponseHandler(){
+            @Override
+            public void onStart() {
+                Log.i("tag","it start");
+            }
 
-        PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("alpha",
-                0f, 1f);
-        PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleX",
-                0, 1f);
-        PropertyValuesHolder pvhZ = PropertyValuesHolder.ofFloat("scaleY",
-                0, 1f);
-        PropertyValuesHolder pvhH = PropertyValuesHolder.ofFloat("y",
-                site.getY() + 500f , site.getY() + 250f );
-        ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY, pvhZ, pvhH).setDuration(2000).start();
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    int versionCode = response.getInt("version_code");
+                    md5 = response.getString("md5");
+                    if (versionCode > getVersionCode()){
+                        Log.i("tag","需要更新");
+                        showNoticeDialog();
+                    }else {
+                        Log.i("tag", "我们不需要更新");
+                        turn2mianActivity(null);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(New_login.this,"网络请求失败",Toast.LENGTH_SHORT).show();
+            }
+
+        });
+    }
+
+    public void propertyValuesHolder(View view) {
+        Log.i("tag","动画已经被执行");
+        PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("alpha", 0f, 1f);
+        PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleX", 0, 1f);
+        PropertyValuesHolder pvhZ = PropertyValuesHolder.ofFloat("scaleY", 0, 1f);
+        PropertyValuesHolder pvhH = PropertyValuesHolder.ofFloat("y", site.getY() + 500f , site.getY() + 250f );
+        Animator objectAnimator =  ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY, pvhZ, pvhH).setDuration(2000);
+        objectAnimator.start();
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                checkVersionAsync();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
     }
 
     public static Drawable readBitMap(Context context, int resId){
@@ -195,6 +223,13 @@ public class New_login extends ActionBarActivity {
         AlertDialog noticeDialog = builder.create();
         noticeDialog.show();
     }
+    private int getVersionCode() throws Exception{
+        //获取packagemanager的实例
+        PackageManager packageManager = getPackageManager();
+        //getPackageName()是你当前类的包名，0代表是获取版本信息
+        PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+        return packInfo.versionCode;
+    }
 
 
     private void downloadApk(){
@@ -202,104 +237,4 @@ public class New_login extends ActionBarActivity {
         bundle.putString("update", md5);
         turn2mianActivity(bundle);
     }
-
-    private class checkVersion extends Thread{
-
-
-        private String url ;
-        private Context context;
-        public checkVersion(String url,Context context){
-            this.url = url;
-            this.context = context;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Log.i("tag","版本检查开始");
-                HttpHelper getVersion = new HttpHelper();
-                Message message = getVersionHandler.obtainMessage();
-                HashMap<String,Object> version = getVersion.getVersion(url);
-                if(version != null){
-                    int versionCode = (int) version.get("versionCode");
-                    Log.i("tag","得到的版本号是："+versionCode);
-                    String versionName = (String) version.get("versionName");
-                    String md5 = (String) version.get("md5");
-                    int selfCode = getVersionCode();
-                    Thread.sleep(3000);
-                    if (versionCode > selfCode){
-                        Log.i("tag","我们需要更新");
-                        message.obj = md5;
-                    }else{
-                        Log.i("tag","我们不需要更新");
-                        message.obj = null;
-                    }
-                    message.arg1 = 1;
-                }else{
-                    message.arg1 = 0;
-                }
-                getVersionHandler.sendMessage(message);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            super.run();
-        }
-        /*
-         * 获取当前程序的版本号
-         */
-        private int getVersionCode() throws Exception{
-            //获取packagemanager的实例
-            PackageManager packageManager = getPackageManager();
-            //getPackageName()是你当前类的包名，0代表是获取版本信息
-            PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-            return packInfo.versionCode;
-        }
-
-    }
-
-    private class myThead extends Thread {//如果有用户信息，请求用户信息
-
-        private String username;
-        private String password;
-        private String url;
-        private String token;
-
-        public myThead(String username, String password, String url,String token) {
-            this.username = username;
-            this.password = password;
-            this.url = url;
-            this.token = token;
-        }
-
-
-
-        @Override
-        public void run() {
-            Log.i("tag","个人信息请求开始");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            super.run();
-            HttpHelper httpHelper = new HttpHelper();
-            Message head = handler.obtainMessage();
-            if(token == null) {
-                token = httpHelper.passwordcheck(username, password, loginUrl);
-            }
-            if(token != null){
-                UserEntity userEntity;
-                userEntity = httpHelper.getUserContent(username,token,loginUrl);
-                head.obj = userEntity;
-            } else {
-                head.obj = false;
-            }
-            handler.sendMessage(head);
-
-        }
-    }
-
 }
