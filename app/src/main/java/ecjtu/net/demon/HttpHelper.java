@@ -492,4 +492,13 @@ public class HttpHelper {
         return reback;
     }
 
+    public HashMap<String,Object> getNewsListByAsync(){
+        HashMap<String,Object> list = new HashMap<String,Object>();
+
+
+        return list;
+    }
+
+
+
 }
