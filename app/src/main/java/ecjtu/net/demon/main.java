@@ -1,5 +1,6 @@
 package ecjtu.net.demon;
 
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -31,6 +33,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,6 +53,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -86,33 +96,6 @@ public class main extends InstrumentedActivity {
     private boolean cancelUpdate = false;/* 是否取消更新 */
     private boolean isLogin = false;
     private NotificationManager mNotificationManager; //顶部通知栏的控制器
-    /**
-     * 更新新闻内容的的句柄
-     */
-    private Handler getNewsData = new Handler() {
-        public void handleMessage(Message message) {
-
-            if(message.obj != null){
-                progressBarCircularIndeterminate.setVisibility(View.GONE);
-                HashMap<String, Object> data = (HashMap<String, Object>) message.obj;
-                if (newslistadapter == null) {
-                    Log.i("tag","第一次的apdapter");
-                    newslistadapter = new Newslistadapter(main.this, data);
-                    newslist.setAdapter(newslistadapter);
-                } else {
-                    newslistadapter.onDateChange(data);
-                }
-                newslist.setVisibility(View.VISIBLE);
-                refreshLayout.setLoading(false);
-                refreshLayout.setRefreshing(false);
-                if (message.arg1 == 1){
-                    initReflash.onRefresh();
-                }
-            }else{
-                Toast.makeText(main.this,"网络不给力呀,去抽打一下小黑吧",Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
 
     /**
      * 更新头像的线程句柄
@@ -190,15 +173,15 @@ public class main extends InstrumentedActivity {
         newslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               //if(position != (newslist.getCount() - 1)) {
-                    TextView articleIDText = (TextView) view.findViewById(R.id.articleID);
-                    String articleID = (String) articleIDText.getText();
-                    turn2contentActivity(articleID);
-                //}
+                TextView articleIDText = (TextView) view.findViewById(R.id.articleID);
+                String articleID = (String) articleIDText.getText();
+                String articleUrl = "http://app.ecjtu.net/api/v1/article/" + articleID + "/view";
+                main.this.turn2Activity(webview.class, articleUrl);
             }
         });
         //初始化listView
-        new getNewsList(url,null,true).start();
+        setNewslist(url,null,true);
+        //new getNewsList(url,null,true).start();
     }
 
     /**
@@ -229,8 +212,8 @@ public class main extends InstrumentedActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
-                    intent.setClass(main.this,LoginActivity.class);
-                    startActivity(intent);
+                    intent.setClass(main.this, LoginActivity.class);
+                    main.this.startActivity(intent);
                 }
             });
         }
@@ -264,23 +247,9 @@ public class main extends InstrumentedActivity {
     }
 
 
-
-
-
-    private void turn2contentActivity(String ArticleID) {
-        String articleUrl = "http://app.ecjtu.net/api/v1/article/"+ArticleID+"/view";
-        Intent intent = new Intent();
-        intent.setClass(main.this, webview.class);
-        Bundle bundle = new Bundle();
-
-        bundle.putString("url", articleUrl);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
-
     private void initNotification()
     {
-        Log.i("tag","更新开始");
+        Log.i("tag", "更新开始");
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification notification = mBuilder.build();
@@ -309,8 +278,8 @@ public class main extends InstrumentedActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreUtil.initSharedPreference(getApplicationContext());
-        main_view = getLayoutInflater().from(this).inflate(R.layout.activity_main,null);
-        main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        main_view = LayoutInflater.from(this).inflate(R.layout.activity_main,null);
+        main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         setContentView(main_view);
 
         Intent intent = getIntent();
@@ -326,10 +295,12 @@ public class main extends InstrumentedActivity {
             headImage = userEntity.getHeadImage();
             isLogin = true;
         }
+
         refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
         newslist = (ListView) findViewById(R.id.newslist);
-        initView();
         progressBarCircularIndeterminate = (ProgressBar) findViewById(R.id.progressBarCircularIndetermininate);
+
+        initView();
         setActionBarLayout(R.layout.action_bar);
         setOverflowButtonDisplayAlways();
         initReflash(refreshLayout);
@@ -350,15 +321,14 @@ public class main extends InstrumentedActivity {
         JPushInterface.onPause(this);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void setOverflowButtonDisplayAlways(){
         ViewConfiguration viewConfiguration = ViewConfiguration.get(main.this);
         try {
             Field field = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
             field.setAccessible(true);
             field.setBoolean(viewConfiguration,false);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -366,8 +336,8 @@ public class main extends InstrumentedActivity {
     private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            Toast.makeText(main.this,"加载中...",Toast.LENGTH_SHORT).show();
-            new getNewsList(url,null,false).start();//下拉刷新时调用
+            main.this.setNewslist(url, null, false);
+            // new getNewsList(url,null,false).start();//下拉刷新时调用
         }
     };
 
@@ -380,11 +350,12 @@ public class main extends InstrumentedActivity {
             @Override
             public void onLoad() {
                 newslist.removeFooterView(upToLoad);
-                Log.i("tag","the count is"+newslist.getCount());
-                HashMap<String,Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount()-3));
+                Log.i("tag", "the count is" + newslist.getCount());
+                HashMap<String, Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount() - 3));
                 String articleId = String.valueOf(hashMap.get("id"));
-                Log.i("tag","the articleId is "+articleId);
-                new getNewsList(url,articleId,false).start();//向上滑动时调用
+                Log.i("tag", "the articleId is " + articleId);
+                main.this.setNewslist(url, articleId, false);
+                //new getNewsList(url, articleId, false).start();//向上滑动时调用
             }
         });
     }
@@ -394,9 +365,6 @@ public class main extends InstrumentedActivity {
     }
 
     public void slidingMenuClickListen(View view) {
-        Intent intent = new Intent();
-        intent.setClass(main.this, webview.class);
-        Bundle bundle = new Bundle();
         String url = null;
         if(studentID != null){
             switch (view.getId()) {
@@ -407,10 +375,10 @@ public class main extends InstrumentedActivity {
                     url = "http://class.ecjtu.net/wClass.php?class=" + studentID;
                     break;
                 case R.id.scran:
-                    turn2Activity(CaptureActivity.class);
+                    turn2Activity(CaptureActivity.class,null);
                     break;
                 case R.id.setting:
-                    turn2Activity(Setting.class);
+                    turn2Activity(Setting.class,null);
                     break;
                 default:
                     Toast.makeText(main.this, "开发中。。。", Toast.LENGTH_SHORT).show();
@@ -421,21 +389,24 @@ public class main extends InstrumentedActivity {
                 */
             }
             if (url != null) {
-                bundle.putString("url", url);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                turn2Activity(webview.class,url);
             }
         }else{
-            turn2Activity(LoginActivity.class);
+            turn2Activity(LoginActivity.class,null);
             Toast.makeText(main.this, "请先行登入", Toast.LENGTH_SHORT).show();
         }
 
     }
 
 
-    private void turn2Activity(Class activity) {
+    private void turn2Activity(Class activity,String url) {
         Intent intent = new Intent();
         intent.setClass(main.this, activity);
+        if (url != null){
+            Bundle bundle = new Bundle();
+            bundle.putString("url", url);
+            intent.putExtras(bundle);
+        }
         startActivity(intent);
     }
 
@@ -449,7 +420,7 @@ public class main extends InstrumentedActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i("tag","the main class touchEvent has been work");
+        Log.i("tag", "the main class touchEvent has been work");
         refreshLayout.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
@@ -462,7 +433,7 @@ public class main extends InstrumentedActivity {
     /**
      * 初始化actionbar的布局
      *
-     * @param layoutID
+     * @param layoutID 布局
      */
     public void setActionBarLayout(int layoutID) {
         ActionBar actionBar = getActionBar();
@@ -480,25 +451,7 @@ public class main extends InstrumentedActivity {
         this.setTitle("你妹妹的点点");
     }
 
-/*    */
 
-    /**
-     * 测试用
-     *
-     * @return
-     *//*dsa
-    private ArrayList<HashMap<String, Object>> getDate(){
-        ArrayList<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
-
-        HashMap<String,Object>map = new HashMap<String, Object>();
-        for (int i = 0; i <10 ; i++ ){
-        map.put("title","first title");
-        map.put("info","it's a simple info show");
-        map.put("image",R.drawable.least_image);
-        list.add(map);
-        }
-        return list;
-    }*/
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -509,7 +462,7 @@ public class main extends InstrumentedActivity {
 
     private void exitInBack2() {
         Timer tExit = null;
-        if (isExit == false) {
+        if (!isExit) {
             isExit = true;
             Toast.makeText(main.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
             tExit = new Timer();
@@ -523,6 +476,95 @@ public class main extends InstrumentedActivity {
             finish();
             System.exit(0);
         }
+    }
+
+    private void setNewslist(String url,final String lastId ,Boolean isInit){
+        final HashMap<String, Object> list = new HashMap<String, Object>();
+        if(lastId != null){
+            url = url + "?until=" + lastId;
+        }
+        final ACache newsListCache = ACache.get(main.this);
+        JSONObject cache = newsListCache.getAsJSONObject("newsList");
+        if(cache != null){//判断缓存是否为空
+            Log.i("tag", "我们使用了缓存~！");
+            try {
+                JSONObject slide_article = cache.getJSONObject("slide_article");
+                JSONArray slide_articles = slide_article.getJSONArray("articles");
+                JSONObject normal_article = cache.getJSONObject("normal_article");
+                JSONArray normal_articles = normal_article.getJSONArray("articles");
+                list.put("slide_articles",jsonArray2Arraylist(slide_articles));
+                list.put("normal_articles",jsonArray2Arraylist(normal_articles));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (newslistadapter == null) {
+                newslistadapter = new Newslistadapter(main.this, list);
+                newslist.setAdapter(newslistadapter);
+            }else{
+                newslistadapter.onDateChange(list);
+            }
+            progressBarCircularIndeterminate.setVisibility(View.GONE);//影藏进度条，显示listview
+            newslist.setVisibility(View.VISIBLE);
+        }
+        HttpAsync.get(url,new JsonHttpResponseHandler(){
+            @Override
+            public void onStart() {
+                Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                if (lastId == null){//只缓存最新的内容列表
+                    newsListCache.remove("newsList");
+                    newsListCache.put("newsList",response,7*ACache.TIME_DAY);
+                }
+                try{
+                    JSONObject slide_article = response.getJSONObject("slide_article");
+                    JSONArray slide_articles = slide_article.getJSONArray("articles");
+                    JSONObject normal_article = response.getJSONObject("normal_article");
+                    JSONArray normal_articles = normal_article.getJSONArray("articles");
+                    list.put("slide_articles",jsonArray2Arraylist(slide_articles));
+                    list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newslistadapter.onDateChange(list);
+                refreshLayout.setLoading(false);
+                refreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
+            }
+
+        });
+    }
+    /**
+     * 将json数组变成arraylist
+     * @param jsonArray
+     * @return
+     */
+    private ArrayList<HashMap<String,Object>> jsonArray2Arraylist(JSONArray jsonArray){
+        ArrayList<HashMap<String,Object>> arrayList = new ArrayList<HashMap<String, Object>>();
+        for (int i = 0; i< jsonArray.length(); i++){
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                HashMap<String,Object> item = new HashMap<String,Object>();
+                item.put("id",jsonObject.getInt("id"));
+                item.put("title",jsonObject.getString("title"));
+                item.put("updated_at",jsonObject.getString("updated_at"));
+                item.put("info",jsonObject.getString("info"));
+                String imageUrl = "http://app.ecjtu.net"+jsonObject.getString("thumb");
+                item.put("thumb",imageUrl);
+                arrayList.add(item);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return arrayList;
     }
 
 
@@ -654,40 +696,10 @@ public class main extends InstrumentedActivity {
                 hashMap.put("drawable", ImageDrawable);
                 message.obj = hashMap;
                 updateHeadImage.sendMessage(message);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-
-    private class getNewsList extends Thread {
-
-        private String url;
-        private String articleId;
-        private Boolean isInit;
-
-        public getNewsList(String url,String articleId,Boolean isInit) {
-            this.url = url;
-            this.articleId = articleId;
-            this.isInit = isInit;
-        }
-
-        @Override
-        public void run() {
-            Message message = getNewsData.obtainMessage();
-            HttpHelper httpHelper = new HttpHelper();
-            message.obj = httpHelper.getNewsList(url,articleId,main.this,isInit);
-            if(isInit){
-                message.arg1 = 1;
-            }else{
-                message.arg1 = 0;
-            }
-            getNewsData.sendMessage(message);
-        }
-    }
-
-
 
 }

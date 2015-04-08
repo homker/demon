@@ -29,6 +29,11 @@ public class HttpAsync {
     public static void get(String url,BinaryHttpResponseHandler handler){
         client.get(url,handler);
     }
+    public static void post(String url, RequestParams params, JsonHttpResponseHandler res){
+        client.post(url,params,res);
+    }
+
+
     public static AsyncHttpClient getClient(){
         return client;
     }
