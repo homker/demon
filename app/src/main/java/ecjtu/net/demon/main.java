@@ -6,13 +6,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -26,32 +23,26 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,63 +72,14 @@ public class main extends InstrumentedActivity {
     private String userName;
     private String headImage;
     private NotificationCompat.Builder mBuilder;
-    /* 下载中 */
-    private static final int DOWNLOAD = 1;
-    /* 下载结束 */
-    private static final int DOWNLOAD_FINISH = 2;
-    /* 下载保存路径 */
     private String mSavePath;
-    /* 记录进度条数量 */
-    private int progress;
     private final static String url = "http://app.ecjtu.net/api/v1/index";
     private final static String apkUrl ="http://app.ecjtu.net/download";
     private final static String rxApk = "rixin.apk";
     private String md5 = null;
-    private boolean cancelUpdate = false;/* 是否取消更新 */
     private boolean isLogin = false;
     private NotificationManager mNotificationManager; //顶部通知栏的控制器
-
-    /**
-     * 更新头像的线程句柄
-     */
-    private Handler updateHeadImage = new Handler() {
-        public void handleMessage(Message message) {
-            HashMap<String, Object> hashMap = (HashMap<String, Object>) message.obj;
-            Drawable drawable = (Drawable) hashMap.get("drawable");
-            ImageView imageView = (ImageView) hashMap.get("imageView");
-            imageView.setImageDrawable(drawable);
-        }
-    };
-
-    private Handler mHandler = new Handler(){
-        public void handleMessage(Message message) {
-            switch (message.what)
-            {
-                // 正在下载
-                case DOWNLOAD:
-                    // 设置进度条位置
-                    mBuilder.setProgress(100,progress,false);
-                    mNotificationManager.notify(1, mBuilder.build());
-                    break;
-                case DOWNLOAD_FINISH:
-                    // 安装文件
-                    if(md5 == getFileMD5(new File(mSavePath, rxApk))){
-                        mBuilder.setContentText("更新成功~！");
-                        mBuilder.setProgress(0,0,false);
-                        mNotificationManager.notify(1, mBuilder.build());
-                        installApk();
-                    }else{
-                        mBuilder.setContentText("更新失败~！");
-                        mNotificationManager.notify(1, mBuilder.build());
-                        Toast.makeText(main.this,"更新失败",Toast.LENGTH_SHORT).show();
-                        DownloadByAndroid(apkUrl);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    private DisplayImageOptions options;
 
     private void DownloadByAndroid(String url){
         Uri uri = Uri.parse(url);
@@ -145,9 +87,8 @@ public class main extends InstrumentedActivity {
         startActivity(intent);
     }
 
-    private void installApk()
+    private void installApk(File apkfile)
     {
-        File apkfile = new File(mSavePath, rxApk);
         if (!apkfile.exists())
         {
             return;
@@ -180,16 +121,12 @@ public class main extends InstrumentedActivity {
             }
         });
         //初始化listView
-        setNewslist(url,null,true);
-        //new getNewsList(url,null,true).start();
+        setNewslist(url, null, true);
     }
 
     /**
      * 初始化silidingmenu
      */
-
-
-
     private void initSildingmenu(Context context) {
         sm = new SlidingMenu(context);
         sm.setBehindOffsetRes(R.dimen.sling_margin_main);
@@ -218,8 +155,11 @@ public class main extends InstrumentedActivity {
             });
         }
         headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
-        new updateImageThread(headIamgeView, headImage).start();
-
+        headIamgeView.setImageResource(R.drawable.userimage);
+        if (headImage == null){
+            headImage = "http://img5.imgtn.bdimg.com/it/u=37747847,1258561098&fm=21&gp=0.jpg";
+        }
+        ImageLoader.getInstance().displayImage(headImage, headIamgeView, options);
         sm.showContent();
     }
 
@@ -252,8 +192,6 @@ public class main extends InstrumentedActivity {
         Log.i("tag", "更新开始");
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notification = mBuilder.build();
-        notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle("更新中")//设置通知栏标题
                 .setContentText("正在下载。。。") //设置通知栏显示内容
@@ -263,14 +201,12 @@ public class main extends InstrumentedActivity {
                 .setOngoing(false)//ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
                 .setDefaults(Notification.DEFAULT_LIGHTS)//向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setProgress(100,0,false);
-        mNotificationManager.notify(1, mBuilder.build());
+                .setProgress(100, 0, false);
+        Notification notification = mBuilder.build();
+        notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
+        mNotificationManager.notify(1, notification);
         // 现在文件
-        downloadApk();
-    }
-
-    private void downloadApk(){
-        new DownLoadApkThread(apkUrl).start();
+        DownLoadApk();
     }
 
 
@@ -300,12 +236,29 @@ public class main extends InstrumentedActivity {
         newslist = (ListView) findViewById(R.id.newslist);
         progressBarCircularIndeterminate = (ProgressBar) findViewById(R.id.progressBarCircularIndetermininate);
 
+        initImageloader();
         initView();
         setActionBarLayout(R.layout.action_bar);
         setOverflowButtonDisplayAlways();
         initReflash(refreshLayout);
         initSildingmenu(this.getBaseContext());
 
+
+    }
+
+    private void initImageloader(){
+        ImageLoaderConfiguration configuration = ImageLoaderConfiguration
+                .createDefault(main.this);
+
+        //Initialize ImageLoader with configuration.
+        ImageLoader.getInstance().init(configuration);
+
+        options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.userimage)
+                .showImageOnFail(R.drawable.userimage)
+                .cacheInMemory(false)
+                .cacheOnDisk(true)
+                .build();
     }
 
 
@@ -395,7 +348,6 @@ public class main extends InstrumentedActivity {
             turn2Activity(LoginActivity.class,null);
             Toast.makeText(main.this, "请先行登入", Toast.LENGTH_SHORT).show();
         }
-
     }
 
 
@@ -483,6 +435,7 @@ public class main extends InstrumentedActivity {
         if(lastId != null){
             url = url + "?until=" + lastId;
         }
+        Log.i("tag","请求链接："+url);
         final ACache newsListCache = ACache.get(main.this);
         JSONObject cache = newsListCache.getAsJSONObject("newsList");
         if(cache != null){//判断缓存是否为空
@@ -529,7 +482,13 @@ public class main extends InstrumentedActivity {
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
-                newslistadapter.onDateChange(list);
+                Log.i("tag", "更新线程执行成功");
+                if (newslistadapter != null){
+                    newslistadapter.onDateChange(list);
+                }else{
+                    newslistadapter = new Newslistadapter(main.this,list);
+                    newslist.setAdapter(newslistadapter);
+                }
                 refreshLayout.setLoading(false);
                 refreshLayout.setRefreshing(false);
             }
@@ -540,6 +499,11 @@ public class main extends InstrumentedActivity {
                 Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
             }
 
+            @Override
+            public void onFinish() {
+                progressBarCircularIndeterminate.setVisibility(View.GONE);//影藏进度条，显示listview
+                newslist.setVisibility(View.VISIBLE);
+            }
         });
     }
     /**
@@ -567,139 +531,40 @@ public class main extends InstrumentedActivity {
         return arrayList;
     }
 
+    private void DownLoadApk(){
+        HttpAsync.get(apkUrl, new FileAsyncHttpResponseHandler(main.this) {
+            @Override
+            public void onStart() {
+                Log.i("tag","下载开始");
+            }
 
-    private class DownLoadApkThread extends Thread{
+            @Override
+            public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
+                mBuilder.setContentText("更新失败~！");
+                mNotificationManager.notify(1, mBuilder.build());
+                Toast.makeText(main.this,"更新失败",Toast.LENGTH_SHORT).show();
+                DownloadByAndroid(apkUrl);
+            }
 
-        private String apkUrl;
+            @Override
+            public void onProgress(int bytesWritten, int totalSize) {
+                int progress = (int) (((float) bytesWritten / totalSize) * 100);
+                mBuilder.setProgress(100, progress, false);
+                mNotificationManager.notify(1, mBuilder.build());
+            }
 
-        public DownLoadApkThread(String apkUrl){
-            this.apkUrl = apkUrl;
-        }
-
-
-        @Override
-        public void run() {
-            super.run();
-            // 判断SD卡是否存在，并且是否具有读写权限
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
-            {
-                // 获得存储卡的路径
+            @Override
+            public void onSuccess(int i, Header[] headers, File file) {
                 String sdpath = Environment.getExternalStorageDirectory() + "/";
                 mSavePath = sdpath + "download";
-                URL url = null;
-                try {
-                    url = new URL(apkUrl);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                // 创建连接
-                HttpURLConnection conn = null;
-                try {
-                    conn = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    conn.connect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                // 获取文件大小
-                int length = conn.getContentLength();
-                // 创建输入流
-                InputStream is = null;
-                try {
-                    is = conn.getInputStream();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                File file = new File(mSavePath);
-                // 判断文件目录是否存在
-                if (!file.exists())
-                {
-                    file.mkdir();
-                }
-                File apkFile = new File(mSavePath, rxApk);
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(apkFile);
-                } catch (FileNotFoundException e1) {
-                    e1.printStackTrace();
-                }
-                int count = 0;
-                // 缓存
-                byte buf[] = new byte[1024];
-                // 写入到文件中
-                do
-                {
-                    int numread = 0;
-                    try {
-                        numread = is.read(buf);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                    count += numread;
-                    // 计算进度条位置
-                    progress = (int) (((float) count / length) * 100);
-                    // 更新进度
-                    mHandler.sendEmptyMessage(DOWNLOAD);
-                    if (numread <= 0)
-                    {
-                        // 下载完成
-                        mHandler.sendEmptyMessage(DOWNLOAD_FINISH);
-                        break;
-                    }
-                    // 写入文件
-                    try {
-                        fos.write(buf, 0, numread);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                } while (!cancelUpdate);// 点击取消就停止下载.
-                try {
-                    fos.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                try {
-                    is.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                File apkfile = new File(mSavePath,rxApk);
+                file.renameTo(apkfile);
+                // 安装文件
+                    mBuilder.setContentText("更新成功~！");
+                    mBuilder.setProgress(0,0,false);
+                    mNotificationManager.notify(1, mBuilder.build());
+                    installApk(apkfile);
             }
-        }
+        });
     }
-
-
-    /**
-     * 更新图片的线程
-     */
-    private class updateImageThread extends Thread {
-
-        private ImageView imageView;
-        private String imageUrl;
-
-        public updateImageThread(ImageView imageView, String url) {
-            this.imageView = imageView;
-            this.imageUrl = url;
-        }
-
-        @Override
-        public void run() {
-            try {
-                URL url = new URL(imageUrl);
-                Drawable ImageDrawable = Drawable.createFromStream(url.openStream(), "image");
-                Message message = updateHeadImage.obtainMessage();
-                HashMap<String, Object> hashMap = new HashMap<String, Object>();
-                hashMap.put("imageView", imageView);
-                hashMap.put("drawable", ImageDrawable);
-                message.obj = hashMap;
-                updateHeadImage.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }

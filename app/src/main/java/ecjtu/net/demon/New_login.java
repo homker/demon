@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.gc.materialdesign.views.ButtonFlat;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -42,26 +43,10 @@ import cn.jpush.android.api.JPushInterface;
 
 
 public class New_login extends ActionBarActivity {
-
     private ImageView site;
     private final static String VersionUrl = "http://app.ecjtu.net/api/v1/version";
     private String md5 = null;
     private boolean update = false;
-
-/*    private Handler getVersionHandler = new Handler(){
-      public void handleMessage(Message message){
-          if(message.arg1 == 0){
-              Toast.makeText(New_login.this,"网络链接错误,请稍后重试！",Toast.LENGTH_SHORT).show();
-          }
-          if (message.obj != null){
-                md5 = (String) message.obj;
-                showNoticeDialog();
-            }else{
-                turn2mianActivity(null);
-            }
-      }
-    };*/
-
     private void turn2mianActivity(Bundle bundle) {
         Intent intent = new Intent();
         if (bundle != null) {
@@ -71,9 +56,6 @@ public class New_login extends ActionBarActivity {
         startActivity(intent);
         finish();
     }
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,13 +72,13 @@ public class New_login extends ActionBarActivity {
         }else background.setBackground(readBitMap(this, R.drawable.backgroud));
         site = (ImageView) findViewById(R.id.site);
         propertyValuesHolder(site);
+        checkVersionAsync();
     }
-
     private void checkVersionAsync(){
-        HttpAsync.get(VersionUrl,new JsonHttpResponseHandler(){
+        HttpAsync.get(VersionUrl, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
-                Log.i("tag","it start");
+                Log.i("tag", "it start");
             }
 
             @Override
@@ -104,12 +86,12 @@ public class New_login extends ActionBarActivity {
                 try {
                     int versionCode = response.getInt("version_code");
                     md5 = response.getString("md5");
-                    if (versionCode > getVersionCode()){
-                        Log.i("tag","需要更新");
-                        showNoticeDialog();
-                    }else {
+                    if (versionCode > getVersionCode()) {
+                        Log.i("tag", "需要更新");
+                        update = true;
+                        showDialog();
+                    } else {
                         Log.i("tag", "我们不需要更新");
-                        turn2mianActivity(null);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -120,18 +102,16 @@ public class New_login extends ActionBarActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(New_login.this,"网络请求失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(New_login.this, "网络请求失败", Toast.LENGTH_SHORT).show();
             }
-
         });
     }
-
     public void propertyValuesHolder(View view) {
         Log.i("tag","动画已经被执行");
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("alpha", 0f, 1f);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleX", 0, 1f);
         PropertyValuesHolder pvhZ = PropertyValuesHolder.ofFloat("scaleY", 0, 1f);
-        PropertyValuesHolder pvhH = PropertyValuesHolder.ofFloat("y", site.getY() + 500f , site.getY() + 250f );
+        PropertyValuesHolder pvhH = PropertyValuesHolder.ofFloat("y", site.getY() + 500f, site.getY() + 250f);
         Animator objectAnimator =  ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY, pvhZ, pvhH).setDuration(2000);
         objectAnimator.start();
         objectAnimator.addListener(new Animator.AnimatorListener() {
@@ -142,7 +122,9 @@ public class New_login extends ActionBarActivity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                checkVersionAsync();
+                if (!update) {
+                    turn2mianActivity(null);
+                }
             }
 
             @Override
@@ -152,7 +134,6 @@ public class New_login extends ActionBarActivity {
 
             @Override
             public void onAnimationRepeat(Animator animation) {
-
             }
         });
     }
@@ -190,11 +171,9 @@ public class New_login extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    /**
-     * 显示软件更新对话框
-     */
-    private void showNoticeDialog()
-    {
+
+
+    private void showDialog(){
         // 构造对话框
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.soft_update_title);
@@ -223,6 +202,7 @@ public class New_login extends ActionBarActivity {
         AlertDialog noticeDialog = builder.create();
         noticeDialog.show();
     }
+
     private int getVersionCode() throws Exception{
         //获取packagemanager的实例
         PackageManager packageManager = getPackageManager();
