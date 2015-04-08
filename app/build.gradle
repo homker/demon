@@ -10,8 +10,8 @@ android {
         applicationId 'ecjtu.net.demon'
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 3
-        versionName "0.2.1.1"
+        versionCode 4
+        versionName "0.2.1.2"
     }
     buildTypes {
         release {

@@ -52,6 +52,7 @@ public class Newslistadapter extends BaseAdapter {
         this.context = context;
         listContainer = LayoutInflater.from(context);
         myTopView = new ArrayList<ImageView>();
+
         ImageLoaderConfiguration configuration = ImageLoaderConfiguration
                 .createDefault(context);
 
@@ -200,12 +201,10 @@ public class Newslistadapter extends BaseAdapter {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     draw_point(position);
-
                 }
 
                 @Override
                 public void onPageSelected(int position) {
-
                 }
 
                 @Override

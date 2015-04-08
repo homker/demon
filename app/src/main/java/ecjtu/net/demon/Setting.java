@@ -2,6 +2,7 @@ package ecjtu.net.demon;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +21,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,18 +49,7 @@ public class Setting extends Activity {
     private Button exit;
     private String VersionUrl = "http://app.ecjtu.net/api/v1/version";
 
-    private Handler getVersionHandler = new Handler(){
-        public void handleMessage(Message message){
-            if(message.arg1 == 0){
-                Toast.makeText(Setting.this, "网络链接错误,请稍后重试！", Toast.LENGTH_SHORT).show();
-            }
-            if (message.obj != null){
-                md5 = (String) message.obj;
-                showNoticeDialog();
-            }else{
-                Toast.makeText(Setting.this, "已经是最新版本，无需更新。", Toast.LENGTH_SHORT).show();            }
-        }
-    };
+
     private void showNoticeDialog()
     {
         // 构造对话框
@@ -127,71 +124,54 @@ public class Setting extends Activity {
         aboutListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case 1:chenckVersion() ;break;
+                switch (position) {
+                    case 1:
+                        checkVersionAsync();
+                        break;
                 }
             }
         });
     }
 
-    private void chenckVersion(){
-            new  checkVersion(VersionUrl,this).start();
-    }
-    private class checkVersion extends Thread{
-
-
-        private String url ;
-        private Context context;
-        public checkVersion(String url,Context context){
-            this.url = url;
-            this.context = context;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Log.i("tag", "版本检查开始");
-                HttpHelper getVersion = new HttpHelper();
-                Message message = getVersionHandler.obtainMessage();
-                HashMap<String,Object> version = getVersion.getVersion(url);
-                if(version != null){
-                    int versionCode = (int) version.get("versionCode");
-                    Log.i("tag","得到的版本号是："+versionCode);
-                    String versionName = (String) version.get("versionName");
-                    String md5 = (String) version.get("md5");
-                    int selfCode = getVersionCode();
-                    Thread.sleep(3000);
-                    if (versionCode > selfCode){
-                        Log.i("tag","我们需要更新");
-                        message.obj = md5;
-                    }else{
-                        Log.i("tag","我们不需要更新");
-                        message.obj = null;
-                    }
-                    message.arg1 = 1;
-                }else{
-                    message.arg1 = 0;
-                }
-                getVersionHandler.sendMessage(message);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+    private void checkVersionAsync(){
+        HttpAsync.get(VersionUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                Log.i("tag", "it start");
             }
 
-            super.run();
-        }
-        /*
-         * 获取当前程序的版本号
-         */
-        private int getVersionCode() throws Exception{
-            //获取packagemanager的实例
-            PackageManager packageManager = getPackageManager();
-            //getPackageName()是你当前类的包名，0代表是获取版本信息
-            PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-            return packInfo.versionCode;
-        }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    int versionCode = response.getInt("version_code");
+                    md5 = response.getString("md5");
+                    if (versionCode > getVersionCode()) {
+                        Log.i("tag", "需要更新");
+                        showNoticeDialog();
+                    } else {
+                        Log.i("tag", "我们不需要更新");
+                        Toast.makeText(Setting.this,"已是最新版本，无需更新",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(Setting.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+    }
+    private int getVersionCode() throws Exception{
+        //获取packagemanager的实例
+        PackageManager packageManager = getPackageManager();
+        //getPackageName()是你当前类的包名，0代表是获取版本信息
+        PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+        return packInfo.versionCode;
     }
 
 
@@ -246,10 +226,22 @@ public class Setting extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                Intent upIntent = NavUtils.getParentActivityIntent(Setting.this);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                    TaskStackBuilder.create(this)
+                            .addNextIntentWithParentStack(upIntent)
+                            .startActivities();
+                } else {
+                    Log.i("tag", "nihao" + String.valueOf(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    NavUtils.navigateUpTo(this, upIntent);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private String getVersionName() throws Exception
