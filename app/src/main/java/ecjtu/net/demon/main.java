@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -48,6 +50,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -165,12 +168,13 @@ public class main extends InstrumentedActivity {
         sm.showContent();
     }
 
-    public static String getFileMD5(File file) {
+   /* public static String getFileMD5(File file) {
         if (!file.isFile()) {
             return null;
         }
-        MessageDigest digest = null;
-        FileInputStream in = null;
+        MessageDigest digest;
+        FileInputStream in;
+        in = null;
         byte buffer[] = new byte[1024];
         int len;
         try {
@@ -187,7 +191,7 @@ public class main extends InstrumentedActivity {
         BigInteger bigInt = new BigInteger(1, digest.digest());
         return bigInt.toString(16);
     }
-
+*/
 
     private void initNotification()
     {
@@ -350,6 +354,17 @@ public class main extends InstrumentedActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                sm.toggle();
+                //
+                break;
+            default:return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void turn2Activity(Class activity,String url) {
         Intent intent = new Intent();
@@ -379,7 +394,7 @@ public class main extends InstrumentedActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent(ev);
+        return super.dispatchTouchEvent(Objects.requireNonNull(ev));
     }
 
     /**
@@ -390,15 +405,20 @@ public class main extends InstrumentedActivity {
     public void setActionBarLayout(int layoutID) {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayShowHomeEnabled(false);
-            actionBar.setDisplayShowCustomEnabled(true);
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(layoutID, null);
-            ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(
+//            actionBar.setDisplayShowTitleEnabled(false);
+//            actionBar.setDisplayShowHomeEnabled(false);
+//            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setLogo(R.drawable.sliderbutton);
+            actionBar.setTitle("新闻");
+//            LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+//            View view = inflater.inflate(layoutID, null);
+//            TextView title = (TextView) view.findViewById(R.id.title);
+//            title.setText("新闻");
+/*            ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(
                     ActionBar.LayoutParams.MATCH_PARENT,
-                    ActionBar.LayoutParams.MATCH_PARENT);
-            actionBar.setCustomView(view, layoutParams);
+                    ActionBar.LayoutParams.MATCH_PARENT);*/
+//            actionBar.setCustomView(view);
         }
 
     }
@@ -413,7 +433,7 @@ public class main extends InstrumentedActivity {
     }
 
     private void exitInBack2() {
-        Timer tExit = null;
+        Timer tExit;
         if (!isExit) {
             isExit = true;
             Toast.makeText(main.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
@@ -431,7 +451,7 @@ public class main extends InstrumentedActivity {
     }
 
     private void setNewslist(String url,final String lastId ,Boolean isInit){
-        final HashMap<String, Object> list = new HashMap<String, Object>();
+        final HashMap<String, Object> list = new HashMap<>();
         if(lastId != null){
             url = url + "?until=" + lastId;
         }

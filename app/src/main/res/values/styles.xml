@@ -11,10 +11,10 @@
 
     <style name="rxActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">#3d3d3d</item>
-        <item name="android:titleTextStyle">@style/rxActionTitleStyle</item>
+        <item name="android:titleTextStyle">@style/rxTitleStyle</item>
     </style>
-    <style name="rxActionTitleStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse">
-        <item name="android:layout_centerHorizontal">true</item>
+    <style name="rxTitleStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse">
+        <item name="android:textSize">24dp</item>
     </style>
     <style name="rxActionBarOverFlowerButtonStyle" >
         <item name="android:src">@drawable/gruid</item>

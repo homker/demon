@@ -41,4 +41,5 @@
     <string name="soft_update_later">稍后更新</string>
     <string name="soft_updating">更新中。。。</string>
     <string name="soft_update_cancel">取消</string>
+    <string name="search">Search</string>
 </resources>
