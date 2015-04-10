@@ -390,7 +390,7 @@ public class main extends InstrumentedActivity {
     public void setActionBarLayout(int layoutID) {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -400,7 +400,7 @@ public class main extends InstrumentedActivity {
                     ActionBar.LayoutParams.MATCH_PARENT);
             actionBar.setCustomView(view, layoutParams);
         }
-        this.setTitle("你妹妹的点点");
+
     }
 
 
@@ -508,15 +508,15 @@ public class main extends InstrumentedActivity {
     }
     /**
      * 将json数组变成arraylist
-     * @param jsonArray
-     * @return
+     * @param jsonArray 输入你转换的jsonArray
+     * @return 返回arraylist
      */
     private ArrayList<HashMap<String,Object>> jsonArray2Arraylist(JSONArray jsonArray){
-        ArrayList<HashMap<String,Object>> arrayList = new ArrayList<HashMap<String, Object>>();
+        ArrayList<HashMap<String,Object>> arrayList = new ArrayList<>();
         for (int i = 0; i< jsonArray.length(); i++){
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                HashMap<String,Object> item = new HashMap<String,Object>();
+                HashMap<String,Object> item = new HashMap<>();
                 item.put("id",jsonObject.getInt("id"));
                 item.put("title",jsonObject.getString("title"));
                 item.put("updated_at",jsonObject.getString("updated_at"));
