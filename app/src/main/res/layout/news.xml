@@ -2,13 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/news_list_item"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="80dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    >
 
     <ImageView
         android:id="@+id/news_image"
         android:layout_width="@dimen/news_imga_width"
         android:layout_height="@dimen/news_imga_height"
-        android:layout_margin="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_vertical"
         android:scaleType="centerCrop"
         />
 

@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gc.materialdesign.views.Button;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -200,7 +202,7 @@ public class main extends InstrumentedActivity {
                 .setPriority(Notification.PRIORITY_DEFAULT) //设置该通知优先级
                 .setOngoing(false)//ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
                 .setDefaults(Notification.DEFAULT_LIGHTS)//向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.logo_cycle)
                 .setProgress(100, 0, false);
         Notification notification = mBuilder.build();
         notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
@@ -290,7 +292,6 @@ public class main extends InstrumentedActivity {
         @Override
         public void onRefresh() {
             main.this.setNewslist(url, null, false);
-            // new getNewsList(url,null,false).start();//下拉刷新时调用
         }
     };
 
@@ -308,7 +309,6 @@ public class main extends InstrumentedActivity {
                 String articleId = String.valueOf(hashMap.get("id"));
                 Log.i("tag", "the articleId is " + articleId);
                 main.this.setNewslist(url, articleId, false);
-                //new getNewsList(url, articleId, false).start();//向上滑动时调用
             }
         });
     }

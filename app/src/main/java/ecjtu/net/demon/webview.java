@@ -33,6 +33,7 @@ public class webview extends Activity {
         setContentView(R.layout.activity_webview);
         actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
         webView = (WebView) findViewById(R.id.webView);
         Intent intent = getIntent();
         url = intent.getStringExtra("url");
@@ -43,7 +44,7 @@ public class webview extends Activity {
             public void onReceivedTitle(WebView view, String title) {
                 webview.this.title = title;
                 actionBar.setTitle(title);
-                super.onReceivedTitle(view, title);
+                //super.onReceivedTitle(view, title);
             }
         });
         WebSettings ws = webView.getSettings();

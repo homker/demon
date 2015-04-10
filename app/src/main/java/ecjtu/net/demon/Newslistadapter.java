@@ -158,7 +158,6 @@ public class Newslistadapter extends BaseAdapter {
             listItemView.articleID = (TextView) convertView.findViewById(R.id.articleID);
             convertView.setTag(listItemView);
         } else listItemView = (ListItemView) convertView.getTag();
-        //listItemView.image.setImageDrawable((android.graphics.drawable.Drawable) listItem.get(position - 1).get("thumb"));
         String url = (String) listItem.get(position - 1).get("thumb");
         listItemView.image.setImageResource(R.drawable.thumb_default);
         ImageLoader.getInstance().displayImage(url,listItemView.image,options);

@@ -2,21 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff3f3f3f">
+    android:background="#ff3f3f3f"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    >
 
     <LinearLayout
         android:id="@+id/User"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="105dp"
         android:layout_marginTop="30dp"
         android:orientation="vertical">
 
         <ecjtu.net.demon.view.CycleImageView
             android:id="@+id/UserImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:onClick="slidingMenuClickListen"
             android:src="@drawable/userimage" />
 
@@ -25,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="45dp"
             android:text="@string/UserName"
             android:textColor="#fffffefa"
             android:textSize="24dp" />
@@ -34,8 +35,7 @@
             android:id="@+id/UserID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:text="@string/StudentID"
             android:textColor="#bbbbbb" />
     </LinearLayout>
@@ -47,20 +47,21 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/User"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="50dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
-        android:paddingLeft="45dp">
+        >
 
         <ImageView
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
+            android:scaleType="fitCenter"
             android:src="@drawable/score" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/ScoreQuery"
             android:textColor="#ffffffff"
@@ -78,17 +79,18 @@
         android:layout_marginTop="15dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
-        android:paddingLeft="45dp">
+        >
 
         <ImageView
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
+            android:scaleType="fitCenter"
             android:src="@drawable/classquery" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/ClassQuery"
             android:textColor="#ffffffff"
@@ -106,17 +108,18 @@
         android:layout_marginTop="15dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
-        android:paddingLeft="45dp">
+        >
 
         <ImageView
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
+            android:scaleType="fitCenter"
             android:src="@drawable/ecard" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/YKTQuery"
             android:textColor="#ffffffff"
@@ -134,17 +137,18 @@
         android:layout_marginTop="15dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
-        android:paddingLeft="45dp">
+        >
 
         <ImageView
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
+            android:scaleType="fitCenter"
             android:src="@drawable/book" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/LibaryQuery"
             android:textColor="#ffffffff"
@@ -162,17 +166,18 @@
         android:layout_marginTop="15dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
-        android:paddingLeft="45dp">
+        >
 
         <ImageView
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
+            android:scaleType="fitCenter"
             android:src="@drawable/moon" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/MoonModel"
             android:textColor="#ffffffff"
@@ -186,7 +191,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:orientation="horizontal"
-        android:paddingLeft="45dp">
+        >
 
         <LinearLayout
             android:id="@+id/setting"
@@ -197,13 +202,14 @@
             <ImageView
                 android:layout_width="@dimen/icon_width"
                 android:layout_height="@dimen/icon_height"
+                android:scaleType="fitCenter"
                 android:layout_gravity="bottom"
                 android:src="@drawable/setting" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="23dp"
                 android:gravity="center"
                 android:text="@string/setting"
                 android:textColor="#b2b2b2"
@@ -219,13 +225,14 @@
             <ImageView
                 android:layout_width="@dimen/icon_width"
                 android:layout_height="@dimen/icon_height"
+                android:scaleType="fitCenter"
                 android:layout_marginLeft="45dp"
                 android:src="@drawable/scan" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="23dp"
                 android:gravity="center"
                 android:text="@string/scan"
                 android:textColor="#b2b2b2"
