@@ -58,7 +58,7 @@
             <com.gc.materialdesign.views.ButtonRectangle
                 android:id="@+id/email_sign_in_button"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold"

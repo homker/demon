@@ -102,7 +102,8 @@ public class New_login extends ActionBarActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(New_login.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                ToastMsg.builder.display("网络请求失败",300);
+                //Toast.makeText(New_login.this, "网络请求失败", Toast.LENGTH_SHORT).show();
             }
         });
     }

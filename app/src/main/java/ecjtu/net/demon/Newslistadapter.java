@@ -62,7 +62,7 @@ public class Newslistadapter extends BaseAdapter {
         options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.thumb_default)
                 .showImageOnFail(R.drawable.thumb_default)
-                .cacheInMemory(false)
+                .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
 

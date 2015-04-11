@@ -48,6 +48,7 @@ public class Setting extends Activity {
     private String md5;
     private Button exit;
     private String VersionUrl = "http://app.ecjtu.net/api/v1/version";
+    private int duration = 300;
 
 
     private void showNoticeDialog()
@@ -150,7 +151,8 @@ public class Setting extends Activity {
                         showNoticeDialog();
                     } else {
                         Log.i("tag", "我们不需要更新");
-                        Toast.makeText(Setting.this,"已是最新版本，无需更新",Toast.LENGTH_SHORT).show();
+                        ToastMsg.builder.display("已是最新版本，无需更新",duration);
+                        //Toast.makeText(Setting.this,"已是最新版本，无需更新",Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -161,7 +163,8 @@ public class Setting extends Activity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(Setting.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                ToastMsg.builder.display("网络请求失败",duration);
+                //Toast.makeText(Setting.this, "网络请求失败", Toast.LENGTH_SHORT).show();
             }
 
         });

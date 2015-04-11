@@ -17,7 +17,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 
 public class webview extends Activity {
@@ -106,7 +105,7 @@ public class webview extends Activity {
         }
         if (id == R.id.action_refresh) {
             webView.reload();
-            Toast.makeText(this, "正在刷新", Toast.LENGTH_SHORT).show();
+            ToastMsg.builder.display("正在刷新",300);
             return true;
         }
         if (id == R.id.share){

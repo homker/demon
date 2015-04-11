@@ -54,6 +54,8 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.xml.datatype.Duration;
+
 import cn.jpush.android.api.InstrumentedActivity;
 import cn.jpush.android.api.JPushInterface;
 import ecjtu.net.demon.view.CycleImageView;
@@ -85,6 +87,7 @@ public class main extends InstrumentedActivity {
     private boolean isLogin = false;
     private NotificationManager mNotificationManager; //顶部通知栏的控制器
     private DisplayImageOptions options;
+    private int duration = 200;
 
     private void DownloadByAndroid(String url){
         Uri uri = Uri.parse(url);
@@ -338,7 +341,8 @@ public class main extends InstrumentedActivity {
                     turn2Activity(Setting.class,null);
                     break;
                 default:
-                    Toast.makeText(main.this, "开发中。。。", Toast.LENGTH_SHORT).show();
+                    ToastMsg.builder.display("开发中...",duration);
+                    //Toast.makeText(main.this, "开发中。。。", Toast.LENGTH_SHORT).show();
                 /*case R.id.yktquery:;break;
                 case R.id.bookquery:;break;
                 case R.id.moonModel:;break;
@@ -350,7 +354,8 @@ public class main extends InstrumentedActivity {
             }
         }else{
             turn2Activity(LoginActivity.class,null);
-            Toast.makeText(main.this, "请先行登入", Toast.LENGTH_SHORT).show();
+            ToastMsg.builder.display("请先行登入",duration);
+            //Toast.makeText(main.this, "请先行登入", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -393,8 +398,8 @@ public class main extends InstrumentedActivity {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent(Objects.requireNonNull(ev));
+    public boolean dispatchTouchEvent( MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
     }
 
     /**
@@ -436,7 +441,8 @@ public class main extends InstrumentedActivity {
         Timer tExit;
         if (!isExit) {
             isExit = true;
-            Toast.makeText(main.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            ToastMsg.builder.display("再按一次退出程序",duration);
+            //Toast.makeText(main.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
                 @Override
@@ -482,7 +488,8 @@ public class main extends InstrumentedActivity {
         HttpAsync.get(url,new JsonHttpResponseHandler(){
             @Override
             public void onStart() {
-                Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
+                ToastMsg.builder.display("正在加载...",duration);
+                //Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -516,7 +523,8 @@ public class main extends InstrumentedActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-                Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
+                ToastMsg.builder.display("网络环境好像不是很好呀~！",duration);
+                //Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -562,7 +570,8 @@ public class main extends InstrumentedActivity {
             public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
                 mBuilder.setContentText("更新失败~！");
                 mNotificationManager.notify(1, mBuilder.build());
-                Toast.makeText(main.this,"更新失败",Toast.LENGTH_SHORT).show();
+                ToastMsg.builder.display("更新失败",duration);
+                //Toast.makeText(main.this,"更新失败",Toast.LENGTH_SHORT).show();
                 DownloadByAndroid(apkUrl);
             }
 
