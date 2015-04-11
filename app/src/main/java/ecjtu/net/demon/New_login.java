@@ -62,9 +62,6 @@ public class New_login extends ActionBarActivity {
         SharedPreUtil.initSharedPreference(getApplicationContext());
         setContentView(R.layout.activity_new_login);
 
-        JPushInterface.setDebugMode(false);
-        JPushInterface.init(this);
-
         RelativeLayout background = (RelativeLayout) findViewById(R.id.background);
 
         if (Build.VERSION.SDK_INT < 17) {        //兼容低版本
