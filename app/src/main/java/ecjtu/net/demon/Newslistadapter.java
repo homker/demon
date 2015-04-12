@@ -43,6 +43,7 @@ public class Newslistadapter extends BaseAdapter {
     private rxViewPager myViewPager;
     private LinearLayout myPointView;//pointView 的容器
     private ArrayList<ImageView> myTopView; //顶部ViewPager image list
+    private ArrayList<HashMap<String,String>> myTopViewS;
     private ArrayList<ImageView> points;//标识点的list
     private TextView info;
     private DisplayImageOptions options;
@@ -51,7 +52,8 @@ public class Newslistadapter extends BaseAdapter {
     public Newslistadapter(Context context, HashMap<String, Object> listItems) {
         this.context = context;
         listContainer = LayoutInflater.from(context);
-        myTopView = new ArrayList<ImageView>();
+        myTopView = new ArrayList<>();
+        myTopViewS = new ArrayList<>();
 
         ImageLoaderConfiguration configuration = ImageLoaderConfiguration
                 .createDefault(context);
@@ -181,7 +183,13 @@ public class Newslistadapter extends BaseAdapter {
             //得到pointView 的容器
 
             myPointView = (LinearLayout) topView.findViewById(R.id.point_view);
-            ImageView imageView;
+           for (int i = 0;i<slide_articles.size();i++){
+               HashMap<String,String> hashMap = new HashMap<>();
+               hashMap.put("url", (String) slide_articles.get(i).get("thumb"));
+               hashMap.put("id", String.valueOf(slide_articles.get(i).get("id")));
+               myTopViewS.add(hashMap);
+           }
+           /* ImageView imageView;
             for(int i = 0; i<slide_articles.size();i++){
                 imageView = new ImageView(context);
                 imageView.setImageResource(R.drawable.thumb_default);
@@ -191,9 +199,9 @@ public class Newslistadapter extends BaseAdapter {
                 String url = (String) slide_articles.get(i).get("thumb");
                 ImageLoader.getInstance().displayImage(url,imageView,options);
                 myTopView.add(imageView);
-            }
+            }*/
 
-            ecjtu.net.demon.newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopView);
+            ecjtu.net.demon.newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopViewS,context);
             myViewPager.setAdapter(newsImageAdapter);
             myViewPager.setCurrentItem(0);
             myViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -243,9 +251,9 @@ public class Newslistadapter extends BaseAdapter {
 
 
     private void initPoint(){
-        points = new ArrayList<ImageView>();
+        points = new ArrayList<>();
         ImageView imageView;
-        for (int i = 0 ; i < myTopView.size();i++){
+        for (int i = 0 ; i < myTopViewS.size();i++){
             imageView = new ImageView(context);
             imageView.setImageResource(R.drawable.indicator);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -263,7 +271,7 @@ public class Newslistadapter extends BaseAdapter {
     }
 
     private void draw_point(int position){
-        for (int i = 0; i<myTopView.size();i++){
+        for (int i = 0; i<myTopViewS.size();i++){
             points.get(i).setImageResource(R.drawable.indicator);
         }
         points.get(position).setImageResource(R.drawable.indicator_focused);
