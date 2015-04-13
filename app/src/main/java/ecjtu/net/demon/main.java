@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -23,15 +22,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gc.materialdesign.views.Button;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -43,18 +39,13 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.xml.datatype.Duration;
 
 import cn.jpush.android.api.InstrumentedActivity;
 import cn.jpush.android.api.JPushInterface;
@@ -64,6 +55,9 @@ import ecjtu.net.demon.view.RefreshLayout;
 
 public class main extends InstrumentedActivity {
 
+    private final static String url = "http://app.ecjtu.net/api/v1/index";
+    private final static String apkUrl = "http://app.ecjtu.net/download";
+    private final static String rxApk = "rixin.apk";
     private static boolean isExit = false;
     private ListView newslist;
     private Newslistadapter newslistadapter;
@@ -80,14 +74,17 @@ public class main extends InstrumentedActivity {
     private String headImage;
     private NotificationCompat.Builder mBuilder;
     private String mSavePath;
-    private final static String url = "http://app.ecjtu.net/api/v1/index";
-    private final static String apkUrl ="http://app.ecjtu.net/download";
-    private final static String rxApk = "rixin.apk";
     private String md5 = null;
     private boolean isLogin = false;
     private NotificationManager mNotificationManager; //顶部通知栏的控制器
     private DisplayImageOptions options;
     private int duration = 200;
+    private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            main.this.setNewslist(url, null, false);
+        }
+    };
 
     private void DownloadByAndroid(String url){
         Uri uri = Uri.parse(url);
@@ -97,7 +94,7 @@ public class main extends InstrumentedActivity {
 
     private void installApk(File apkfile)
     {
-        if (!apkfile.exists())
+        if (!apkfile.exists() && md5 == HttpHelper.getFileMD5(apkfile))
         {
             return;
         }
@@ -132,45 +129,6 @@ public class main extends InstrumentedActivity {
         setNewslist(url, null, true);
     }
 
-    /**
-     * 初始化silidingmenu
-     */
-    private void initSildingmenu(Context context) {
-        sm = new SlidingMenu(context);
-        sm.setBehindOffsetRes(R.dimen.sling_margin_main);
-        sm.setFadeEnabled(true);
-        sm.setMode(SlidingMenu.LEFT);
-        sm.setBehindScrollScale(0);
-        sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
-        sm.setShadowWidthRes(R.dimen.shawdow_width);
-        sm.setShadowDrawable(R.drawable.shadow);
-        sm.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
-        sm.setMenu(R.layout.left_menu);
-        StudentID = (TextView) findViewById(R.id.UserID);
-        StudentID.setText(studentID);
-        userNameView = (TextView) findViewById(R.id.UserName);
-        if (userName != null){
-            userNameView.setText(userName);
-        }else{
-            userNameView.setText("点击登入");
-            userNameView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setClass(main.this, LoginActivity.class);
-                    main.this.startActivity(intent);
-                }
-            });
-        }
-        headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
-        headIamgeView.setImageResource(R.drawable.userimage);
-        if (headImage == null){
-            headImage = "http://img5.imgtn.bdimg.com/it/u=37747847,1258561098&fm=21&gp=0.jpg";
-        }
-        ImageLoader.getInstance().displayImage(headImage, headIamgeView, options);
-        sm.showContent();
-    }
-
    /* public static String getFileMD5(File file) {
         if (!file.isFile()) {
             return null;
@@ -196,6 +154,45 @@ public class main extends InstrumentedActivity {
     }
 */
 
+    /**
+     * 初始化silidingmenu
+     */
+    private void initSildingmenu(Context context) {
+        sm = new SlidingMenu(context);
+        sm.setBehindOffsetRes(R.dimen.sling_margin_main);
+        sm.setFadeEnabled(true);
+        sm.setMode(SlidingMenu.LEFT);
+        sm.setBehindScrollScale(0);
+        sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        sm.setShadowWidthRes(R.dimen.shawdow_width);
+        sm.setShadowDrawable(R.drawable.shadow);
+        sm.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+        sm.setMenu(R.layout.left_menu);
+        StudentID = (TextView) findViewById(R.id.UserID);
+        StudentID.setText(studentID);
+        userNameView = (TextView) findViewById(R.id.UserName);
+        if (userName != null) {
+            userNameView.setText(userName);
+        } else {
+            userNameView.setText("点击登入");
+            userNameView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setClass(main.this, LoginActivity.class);
+                    main.this.startActivity(intent);
+                }
+            });
+        }
+        headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
+        headIamgeView.setImageResource(R.drawable.userimage);
+        if (headImage == null) {
+            headImage = "http://img5.imgtn.bdimg.com/it/u=37747847,1258561098&fm=21&gp=0.jpg";
+        }
+        ImageLoader.getInstance().displayImage(headImage, headIamgeView, options);
+        sm.showContent();
+    }
+
     private void initNotification()
     {
         Log.i("tag", "更新开始");
@@ -217,7 +214,6 @@ public class main extends InstrumentedActivity {
         // 现在文件
         DownLoadApk();
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -270,7 +266,6 @@ public class main extends InstrumentedActivity {
                 .build();
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -294,14 +289,6 @@ public class main extends InstrumentedActivity {
             e.printStackTrace();
         }
     }
-
-    private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            main.this.setNewslist(url, null, false);
-        }
-    };
-
 
     private void initReflash(final RefreshLayout refreshLayout){
         refreshLayout.setmListView(newslist);
@@ -571,7 +558,6 @@ public class main extends InstrumentedActivity {
                 mBuilder.setContentText("更新失败~！");
                 mNotificationManager.notify(1, mBuilder.build());
                 ToastMsg.builder.display("更新失败",duration);
-                //Toast.makeText(main.this,"更新失败",Toast.LENGTH_SHORT).show();
                 DownloadByAndroid(apkUrl);
             }
 
@@ -589,10 +575,10 @@ public class main extends InstrumentedActivity {
                 File apkfile = new File(mSavePath,rxApk);
                 file.renameTo(apkfile);
                 // 安装文件
-                    mBuilder.setContentText("更新成功~！");
-                    mBuilder.setProgress(0,0,false);
-                    mNotificationManager.notify(1, mBuilder.build());
-                    installApk(apkfile);
+                mBuilder.setContentText("更新成功~！");
+                mBuilder.setProgress(0, 0, false);
+                mNotificationManager.notify(1, mBuilder.build());
+                installApk(apkfile);
             }
         });
     }
