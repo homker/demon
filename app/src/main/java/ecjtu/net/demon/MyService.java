@@ -48,29 +48,29 @@ public class MyService extends Service {
 
     @Override
     public void onCreate() {
+        Log.i("tag", "the download service is work");
         super.onCreate();
         initNotification();
         DownLoadApk();
     }
 
     private void initNotification() {
-        Log.i("tag", "¸üĞÂ¿ªÊ¼");
-
+        Log.i("tag", "æ›´æ–°å¼€å§‹");
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle("¸üĞÂÖĞ")//ÉèÖÃÍ¨ÖªÀ¸±êÌâ
-                .setContentText("ÕıÔÚÏÂÔØ¡£¡£¡£") //ÉèÖÃÍ¨ÖªÀ¸ÏÔÊ¾ÄÚÈİ
-                .setTicker("¿ªÊ¼¸üĞÂ") //Í¨ÖªÊ×´Î³öÏÖÔÚÍ¨ÖªÀ¸£¬´øÉÏÉı¶¯»­Ğ§¹ûµÄ
-                .setWhen(System.currentTimeMillis())//Í¨Öª²úÉúµÄÊ±¼ä£¬»áÔÚÍ¨ÖªĞÅÏ¢ÀïÏÔÊ¾£¬Ò»°ãÊÇÏµÍ³»ñÈ¡µ½µÄÊ±¼ä
-                .setPriority(Notification.PRIORITY_DEFAULT) //ÉèÖÃ¸ÃÍ¨ÖªÓÅÏÈ¼¶
-                .setOngoing(false)//ture£¬ÉèÖÃËûÎªÒ»¸öÕıÔÚ½øĞĞµÄÍ¨Öª¡£ËûÃÇÍ¨³£ÊÇÓÃÀ´±íÊ¾Ò»¸öºóÌ¨ÈÎÎñ,ÓÃ»§»ı¼«²ÎÓë(Èç²¥·ÅÒôÀÖ)»òÒÔÄ³ÖÖ·½Ê½ÕıÔÚµÈ´ı,Òò´ËÕ¼ÓÃÉè±¸(ÈçÒ»¸öÎÄ¼şÏÂÔØ,Í¬²½²Ù×÷,Ö÷¶¯ÍøÂçÁ¬½Ó)
-                .setDefaults(Notification.DEFAULT_LIGHTS)//ÏòÍ¨ÖªÌí¼ÓÉùÒô¡¢ÉÁµÆºÍÕñ¶¯Ğ§¹ûµÄ×î¼òµ¥¡¢×îÒ»ÖÂµÄ·½Ê½ÊÇÊ¹ÓÃµ±Ç°µÄÓÃ»§Ä¬ÈÏÉèÖÃ£¬Ê¹ÓÃdefaultsÊôĞÔ£¬¿ÉÒÔ×éºÏ
+        mBuilder.setContentTitle("æ›´æ–°ä¸­")//è®¾ç½®é€šçŸ¥æ æ ‡é¢˜
+                .setContentText("æ­£åœ¨ä¸‹è½½ã€‚ã€‚ã€‚")//è®¾ç½®é€šçŸ¥æ æ˜¾ç¤ºå†…å®¹
+                .setTicker("å¼€å§‹æ›´æ–°") //é€šçŸ¥é¦–æ¬¡å‡ºç°åœ¨é€šçŸ¥æ ï¼Œå¸¦ä¸Šå‡åŠ¨ç”»æ•ˆæœçš„
+                .setWhen(System.currentTimeMillis())//é€šçŸ¥äº§ç”Ÿçš„æ—¶é—´ï¼Œä¼šåœ¨é€šçŸ¥ä¿¡æ¯é‡Œæ˜¾ç¤ºï¼Œä¸€èˆ¬æ˜¯ç³»ç»Ÿè·å–åˆ°çš„æ—¶é—´
+                .setPriority(Notification.PRIORITY_DEFAULT) //è®¾ç½®è¯¥é€šçŸ¥ä¼˜å…ˆçº§
+                .setOngoing(false)//tureï¼Œè®¾ç½®ä»–ä¸ºä¸€ä¸ªæ­£åœ¨è¿›è¡Œçš„é€šçŸ¥ã€‚ä»–ä»¬é€šå¸¸æ˜¯ç”¨æ¥è¡¨ç¤ºä¸€ä¸ªåå°ä»»åŠ¡,ç”¨æˆ·ç§¯æå‚ä¸(å¦‚æ’­æ”¾éŸ³ä¹)æˆ–ä»¥æŸç§æ–¹å¼æ­£åœ¨ç­‰å¾…,å› æ­¤å ç”¨è®¾å¤‡(å¦‚ä¸€ä¸ªæ–‡ä»¶ä¸‹è½½,åŒæ­¥æ“ä½œ,ä¸»åŠ¨ç½‘ç»œè¿æ¥)
+                .setDefaults(Notification.DEFAULT_LIGHTS)//å‘é€šçŸ¥æ·»åŠ å£°éŸ³ã€é—ªç¯å’ŒæŒ¯åŠ¨æ•ˆæœçš„æœ€ç®€å•ã€æœ€ä¸€è‡´çš„æ–¹å¼æ˜¯ä½¿ç”¨å½“å‰çš„ç”¨æˆ·é»˜è®¤è®¾ç½®ï¼Œä½¿ç”¨defaultså±æ€§ï¼Œå¯ä»¥ç»„åˆ
                 .setSmallIcon(R.drawable.logo_cycle)
                 .setProgress(100, 0, false);
         Notification notification = mBuilder.build();
         notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
         mNotificationManager.notify(1, notification);
-        // ÏÖÔÚÎÄ¼ş
+        //ç‰ˆæœ¬æ›´æ–°
         checkVersion();
     }
 
@@ -78,14 +78,14 @@ public class MyService extends Service {
         HttpAsync.get(apkUrl, new FileAsyncHttpResponseHandler(this) {
             @Override
             public void onStart() {
-                Log.i("tag", "ÏÂÔØ¿ªÊ¼");
+                Log.i("tag", "ä¸‹è½½å¼€å§‹");
             }
 
             @Override
             public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
-                mBuilder.setContentText("¸üĞÂÊ§°Ü~£¡");
+                mBuilder.setContentText("æ›´æ–°å¤±è´¥");
                 mNotificationManager.notify(1, mBuilder.build());
-                ToastMsg.builder.display("¸üĞÂÊ§°Ü", duration);
+                ToastMsg.builder.display("æ›´æ–°å¤±è´¥", duration);
                 DownloadByAndroid(apkUrl);
             }
 
@@ -102,8 +102,8 @@ public class MyService extends Service {
                 mSavePath = sdpath + "download";
                 File apkfile = new File(mSavePath, rxApk);
                 file.renameTo(apkfile);
-                // °²×°ÎÄ¼ş
-                mBuilder.setContentText("¸üĞÂ³É¹¦~£¡");
+                //å®‰è£…æ–‡ä»¶
+                mBuilder.setContentText("æ›´æ–°æˆåŠŸ~ï¼");
                 mBuilder.setProgress(0, 0, false);
                 mNotificationManager.notify(1, mBuilder.build());
                 installApk(apkfile);
@@ -121,7 +121,7 @@ public class MyService extends Service {
         if (!apkfile.exists() && md5 == HttpHelper.getFileMD5(apkfile)) {
             return;
         }
-        // Í¨¹ıIntent°²×°APKÎÄ¼ş
+        //é€šè¿‡Intentå®‰è£…APKæ–‡ä»¶
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
         this.startActivity(i);
@@ -140,10 +140,10 @@ public class MyService extends Service {
                     int versionCode = response.getInt("version_code");
                     md5 = response.getString("md5");
                     if (versionCode > getVersionCode()) {
-                        Log.i("tag", "ĞèÒª¸üĞÂ");
+                        Log.i("tag", "éœ€è¦æ›´æ–°");
                         showDialog();
                     } else {
-                        Log.i("tag", "ÎÒÃÇ²»ĞèÒª¸üĞÂ");
+                        Log.i("tag", "æˆ‘ä»¬ä¸éœ€è¦æ›´æ–°");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -154,27 +154,26 @@ public class MyService extends Service {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ToastMsg.builder.display("ÍøÂçÇëÇóÊ§°Ü", 300);
-                //Toast.makeText(New_login.this, "ÍøÂçÇëÇóÊ§°Ü", Toast.LENGTH_SHORT).show();
+                ToastMsg.builder.display("ç½‘ç»œè¯·æ±‚å¤±è´¥", 300);
             }
         });
     }
 
     private void showDialog() {
-        // ¹¹Ôì¶Ô»°¿ò
+        // æ„é€ å¯¹è¯æ¡†
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.soft_update_title);
         builder.setMessage(R.string.soft_update_info);
-        // ¸üĞÂ
+        //æ›´æ–°
         builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                // ÏÔÊ¾ÏÂÔØ¶Ô»°¿ò
+                // æ˜¾ç¤ºä¸‹è½½å¯¹è¯æ¡†ï¿½
                 DownLoadApk();
             }
         });
-        // ÉÔºó¸üĞÂ
+        // ç¨åæ›´æ–°
         builder.setNegativeButton(R.string.soft_update_later, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -186,9 +185,9 @@ public class MyService extends Service {
     }
 
     private int getVersionCode() throws Exception {
-        //»ñÈ¡packagemanagerµÄÊµÀı
+        //è·å–packagemanagerçš„å®ä¾‹
         PackageManager packageManager = getPackageManager();
-        //getPackageName()ÊÇÄãµ±Ç°ÀàµÄ°üÃû£¬0´ú±íÊÇ»ñÈ¡°æ±¾ĞÅÏ¢
+        //æ˜¯ä½ å½“å‰ç±»çš„åŒ…åï¼Œ0ä»£è¡¨æ˜¯è·å–ç‰ˆæœ¬ä¿¡æ¯
         PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
         return packInfo.versionCode;
     }

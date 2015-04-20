@@ -223,11 +223,11 @@ public class main extends InstrumentedActivity {
         main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         setContentView(main_view);
 
-        Intent intent = getIntent();
+  /*      Intent intent = getIntent();
          md5 = intent.getStringExtra("update");
         if ( md5 != null){
             initNotification();
-        }
+        }*/
 
         UserEntity userEntity = SharedPreUtil.getInstance().getUser();
         if (!TextUtils.isEmpty(userEntity.getStudentID())) {

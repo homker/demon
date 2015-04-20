@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,37 +15,40 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.gc.materialdesign.views.ButtonFlat;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.util.HashMap;
-
-import cn.jpush.android.api.JPushInterface;
 
 
 public class New_login extends ActionBarActivity {
-    private ImageView site;
     private final static String VersionUrl = "http://app.ecjtu.net/api/v1/version";
+    private ImageView site;
     private String md5 = null;
     private boolean update = false;
+
+    public static Drawable readBitMap(Context context, int resId) {
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        opt.inPurgeable = true;
+        opt.inInputShareable = true;
+        //获取资源图片
+        InputStream is = context.getResources().openRawResource(resId);
+        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), BitmapFactory.decodeStream(is, null, opt));
+        return drawable;
+    }
+
     private void turn2mianActivity(Bundle bundle) {
         Intent intent = new Intent();
         if (bundle != null) {
@@ -56,6 +58,7 @@ public class New_login extends ActionBarActivity {
         startActivity(intent);
         finish();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +72,10 @@ public class New_login extends ActionBarActivity {
         }else background.setBackground(readBitMap(this, R.drawable.backgroud));
         site = (ImageView) findViewById(R.id.site);
         propertyValuesHolder(site);
-        checkVersionAsync();
+        //checkVersionAsync();
+        startDownLoadService();
     }
+
     private void checkVersionAsync(){
         HttpAsync.get(VersionUrl, new JsonHttpResponseHandler() {
             @Override
@@ -99,11 +104,17 @@ public class New_login extends ActionBarActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ToastMsg.builder.display("网络请求失败",300);
+                ToastMsg.builder.display("网络请求失败", 300);
                 //Toast.makeText(New_login.this, "网络请求失败", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    private void startDownLoadService() {
+        Intent intent = new Intent(New_login.this, MyService.class);
+        startService(intent);
+    }
+
     public void propertyValuesHolder(View view) {
         Log.i("tag","动画已经被执行");
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("alpha", 0f, 1f);
@@ -135,18 +146,6 @@ public class New_login extends ActionBarActivity {
             }
         });
     }
-
-    public static Drawable readBitMap(Context context, int resId){
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inPreferredConfig = Bitmap.Config.RGB_565;
-        opt.inPurgeable = true;
-        opt.inInputShareable = true;
-        //获取资源图片
-        InputStream is = context.getResources().openRawResource(resId);
-        BitmapDrawable drawable = new BitmapDrawable(context.getResources(),BitmapFactory.decodeStream(is,null,opt));
-        return drawable;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
