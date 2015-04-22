@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -26,7 +27,7 @@ import java.io.File;
 /*
 * download Service
 * */
-public class MyService extends Service {
+public class DownloadService extends Service {
 
     private static final int duration = 300;
     private static final String apkUrl = "http://app.ecjtu.net/download";
@@ -36,8 +37,13 @@ public class MyService extends Service {
     private NotificationManager mNotificationManager;
     private String md5;
     private String mSavePath = null;
+    private MyBinder myBinder = new MyBinder();
 
-    public MyService() {
+    public DownloadService() {
+    }
+
+    public IBinder onBinder(Intent intent) {
+        return myBinder;
     }
 
     @Override
@@ -51,7 +57,6 @@ public class MyService extends Service {
         Log.i("tag", "the download service is work");
         super.onCreate();
         initNotification();
-        DownLoadApk();
     }
 
     private void initNotification() {
@@ -191,5 +196,14 @@ public class MyService extends Service {
         PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
         return packInfo.versionCode;
     }
+
+    public class MyBinder extends Binder {
+
+        public DownloadService startDownLoad() {
+            return DownloadService.this;
+        }
+
+    }
+
 
 }

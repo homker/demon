@@ -72,8 +72,7 @@ public class New_login extends ActionBarActivity {
         }else background.setBackground(readBitMap(this, R.drawable.backgroud));
         site = (ImageView) findViewById(R.id.site);
         propertyValuesHolder(site);
-        //checkVersionAsync();
-        startDownLoadService();
+        checkVersionAsync();
     }
 
     private void checkVersionAsync(){
@@ -111,7 +110,7 @@ public class New_login extends ActionBarActivity {
     }
 
     private void startDownLoadService() {
-        Intent intent = new Intent(New_login.this, MyService.class);
+        Intent intent = new Intent(New_login.this, DownloadService.class);
         startService(intent);
     }
 
@@ -182,8 +181,8 @@ public class New_login extends ActionBarActivity {
             public void onClick(DialogInterface dialog, int which)
             {
                 dialog.dismiss();
-                // 显示下载对话框
-                downloadApk();
+                // 在后台开始下载进程
+                startDownLoadService();
             }
         });
         // 稍后更新
