@@ -1,14 +1,9 @@
 package ecjtu.net.demon;
 
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
@@ -16,11 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 
@@ -37,19 +29,15 @@ public class DownloadService extends Service {
     private NotificationManager mNotificationManager;
     private String md5;
     private String mSavePath = null;
-    private MyBinder myBinder = new MyBinder();
 
     public DownloadService() {
     }
 
-    public IBinder onBinder(Intent intent) {
-        return myBinder;
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        md5 = intent.getStringExtra("md5");
+        return new MyBinder();
+        //throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
@@ -57,6 +45,7 @@ public class DownloadService extends Service {
         Log.i("tag", "the download service is work");
         super.onCreate();
         initNotification();
+        DownLoadApk();
     }
 
     private void initNotification() {
@@ -76,7 +65,7 @@ public class DownloadService extends Service {
         notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
         mNotificationManager.notify(1, notification);
         //版本更新
-        checkVersion();
+
     }
 
     private void DownLoadApk() {
@@ -90,8 +79,7 @@ public class DownloadService extends Service {
             public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
                 mBuilder.setContentText("更新失败");
                 mNotificationManager.notify(1, mBuilder.build());
-                ToastMsg.builder.display("更新失败", duration);
-                DownloadByAndroid(apkUrl);
+                sendDownLoadBroadcast(false);
             }
 
             @Override
@@ -111,95 +99,25 @@ public class DownloadService extends Service {
                 mBuilder.setContentText("更新成功~！");
                 mBuilder.setProgress(0, 0, false);
                 mNotificationManager.notify(1, mBuilder.build());
-                installApk(apkfile);
+                sendDownLoadBroadcast(true);
             }
         });
     }
 
-    private void DownloadByAndroid(String url) {
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+
+    protected void sendDownLoadBroadcast(Boolean isDownLoad) {
+        Intent intent = new Intent();
+        intent.setAction("ecjtu.net.demon.DownLoadService.isDownLoad");
+        intent.putExtra("isDownLoad", isDownLoad);
+        intent.putExtra("md5", md5);
+        sendBroadcast(intent);
     }
 
-    private void installApk(File apkfile) {
-        if (!apkfile.exists() && md5 == HttpHelper.getFileMD5(apkfile)) {
-            return;
-        }
-        //通过Intent安装APK文件
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
-        this.startActivity(i);
-    }
 
-    private void checkVersion() {
-        HttpAsync.get(VersionUrl, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.i("tag", "it start");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    int versionCode = response.getInt("version_code");
-                    md5 = response.getString("md5");
-                    if (versionCode > getVersionCode()) {
-                        Log.i("tag", "需要更新");
-                        showDialog();
-                    } else {
-                        Log.i("tag", "我们不需要更新");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ToastMsg.builder.display("网络请求失败", 300);
-            }
-        });
-    }
-
-    private void showDialog() {
-        // 构造对话框
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.soft_update_title);
-        builder.setMessage(R.string.soft_update_info);
-        //更新
-        builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                // 显示下载对话框�
-                DownLoadApk();
-            }
-        });
-        // 稍后更新
-        builder.setNegativeButton(R.string.soft_update_later, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog noticeDialog = builder.create();
-        noticeDialog.show();
-    }
-
-    private int getVersionCode() throws Exception {
-        //获取packagemanager的实例
-        PackageManager packageManager = getPackageManager();
-        //是你当前类的包名，0代表是获取版本信息
-        PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-        return packInfo.versionCode;
-    }
 
     public class MyBinder extends Binder {
 
-        public DownloadService startDownLoad() {
+        public DownloadService getDownLoadSercice() {
             return DownloadService.this;
         }
 

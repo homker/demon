@@ -1,6 +1,8 @@
 package ecjtu.net.demon;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -48,11 +50,11 @@ import java.util.List;
  * Created by homker on 2015/1/24.
  */
 public class HttpHelper {
+    public static HttpClient customerHttpClient;
     private String result = null;
     private URL url1 = null;
     private HttpURLConnection connection = null;
     private InputStreamReader in = null;
-    public static HttpClient customerHttpClient;
     private ACache newsListCache;
 
     public HttpHelper() {
@@ -89,6 +91,38 @@ public class HttpHelper {
             customerHttpClient =new DefaultHttpClient(conMgr, params);
         }
         return customerHttpClient;
+    }
+
+    public static String getFileMD5(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+        MessageDigest digest;
+        FileInputStream in;
+        in = null;
+        byte buffer[] = new byte[1024];
+        int len;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            in = new FileInputStream(file);
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        BigInteger bigInt = new BigInteger(1, digest.digest());
+        return bigInt.toString(16);
+    }
+
+    public static int getVersionCode(Context context) throws Exception {
+        //获取packagemanager的实例
+        PackageManager packageManager = context.getPackageManager();
+        //是你当前类的包名，0代表是获取版本信息
+        PackageInfo packInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+        return packInfo.versionCode;
     }
 
     /**
@@ -263,8 +297,6 @@ public class HttpHelper {
         return result;
     }
 
-
-
     /**
      * 账户密码检查
      *
@@ -304,7 +336,6 @@ public class HttpHelper {
             return null;
         }
     }
-
 
     /**
      * 获取最新的版本号
@@ -500,30 +531,6 @@ public class HttpHelper {
         HashMap<String,Object> list = new HashMap<String,Object>();
 
         return list;
-    }
-
-    public static String getFileMD5(File file) {
-        if (!file.isFile()) {
-            return null;
-        }
-        MessageDigest digest;
-        FileInputStream in;
-        in = null;
-        byte buffer[] = new byte[1024];
-        int len;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-            in = new FileInputStream(file);
-            while ((len = in.read(buffer, 0, 1024)) != -1) {
-                digest.update(buffer, 0, len);
-            }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        BigInteger bigInt = new BigInteger(1, digest.digest());
-        return bigInt.toString(16);
     }
 
 

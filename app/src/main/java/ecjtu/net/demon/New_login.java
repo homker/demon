@@ -7,8 +7,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -87,7 +85,7 @@ public class New_login extends ActionBarActivity {
                 try {
                     int versionCode = response.getInt("version_code");
                     md5 = response.getString("md5");
-                    if (versionCode > getVersionCode()) {
+                    if (versionCode > HttpHelper.getVersionCode(New_login.this)) {
                         Log.i("tag", "需要更新");
                         update = true;
                         showDialog();
@@ -111,6 +109,7 @@ public class New_login extends ActionBarActivity {
 
     private void startDownLoadService() {
         Intent intent = new Intent(New_login.this, DownloadService.class);
+        intent.putExtra("md5", md5);
         startService(intent);
     }
 
@@ -199,18 +198,5 @@ public class New_login extends ActionBarActivity {
         noticeDialog.show();
     }
 
-    private int getVersionCode() throws Exception{
-        //获取packagemanager的实例
-        PackageManager packageManager = getPackageManager();
-        //getPackageName()是你当前类的包名，0代表是获取版本信息
-        PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-        return packInfo.versionCode;
-    }
 
-
-    private void downloadApk(){
-        Bundle bundle = new Bundle();
-        bundle.putString("update", md5);
-        turn2mianActivity(bundle);
-    }
 }

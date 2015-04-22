@@ -2,14 +2,18 @@ package ecjtu.net.demon;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -29,7 +33,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -62,23 +65,20 @@ public class main extends InstrumentedActivity {
     private ListView newslist;
     private Newslistadapter newslistadapter;
     private ProgressBar progressBarCircularIndeterminate;
-    private View main_view;
     private TextView upToLoad;
     private RefreshLayout refreshLayout = null;
     private SlidingMenu sm;
-    private TextView StudentID;
     private String studentID;
-    private TextView userNameView;
-    private CycleImageView headIamgeView;
     private String userName;
     private String headImage;
     private NotificationCompat.Builder mBuilder;
     private String mSavePath;
     private String md5 = null;
-    private boolean isLogin = false;
+    private boolean isDownLoad = false;
     private NotificationManager mNotificationManager; //顶部通知栏的控制器
     private DisplayImageOptions options;
     private int duration = 200;
+    private DownloadService downLoadService;
     private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
@@ -129,31 +129,6 @@ public class main extends InstrumentedActivity {
         setNewslist(url, null, true);
     }
 
-   /* public static String getFileMD5(File file) {
-        if (!file.isFile()) {
-            return null;
-        }
-        MessageDigest digest;
-        FileInputStream in;
-        in = null;
-        byte buffer[] = new byte[1024];
-        int len;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-            in = new FileInputStream(file);
-            while ((len = in.read(buffer, 0, 1024)) != -1) {
-                digest.update(buffer, 0, len);
-            }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        BigInteger bigInt = new BigInteger(1, digest.digest());
-        return bigInt.toString(16);
-    }
-*/
-
     /**
      * 初始化silidingmenu
      */
@@ -168,9 +143,9 @@ public class main extends InstrumentedActivity {
         sm.setShadowDrawable(R.drawable.shadow);
         sm.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
         sm.setMenu(R.layout.left_menu);
-        StudentID = (TextView) findViewById(R.id.UserID);
-        StudentID.setText(studentID);
-        userNameView = (TextView) findViewById(R.id.UserName);
+        TextView studentID1 = (TextView) findViewById(R.id.UserID);
+        studentID1.setText(studentID);
+        TextView userNameView = (TextView) findViewById(R.id.UserName);
         if (userName != null) {
             userNameView.setText(userName);
         } else {
@@ -184,7 +159,7 @@ public class main extends InstrumentedActivity {
                 }
             });
         }
-        headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
+        CycleImageView headIamgeView = (CycleImageView) findViewById(R.id.UserImage);
         headIamgeView.setImageResource(R.drawable.userimage);
         if (headImage == null) {
             headImage = "http://img5.imgtn.bdimg.com/it/u=37747847,1258561098&fm=21&gp=0.jpg";
@@ -193,7 +168,35 @@ public class main extends InstrumentedActivity {
         sm.showContent();
     }
 
-    private void initNotification()
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SharedPreUtil.initSharedPreference(getApplicationContext());
+        View main_view = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+        main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        setContentView(main_view);
+        UserEntity userEntity = SharedPreUtil.getInstance().getUser();
+        if (!TextUtils.isEmpty(userEntity.getStudentID())) {
+            studentID = userEntity.getStudentID();
+            userName = userEntity.getUserName();
+            headImage = userEntity.getHeadImage();
+            boolean isLogin = true;
+        }
+
+        refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
+        newslist = (ListView) findViewById(R.id.newslist);
+        progressBarCircularIndeterminate = (ProgressBar) findViewById(R.id.progressBarCircularIndetermininate);
+
+        initImageloader();
+        initView();
+        setActionBarLayout(R.layout.action_bar);
+        setOverflowButtonDisplayAlways();
+        initReflash(refreshLayout);
+        initSildingmenu(this.getBaseContext());
+        initService();
+    }
+
+ /*   private void initNotification()
     {
         Log.i("tag", "更新开始");
 
@@ -213,42 +216,18 @@ public class main extends InstrumentedActivity {
         mNotificationManager.notify(1, notification);
         // 现在文件
         DownLoadApk();
+    }*/
+
+    private void initService() {
+        DownLoadServiceConnect downLoadServiceConnect = new DownLoadServiceConnect();
+        bindService(new Intent(main.this, DownloadService.class), downLoadServiceConnect, BIND_AUTO_CREATE);
+        doRegisterReceiver();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        SharedPreUtil.initSharedPreference(getApplicationContext());
-        main_view = LayoutInflater.from(this).inflate(R.layout.activity_main,null);
-        main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        setContentView(main_view);
-
-  /*      Intent intent = getIntent();
-         md5 = intent.getStringExtra("update");
-        if ( md5 != null){
-            initNotification();
-        }*/
-
-        UserEntity userEntity = SharedPreUtil.getInstance().getUser();
-        if (!TextUtils.isEmpty(userEntity.getStudentID())) {
-            studentID = userEntity.getStudentID();
-            userName = userEntity.getUserName();
-            headImage = userEntity.getHeadImage();
-            isLogin = true;
-        }
-
-        refreshLayout = (RefreshLayout) findViewById(R.id.fresh_layout);
-        newslist = (ListView) findViewById(R.id.newslist);
-        progressBarCircularIndeterminate = (ProgressBar) findViewById(R.id.progressBarCircularIndetermininate);
-
-        initImageloader();
-        initView();
-        setActionBarLayout(R.layout.action_bar);
-        setOverflowButtonDisplayAlways();
-        initReflash(refreshLayout);
-        initSildingmenu(this.getBaseContext());
-
-
+    private void doRegisterReceiver() {
+        DownLoadReceiver downLoadReceiver = new DownLoadReceiver();
+        IntentFilter intentFilter = new IntentFilter("ecjtu.net.demon.DownLoadService.isDownLoad");
+        registerReceiver(downLoadReceiver, intentFilter);
     }
 
     private void initImageloader(){
@@ -279,18 +258,18 @@ public class main extends InstrumentedActivity {
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void setOverflowButtonDisplayAlways(){
+    private void setOverflowButtonDisplayAlways() {
         ViewConfiguration viewConfiguration = ViewConfiguration.get(main.this);
         try {
             Field field = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
             field.setAccessible(true);
-            field.setBoolean(viewConfiguration,false);
+            field.setBoolean(viewConfiguration, false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private void initReflash(final RefreshLayout refreshLayout){
+    private void initReflash(final RefreshLayout refreshLayout) {
         refreshLayout.setmListView(newslist);
         refreshLayout.setColorSchemeColors(R.color.link_text_material_light);
         refreshLayout.setOnRefreshListener(initReflash);
@@ -313,7 +292,7 @@ public class main extends InstrumentedActivity {
 
     public void slidingMenuClickListen(View view) {
         String url = null;
-        if(studentID != null){
+        if (studentID != null) {
             switch (view.getId()) {
                 case R.id.score:
                     url = "http://score.ecjtu.net/";
@@ -322,13 +301,13 @@ public class main extends InstrumentedActivity {
                     url = "http://class.ecjtu.net/wClass.php?class=" + studentID;
                     break;
                 case R.id.scran:
-                    turn2Activity(CaptureActivity.class,null);
+                    turn2Activity(CaptureActivity.class, null);
                     break;
                 case R.id.setting:
-                    turn2Activity(Setting.class,null);
+                    turn2Activity(Setting.class, null);
                     break;
                 default:
-                    ToastMsg.builder.display("开发中...",duration);
+                    ToastMsg.builder.display("开发中...", duration);
                     //Toast.makeText(main.this, "开发中。。。", Toast.LENGTH_SHORT).show();
                 /*case R.id.yktquery:;break;
                 case R.id.bookquery:;break;
@@ -337,38 +316,38 @@ public class main extends InstrumentedActivity {
                 */
             }
             if (url != null) {
-                turn2Activity(webview.class,url);
+                turn2Activity(webview.class, url);
             }
-        }else{
-            turn2Activity(LoginActivity.class,null);
-            ToastMsg.builder.display("请先行登入",duration);
+        } else {
+            turn2Activity(LoginActivity.class, null);
+            ToastMsg.builder.display("请先行登入", duration);
             //Toast.makeText(main.this, "请先行登入", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 sm.toggle();
                 //
                 break;
-            default:return true;
+            default:
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void turn2Activity(Class activity,String url) {
+    private void turn2Activity(Class activity, String url) {
         Intent intent = new Intent();
         intent.setClass(main.this, activity);
-        if (url != null){
+        if (url != null) {
             Bundle bundle = new Bundle();
             bundle.putString("url", url);
             intent.putExtras(bundle);
         }
         startActivity(intent);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -385,7 +364,7 @@ public class main extends InstrumentedActivity {
     }
 
     @Override
-    public boolean dispatchTouchEvent( MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         return super.dispatchTouchEvent(ev);
     }
 
@@ -415,7 +394,6 @@ public class main extends InstrumentedActivity {
 
     }
 
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -428,7 +406,7 @@ public class main extends InstrumentedActivity {
         Timer tExit;
         if (!isExit) {
             isExit = true;
-            ToastMsg.builder.display("再按一次退出程序",duration);
+            ToastMsg.builder.display("再按一次退出程序", duration);
             //Toast.makeText(main.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
@@ -443,64 +421,64 @@ public class main extends InstrumentedActivity {
         }
     }
 
-    private void setNewslist(String url,final String lastId ,Boolean isInit){
+    private void setNewslist(String url, final String lastId, Boolean isInit) {
         final HashMap<String, Object> list = new HashMap<>();
-        if(lastId != null){
+        if (lastId != null) {
             url = url + "?until=" + lastId;
         }
-        Log.i("tag","请求链接："+url);
+        Log.i("tag", "请求链接：" + url);
         final ACache newsListCache = ACache.get(main.this);
         JSONObject cache = newsListCache.getAsJSONObject("newsList");
-        if(cache != null){//判断缓存是否为空
+        if (cache != null) {//判断缓存是否为空
             Log.i("tag", "我们使用了缓存~！");
             try {
                 JSONObject slide_article = cache.getJSONObject("slide_article");
                 JSONArray slide_articles = slide_article.getJSONArray("articles");
                 JSONObject normal_article = cache.getJSONObject("normal_article");
                 JSONArray normal_articles = normal_article.getJSONArray("articles");
-                list.put("slide_articles",jsonArray2Arraylist(slide_articles));
-                list.put("normal_articles",jsonArray2Arraylist(normal_articles));
+                list.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                list.put("normal_articles", jsonArray2Arraylist(normal_articles));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             if (newslistadapter == null) {
                 newslistadapter = new Newslistadapter(main.this, list);
                 newslist.setAdapter(newslistadapter);
-            }else{
+            } else {
                 newslistadapter.onDateChange(list);
             }
             progressBarCircularIndeterminate.setVisibility(View.GONE);//影藏进度条，显示listview
             newslist.setVisibility(View.VISIBLE);
         }
-        HttpAsync.get(url,new JsonHttpResponseHandler(){
+        HttpAsync.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
-                ToastMsg.builder.display("正在加载...",duration);
+                ToastMsg.builder.display("正在加载...", duration);
                 //Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
-                if (lastId == null){//只缓存最新的内容列表
+                if (lastId == null) {//只缓存最新的内容列表
                     newsListCache.remove("newsList");
-                    newsListCache.put("newsList",response,7*ACache.TIME_DAY);
+                    newsListCache.put("newsList", response, 7 * ACache.TIME_DAY);
                 }
-                try{
+                try {
                     JSONObject slide_article = response.getJSONObject("slide_article");
                     JSONArray slide_articles = slide_article.getJSONArray("articles");
                     JSONObject normal_article = response.getJSONObject("normal_article");
                     JSONArray normal_articles = normal_article.getJSONArray("articles");
-                    list.put("slide_articles",jsonArray2Arraylist(slide_articles));
+                    list.put("slide_articles", jsonArray2Arraylist(slide_articles));
                     list.put("normal_articles", jsonArray2Arraylist(normal_articles));
-                }catch (JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 Log.i("tag", "更新线程执行成功");
-                if (newslistadapter != null){
+                if (newslistadapter != null) {
                     newslistadapter.onDateChange(list);
-                }else{
-                    newslistadapter = new Newslistadapter(main.this,list);
+                } else {
+                    newslistadapter = new Newslistadapter(main.this, list);
                     newslist.setAdapter(newslistadapter);
                 }
                 refreshLayout.setLoading(false);
@@ -510,7 +488,7 @@ public class main extends InstrumentedActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-                ToastMsg.builder.display("网络环境好像不是很好呀~！",duration);
+                ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
                 //Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
             }
 
@@ -521,23 +499,25 @@ public class main extends InstrumentedActivity {
             }
         });
     }
+
     /**
      * 将json数组变成arraylist
+     *
      * @param jsonArray 输入你转换的jsonArray
      * @return 返回arraylist
      */
-    private ArrayList<HashMap<String,Object>> jsonArray2Arraylist(JSONArray jsonArray){
-        ArrayList<HashMap<String,Object>> arrayList = new ArrayList<>();
-        for (int i = 0; i< jsonArray.length(); i++){
+    private ArrayList<HashMap<String, Object>> jsonArray2Arraylist(JSONArray jsonArray) {
+        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                HashMap<String,Object> item = new HashMap<>();
-                item.put("id",jsonObject.getInt("id"));
-                item.put("title",jsonObject.getString("title"));
-                item.put("updated_at",jsonObject.getString("updated_at"));
-                item.put("info",jsonObject.getString("info"));
-                String imageUrl = "http://app.ecjtu.net"+jsonObject.getString("thumb");
-                item.put("thumb",imageUrl);
+                HashMap<String, Object> item = new HashMap<>();
+                item.put("id", jsonObject.getInt("id"));
+                item.put("title", jsonObject.getString("title"));
+                item.put("updated_at", jsonObject.getString("updated_at"));
+                item.put("info", jsonObject.getString("info"));
+                String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
+                item.put("thumb", imageUrl);
                 arrayList.add(item);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -546,7 +526,40 @@ public class main extends InstrumentedActivity {
         return arrayList;
     }
 
-    private void DownLoadApk(){
+    public final class DownLoadServiceConnect implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            downLoadService = ((DownloadService.MyBinder) service).getDownLoadSercice();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            downLoadService = null;
+        }
+    }
+
+    public class DownLoadReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("tag", "收到了~！");
+            isDownLoad = intent.getBooleanExtra("isDownLoad", false);
+            md5 = intent.getStringExtra("md5");
+            String sdpath = Environment.getExternalStorageDirectory() + "/";
+            mSavePath = sdpath + "download";
+            if (isDownLoad) {
+                installApk(new File(mSavePath, rxApk));
+            } else {
+                ToastMsg.builder.display("更新失败", duration);
+                DownloadByAndroid(apkUrl);
+            }
+        }
+    }
+
+
+
+   /* private void DownLoadApk(){
         HttpAsync.get(apkUrl, new FileAsyncHttpResponseHandler(main.this) {
             @Override
             public void onStart() {
@@ -581,5 +594,5 @@ public class main extends InstrumentedActivity {
                 installApk(apkfile);
             }
         });
-    }
+    }*/
 }
