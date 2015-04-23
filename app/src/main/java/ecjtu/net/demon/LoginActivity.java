@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.TaskStackBuilder;
 import android.content.CursorLoader;
@@ -39,16 +38,14 @@ import java.util.List;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends BaseActivity implements LoaderCallbacks<Cursor> {
 
 
+    private final static String url = "http://user.ecjtu.net/api/";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-    private final static String url = "http://user.ecjtu.net/api/";
-
-
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -173,11 +170,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     private boolean isUserNameValid(String email) {
         Log.i("tag", String.valueOf(email.length()));
-        if(email.length() != 14){
-            return false;
-        }else{
-            return true;
-        }
+        return email.length() == 14;
     }
 
     private boolean isPasswordValid(String password) {
@@ -254,6 +247,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     }
 
+    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<String>(LoginActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+
+        mEmailView.setAdapter(adapter);
+    }
+
+
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -262,16 +265,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
-    }
-
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
     }
 
     /**

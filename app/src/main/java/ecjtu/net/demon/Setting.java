@@ -1,16 +1,12 @@
 package ecjtu.net.demon;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -38,7 +33,7 @@ import ecjtu.net.demon.view.CycleImageView;
 /**
  * Created by 圣麟 on 2015/3/30.
  */
-public class Setting extends Activity {
+public class Setting extends BaseActivity {
 
     private ListView userListView;
     private ListView aboutListView;

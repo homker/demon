@@ -2,7 +2,6 @@ package ecjtu.net.demon;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,10 +18,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 
-public class webview extends Activity {
+public class webview extends BaseActivity {
 
-    private WebView webView;
     public String title;
+    private WebView webView;
     private String url;
     private ActionBar actionBar;
 
@@ -31,6 +30,7 @@ public class webview extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
         actionBar = getActionBar();
+        assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
         webView = (WebView) findViewById(R.id.webView);
@@ -41,9 +41,10 @@ public class webview extends Activity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onReceivedTitle(WebView view, String title) {
+                Log.i("tag", "webview是真的拿到了title");
                 webview.this.title = title;
                 actionBar.setTitle(title);
-                //super.onReceivedTitle(view, title);
+                super.onReceivedTitle(view, title);
             }
         });
         WebSettings ws = webView.getSettings();
@@ -53,12 +54,12 @@ public class webview extends Activity {
         ws.setLoadWithOverviewMode(true);
         ws.setCacheMode(WebSettings.LOAD_DEFAULT);
         ws.setDomStorageEnabled(true);
-        ws.setDatabaseEnabled(true);
         String cachepath = getFilesDir().getAbsolutePath()+"/ws/";
         ws.setAppCachePath(cachepath);
-        ws.setAppCacheMaxSize(8*1024*1024);
+        ws.setAppCacheMaxSize(8 * 1024 * 1024);
         ws.setDatabasePath(cachepath);
         ws.setAppCacheEnabled(true);
+        ws.setDatabaseEnabled(true);
         ws.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
         webView.setWebViewClient(new WebViewClient() {

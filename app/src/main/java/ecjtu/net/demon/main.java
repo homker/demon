@@ -79,6 +79,7 @@ public class main extends InstrumentedActivity {
     private DisplayImageOptions options;
     private int duration = 200;
     private DownloadService downLoadService;
+    private DownLoadServiceConnect downLoadServiceConnect;
     private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
@@ -219,9 +220,16 @@ public class main extends InstrumentedActivity {
     }*/
 
     private void initService() {
-        DownLoadServiceConnect downLoadServiceConnect = new DownLoadServiceConnect();
+
+        downLoadServiceConnect = new DownLoadServiceConnect();
         bindService(new Intent(main.this, DownloadService.class), downLoadServiceConnect, BIND_AUTO_CREATE);
         doRegisterReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(downLoadServiceConnect);
+        super.onDestroy();
     }
 
     private void doRegisterReceiver() {
