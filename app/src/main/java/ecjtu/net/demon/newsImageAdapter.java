@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -16,8 +15,6 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import org.xml.sax.helpers.LocatorImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,23 +76,11 @@ public class newsImageAdapter extends PagerAdapter {
         ImageLoader.getInstance().displayImage(url, imageView, options);
         return newsHeadImageViewList.get(position);
     }
-    private class slidePageClickerListener implements View.OnClickListener {
 
-        private String articleId;
-
-        public slidePageClickerListener(String articleId ){
-            this.articleId = articleId;
-        }
-
-        @Override
-        public void onClick(View v) {
-            turn2contentActivity(articleId);
-        }
-    }
     private void turn2contentActivity(String ArticleID) {
         String articleUrl = "http://app.ecjtu.net/api/v1/article/"+ArticleID+"/view";
         Intent intent = new Intent();
-        intent.setClass(context, webview.class);
+        intent.setClass(context, ContentWebView.class);
         Bundle bundle = new Bundle();
 
         bundle.putString("url", articleUrl);
@@ -119,9 +104,6 @@ public class newsImageAdapter extends PagerAdapter {
         }
     }
 
-
-
-
     @Override
     public int getCount() {
         return newsHeadImageViewListS.size();
@@ -130,5 +112,19 @@ public class newsImageAdapter extends PagerAdapter {
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
+    }
+
+    private class slidePageClickerListener implements View.OnClickListener {
+
+        private String articleId;
+
+        public slidePageClickerListener(String articleId) {
+            this.articleId = articleId;
+        }
+
+        @Override
+        public void onClick(View v) {
+            turn2contentActivity(articleId);
+        }
     }
 }

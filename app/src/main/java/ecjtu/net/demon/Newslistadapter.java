@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -47,8 +46,15 @@ public class Newslistadapter extends BaseAdapter {
     private ArrayList<ImageView> points;//标识点的list
     private TextView info;
     private DisplayImageOptions options;
+    private Comparator<HashMap<String, Object>> comparable = new Comparator<HashMap<String, Object>>() {
 
-
+        @Override
+        public int compare(HashMap<String, Object> lhs, HashMap<String, Object> rhs) {
+            int lhss = (int) lhs.get("id");
+            int rhss = (int) rhs.get("id");
+            return rhss - lhss;
+        }
+    };
     public Newslistadapter(Context context, HashMap<String, Object> listItems) {
         this.context = context;
         listContainer = LayoutInflater.from(context);
@@ -71,31 +77,19 @@ public class Newslistadapter extends BaseAdapter {
         this.listItem = (ArrayList<HashMap<String, Object>>) listItems.get("normal_articles");
         this.slide_articles = (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
     }
+
     /** List order not maintained **/
 
-    public List removeDuplicateWithOrder(List list) {
+    public List removeDuplicateWithOrder(List<HashMap<String, Object>> list) {
         Set set = new HashSet();
         List newList = new ArrayList();
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            Object element = iter.next();
+        for (Object element : list) {
             if (set.add(element))
                 newList.add(element);
         }
         Collections.sort(newList, comparable);
         return newList;
     }
-
-     private Comparator<HashMap<String,Object>> comparable = new Comparator<HashMap<String, Object>>() {
-
-        @Override
-        public int compare(HashMap<String, Object> lhs, HashMap<String, Object> rhs) {
-            int lhss = (int) lhs.get("id");
-            int rhss = (int) rhs.get("id");
-            return rhss - lhss;
-        }
-    };
-
-
 
     public void onDateChange(HashMap<String, Object> listItems) {
         Log.i("tag","onDateChange 被调用");
@@ -163,7 +157,7 @@ public class Newslistadapter extends BaseAdapter {
         String url = (String) listItem.get(position - 1).get("thumb");
         listItemView.image.setImageResource(R.drawable.thumb_default);
         ImageLoader.getInstance().displayImage(url,listItemView.image,options);
-        listItemView.title.setText((String) listItem.get(position - 1).get("title") + String.valueOf(listItem.get(position - 1).get("id")));
+        listItemView.title.setText(listItem.get(position - 1).get("title") + String.valueOf(listItem.get(position - 1).get("id")));
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
         listItemView.articleID.setText( String.valueOf(listItem.get(position - 1).get("id")));
 
@@ -189,18 +183,6 @@ public class Newslistadapter extends BaseAdapter {
                hashMap.put("id", String.valueOf(slide_articles.get(i).get("id")));
                myTopViewS.add(hashMap);
            }
-           /* ImageView imageView;
-            for(int i = 0; i<slide_articles.size();i++){
-                imageView = new ImageView(context);
-                imageView.setImageResource(R.drawable.thumb_default);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                String id = String.valueOf(slide_articles.get(i).get("id"));
-                imageView.setOnClickListener(new slidePageClickerListener(id));
-                String url = (String) slide_articles.get(i).get("thumb");
-                ImageLoader.getInstance().displayImage(url,imageView,options);
-                myTopView.add(imageView);
-            }*/
-
             ecjtu.net.demon.newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopViewS,context);
             myViewPager.setAdapter(newsImageAdapter);
             myViewPager.setCurrentItem(0);
@@ -224,31 +206,16 @@ public class Newslistadapter extends BaseAdapter {
         return topView;
     }
 
-    private class slidePageClickerListener implements View.OnClickListener {
-
-        private String articleId;
-
-        public slidePageClickerListener(String articleId ){
-            this.articleId = articleId;
-        }
-
-        @Override
-        public void onClick(View v) {
-            turn2contentActivity(articleId);
-        }
-    }
-
     private void turn2contentActivity(String ArticleID) {
         String articleUrl = "http://app.ecjtu.net/api/v1/article/"+ArticleID+"/view";
         Intent intent = new Intent();
-        intent.setClass(context, webview.class);
+        intent.setClass(context, ContentWebView.class);
         Bundle bundle = new Bundle();
 
         bundle.putString("url", articleUrl);
         intent.putExtras(bundle);
         context.startActivity(intent);
     }
-
 
     private void initPoint(){
         points = new ArrayList<>();
@@ -277,6 +244,20 @@ public class Newslistadapter extends BaseAdapter {
         points.get(position).setImageResource(R.drawable.indicator_focused);
         HashMap<String,Object> hashMap = slide_articles.get(position);
         info.setText((String)hashMap.get("title"));
+    }
+
+    private class slidePageClickerListener implements View.OnClickListener {
+
+        private String articleId;
+
+        public slidePageClickerListener(String articleId) {
+            this.articleId = articleId;
+        }
+
+        @Override
+        public void onClick(View v) {
+            turn2contentActivity(articleId);
+        }
     }
 
     /**

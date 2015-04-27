@@ -79,6 +79,7 @@ public class main extends InstrumentedActivity {
     private DisplayImageOptions options;
     private int duration = 200;
     private DownloadService downLoadService;
+    private DownLoadReceiver downLoadReceiver;
     private DownLoadServiceConnect downLoadServiceConnect;
     private SwipeRefreshLayout.OnRefreshListener initReflash = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -197,27 +198,6 @@ public class main extends InstrumentedActivity {
         initService();
     }
 
- /*   private void initNotification()
-    {
-        Log.i("tag", "更新开始");
-
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle("更新中")//设置通知栏标题
-                .setContentText("正在下载。。。") //设置通知栏显示内容
-                .setTicker("开始更新") //通知首次出现在通知栏，带上升动画效果的
-                .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示，一般是系统获取到的时间
-                .setPriority(Notification.PRIORITY_DEFAULT) //设置该通知优先级
-                .setOngoing(false)//ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
-                .setDefaults(Notification.DEFAULT_LIGHTS)//向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合
-                .setSmallIcon(R.drawable.logo_cycle)
-                .setProgress(100, 0, false);
-        Notification notification = mBuilder.build();
-        notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
-        mNotificationManager.notify(1, notification);
-        // 现在文件
-        DownLoadApk();
-    }*/
 
     private void initService() {
 
@@ -229,13 +209,22 @@ public class main extends InstrumentedActivity {
     @Override
     protected void onDestroy() {
         unbindService(downLoadServiceConnect);
+        try {
+            unregisterReceiver(downLoadReceiver);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("Receiver not registered")) {
+                Log.i("tag", "recer 未被注册");
+            }
+        }
         super.onDestroy();
     }
 
     private void doRegisterReceiver() {
-        DownLoadReceiver downLoadReceiver = new DownLoadReceiver();
-        IntentFilter intentFilter = new IntentFilter("ecjtu.net.demon.DownLoadService.isDownLoad");
-        registerReceiver(downLoadReceiver, intentFilter);
+        if (downLoadReceiver != null) {
+            downLoadReceiver = new DownLoadReceiver();
+            IntentFilter intentFilter = new IntentFilter("ecjtu.net.demon.DownLoadService.isDownLoad");
+            registerReceiver(downLoadReceiver, intentFilter);
+        }
     }
 
     private void initImageloader(){
