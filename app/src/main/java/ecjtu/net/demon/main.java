@@ -173,10 +173,12 @@ public class main extends InstrumentedActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         SharedPreUtil.initSharedPreference(getApplicationContext());
         View main_view = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
         main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         setContentView(main_view);
+
         UserEntity userEntity = SharedPreUtil.getInstance().getUser();
         if (!TextUtils.isEmpty(userEntity.getStudentID())) {
             studentID = userEntity.getStudentID();

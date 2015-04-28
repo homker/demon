@@ -4,19 +4,13 @@
     android:layout_height="match_parent"
     android:filterTouchesWhenObscured="true">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/fl_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/abc_action_bar_home_description" />
-    </LinearLayout>
+        android:layout_height="match_parent"></FrameLayout>
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="260dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/white">
