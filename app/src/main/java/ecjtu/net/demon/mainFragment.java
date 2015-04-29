@@ -1,9 +1,10 @@
 package ecjtu.net.demon;
 
 import android.app.Fragment;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,19 +12,33 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import ecjtu.net.demon.view.RefreshLayout;
 
 /**
  * Created by homker on 2015/4/28.
  */
 public class mainFragment extends Fragment {
 
-    private Context context;
+    private static final int duration = 200;
     private TextView upToLoad;
+    private Newslistadapter newslistadapter;
+    private ListView newslist;
+    private ProgressBar progressBar;
+    private RefreshLayout refreshLayout = null;
 
-    public mainFragment(Context context) {
-        this.context = context;
-    }
 
     @Nullable
     @Override
@@ -35,9 +50,12 @@ public class mainFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ListView newslist = (ListView) getView().findViewById(R.id.newslist);
 
-        upToLoad = new TextView(context);
+        newslist = (ListView) getView().findViewById(R.id.newslist);
+        progressBar = (ProgressBar) getView().findViewById(R.id.progressBarCircularIndetermininate);
+        refreshLayout = (RefreshLayout) getView().findViewById(R.id.fresh_layout);
+
+        upToLoad = new TextView(getActivity());
         AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
         upToLoad.setLayoutParams(layoutParams);
         upToLoad.setGravity(Gravity.CENTER);
@@ -49,10 +67,127 @@ public class mainFragment extends Fragment {
                 TextView articleIDText = (TextView) view.findViewById(R.id.articleID);
                 String articleID = (String) articleIDText.getText();
                 String articleUrl = "http://app.ecjtu.net/api/v1/article/" + articleID + "/view";
-                //       main.this.turn2Activity(webview.class, articleUrl);
+                turn2Activity(webview.class, articleUrl);
             }
         });
         //初始化listView
         // setNewslist(url, null, true);
     }
+
+    private void turn2Activity(Class activity, String url) {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), activity);
+        if (url != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString("url", url);
+            intent.putExtras(bundle);
+        }
+        startActivity(intent);
+    }
+
+    private void setNewslist(String url, final String lastId, Boolean isInit) {
+        final HashMap<String, Object> list = new HashMap<>();
+        if (lastId != null) {
+            url = url + "?until=" + lastId;
+        }
+        Log.i("tag", "请求链接：" + url);
+        final ACache newsListCache = ACache.get(getActivity());
+        JSONObject cache = newsListCache.getAsJSONObject("newsList");
+        if (cache != null) {//判断缓存是否为空
+            Log.i("tag", "我们使用了缓存~！");
+            try {
+                JSONObject slide_article = cache.getJSONObject("slide_article");
+                JSONArray slide_articles = slide_article.getJSONArray("articles");
+                JSONObject normal_article = cache.getJSONObject("normal_article");
+                JSONArray normal_articles = normal_article.getJSONArray("articles");
+                list.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (newslistadapter == null) {
+                newslistadapter = new Newslistadapter(getActivity(), list);
+                newslist.setAdapter(newslistadapter);
+            } else {
+                newslistadapter.onDateChange(list);
+            }
+            progressBar.setVisibility(View.GONE);//影藏进度条，显示listview
+            newslist.setVisibility(View.VISIBLE);
+        }
+        HttpAsync.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                ToastMsg.builder.display("正在加载...", duration);
+                //Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                if (lastId == null) {//只缓存最新的内容列表
+                    newsListCache.remove("newsList");
+                    newsListCache.put("newsList", response, 7 * ACache.TIME_DAY);
+                }
+                try {
+                    JSONObject slide_article = response.getJSONObject("slide_article");
+                    JSONArray slide_articles = slide_article.getJSONArray("articles");
+                    JSONObject normal_article = response.getJSONObject("normal_article");
+                    JSONArray normal_articles = normal_article.getJSONArray("articles");
+                    list.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                    list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.i("tag", "更新线程执行成功");
+                if (newslistadapter != null) {
+                    newslistadapter.onDateChange(list);
+                } else {
+                    newslistadapter = new Newslistadapter(getActivity(), list);
+                    newslist.setAdapter(newslistadapter);
+                }
+                refreshLayout.setLoading(false);
+                refreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
+                //Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                progressBar.setVisibility(View.GONE);//影藏进度条，显示listview
+                newslist.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    /**
+     * 将json数组变成arraylist
+     *
+     * @param jsonArray 输入你转换的jsonArray
+     * @return 返回arraylist
+     */
+    private ArrayList<HashMap<String, Object>> jsonArray2Arraylist(JSONArray jsonArray) {
+        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                HashMap<String, Object> item = new HashMap<>();
+                item.put("id", jsonObject.getInt("id"));
+                item.put("title", jsonObject.getString("title"));
+                item.put("updated_at", jsonObject.getString("updated_at"));
+                item.put("info", jsonObject.getString("info"));
+                String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
+                item.put("thumb", imageUrl);
+                arrayList.add(item);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return arrayList;
+    }
+
 }
