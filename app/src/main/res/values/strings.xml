@@ -45,4 +45,5 @@
     <string name="title_activity_new_main">NewMain</string>
     <string name="tool_bar_open">开</string>
     <string name="tool_bar_close">关</string>
+    <string name="news_describle">image</string>
 </resources>

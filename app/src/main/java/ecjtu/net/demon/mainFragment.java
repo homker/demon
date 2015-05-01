@@ -27,18 +27,15 @@ import java.util.HashMap;
 
 import ecjtu.net.demon.view.RefreshLayout;
 
-/**
- * Created by homker on 2015/4/28.
- */
 public class mainFragment extends Fragment {
 
     private static final int duration = 200;
+    private final static String url = "http://app.ecjtu.net/api/v1/index";
     private TextView upToLoad;
     private Newslistadapter newslistadapter;
     private ListView newslist;
     private ProgressBar progressBar;
     private RefreshLayout refreshLayout = null;
-
 
     @Nullable
     @Override
@@ -71,7 +68,7 @@ public class mainFragment extends Fragment {
             }
         });
         //初始化listView
-        // setNewslist(url, null, true);
+        setNewslist(url, null, true);
     }
 
     private void turn2Activity(Class activity, String url) {

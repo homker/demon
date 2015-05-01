@@ -5,33 +5,35 @@
     tools:context="ecjtu.net.demon.main">
 
     <ProgressBar
+        android:id="@+id/progressBarCircularIndetermininate"
         android:layout_width="@dimen/progress_width"
         android:layout_height="@dimen/progress_height"
-        android:id="@+id/progressBarCircularIndetermininate"
-        android:visibility="visible"
-        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:layout_centerVertical="true"
+        android:visibility="visible"
         >
 
     </ProgressBar>
 
     <ecjtu.net.demon.view.RefreshLayout
+        android:id="@+id/fresh_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/fresh_layout"
         >
 
         <ListView
-            android:visibility="gone"
             android:id="@+id/newslist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:overScrollMode="never"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="#ffffffff"
+            android:divider="@color/list_view_divier"
+            android:dividerHeight="1dp"
+            android:overScrollMode="never"
+            android:visibility="gone">
         </ListView>
 
     </ecjtu.net.demon.view.RefreshLayout>
