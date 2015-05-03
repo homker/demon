@@ -4,11 +4,22 @@
     android:layout_height="match_parent"
     android:filterTouchesWhenObscured="true">
 
-    <FrameLayout
-        android:id="@+id/fl_main"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <ecjtu.net.demon.view.SlidingTabLayout
+            android:id="@+id/tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
     <LinearLayout
         android:layout_width="260dp"
         android:layout_height="match_parent"
