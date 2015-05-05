@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +18,9 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import ecjtu.net.demon.ContentWebView;
+import ecjtu.net.demon.R;
 
 /**
  * Created by homker on 2015/3/19.

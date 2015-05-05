@@ -3,16 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/User"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="16dp">
 
         <ecjtu.net.demon.view.CycleImageView
             android:id="@+id/UserImage"
@@ -21,22 +20,38 @@
             android:onClick="slidingMenuClickListen"
             android:src="@drawable/userimage" />
 
-        <TextView
-            android:id="@+id/UserName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="45dp"
-            android:text="@string/UserName"
-            android:textColor="#fffffefa"
-            android:textSize="24dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/User"
+        android:layout_marginTop="50dp"
+        android:background="@color/action_bar_background"
+        android:onClick="slidingMenuClickListen"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:scaleType="fitCenter"
+            android:src="@drawable/mainpage" />
 
         <TextView
-            android:id="@+id/UserID"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/StudentID"
-            android:textColor="#bbbbbb" />
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="34dp"
+            android:gravity="center"
+            android:text="@string/ScoreQuery"
+            android:textColor="@color/white"
+            android:textSize="@dimen/icon_text_size" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -45,10 +60,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/User"
-        android:layout_marginTop="50dp"
+        android:layout_below="@+id/main"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
         >
 
         <ImageView
@@ -63,7 +80,7 @@
             android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/ScoreQuery"
-            android:textColor="#ffffffff"
+            android:textColor="#505155"
             android:textSize="@dimen/icon_text_size" />
 
     </LinearLayout>
@@ -75,10 +92,11 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/score"
-        android:layout_marginTop="15dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
-        >
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp">
 
         <ImageView
             android:layout_width="@dimen/icon_width"
@@ -92,7 +110,7 @@
             android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/ClassQuery"
-            android:textColor="#ffffffff"
+            android:textColor="#505155"
             android:textSize="@dimen/icon_text_size" />
 
     </LinearLayout>
@@ -104,9 +122,11 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/classquery"
-        android:layout_marginTop="15dp"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
         >
 
         <ImageView
@@ -121,7 +141,7 @@
             android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/YKTQuery"
-            android:textColor="#ffffffff"
+            android:textColor="#505155"
             android:textSize="@dimen/icon_text_size" />
 
     </LinearLayout>
@@ -133,9 +153,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/yktquery"
-        android:layout_marginTop="15dp"
+        android:divider="@android:drawable/divider_horizontal_bright"
         android:onClick="slidingMenuClickListen"
         android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:showDividers="end"
         >
 
         <ImageView
@@ -150,60 +174,36 @@
             android:layout_marginLeft="34dp"
             android:gravity="center"
             android:text="@string/LibaryQuery"
-            android:textColor="#ffffffff"
+            android:textColor="#505155"
             android:textSize="@dimen/icon_text_size" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/moonModel"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="2dp"
+        android:layout_above="@+id/linearLayout"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/bookquery"
-        android:layout_marginTop="15dp"
-        android:onClick="slidingMenuClickListen"
-        android:orientation="horizontal"
-        >
-
-        <ImageView
-            android:layout_width="@dimen/icon_width"
-            android:layout_height="@dimen/icon_height"
-            android:scaleType="fitCenter"
-            android:src="@drawable/moon" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_marginLeft="34dp"
-            android:gravity="center"
-            android:text="@string/MoonModel"
-            android:textColor="#ffffffff"
-            android:textSize="@dimen/icon_text_size" />
-
-    </LinearLayout>
+        android:background="#ffE7E7E7" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
-        android:orientation="horizontal"
-        >
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/setting"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="slidingMenuClickListen">
+            android:onClick="slidingMenuClickListen"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp">
 
-            <ImageView
-                android:layout_width="@dimen/icon_width"
-                android:layout_height="@dimen/icon_height"
-                android:layout_gravity="bottom"
-                android:scaleType="fitCenter"
-                android:src="@drawable/setting" />
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -217,16 +217,12 @@
 
         <LinearLayout
             android:id="@+id/scran"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="slidingMenuClickListen">
+            android:onClick="slidingMenuClickListen"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp">
 
-            <ImageView
-                android:layout_width="@dimen/icon_width"
-                android:layout_height="@dimen/icon_height"
-                android:layout_marginLeft="45dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/scan" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -239,5 +235,19 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/UserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/User"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@+id/User"
+        android:layout_toRightOf="@+id/User"
+        android:text="@string/UserName"
+        android:textColor="@android:color/black"
+        android:textSize="24dp" />
 
 </RelativeLayout>

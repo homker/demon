@@ -12,8 +12,8 @@
         style="@android:style/Widget.ProgressBar.Small.Inverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:indeterminate="true" />
 
     <TextView
@@ -24,7 +24,6 @@
         android:paddingTop="5dip"
         android:text="@string/load"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
         android:textStyle="bold" />
 

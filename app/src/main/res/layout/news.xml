@@ -8,7 +8,7 @@
     android:paddingRight="16dp"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="230dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|left"
@@ -19,14 +19,35 @@
             android:id="@+id/news_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="top"
+            android:text="xxxxxxxxxxxxxxxxx"
             android:textColor="#2b2b2b"
             android:textSize="20dp" />
 
         <TextView
-            android:id="@+id/news_info"
-            android:layout_width="match_parent"
+            android:id="@+id/click"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#999999" />
+            android:layout_below="@id/news_title"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/corner_bg"
+            android:gravity="bottom|left"
+            android:padding="1dp"
+            android:text="1111"
+            android:textColor="@color/white"
+            android:textSize="12dp" />
+
+        <TextView
+            android:id="@+id/news_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/news_title"
+            android:layout_marginLeft="3dp"
+            android:layout_toRightOf="@id/click"
+            android:padding="3dp"
+            android:text="12314asdfad"
+            android:textColor="#999999"
+            android:textSize="13dp" />
 
         <TextView
             android:id="@+id/articleID"
@@ -34,7 +55,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/news_image"

@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ecjtu.net.demon.ContentWebView;
+import ecjtu.net.demon.R;
 import ecjtu.net.demon.view.rxViewPager;
 
 /**
@@ -151,14 +153,16 @@ public class Newslistadapter extends BaseAdapter {
             listItemView.image = (ImageView) convertView.findViewById(R.id.news_image);
             listItemView.title = (TextView) convertView.findViewById(R.id.news_title);
             listItemView.info = (TextView) convertView.findViewById(R.id.news_info);
+            listItemView.click = (TextView) convertView.findViewById(R.id.click);
             listItemView.articleID = (TextView) convertView.findViewById(R.id.articleID);
             convertView.setTag(listItemView);
         } else listItemView = (ListItemView) convertView.getTag();
         String url = (String) listItem.get(position - 1).get("thumb");
         listItemView.image.setImageResource(R.drawable.thumb_default);
-        ImageLoader.getInstance().displayImage(url,listItemView.image,options);
+        ImageLoader.getInstance().displayImage(url, listItemView.image, options);
         listItemView.title.setText(listItem.get(position - 1).get("title") + String.valueOf(listItem.get(position - 1).get("id")));
         listItemView.info.setText((String) listItem.get(position - 1).get("info"));
+        listItemView.click.setText((String) listItem.get(position - 1).get("click"));
         listItemView.articleID.setText( String.valueOf(listItem.get(position - 1).get("id")));
 
         return convertView;
@@ -183,7 +187,7 @@ public class Newslistadapter extends BaseAdapter {
                hashMap.put("id", String.valueOf(slide_articles.get(i).get("id")));
                myTopViewS.add(hashMap);
            }
-            ecjtu.net.demon.newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopViewS,context);
+            newsImageAdapter newsImageAdapter = new newsImageAdapter(myTopViewS, context);
             myViewPager.setAdapter(newsImageAdapter);
             myViewPager.setCurrentItem(0);
             myViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -267,6 +271,7 @@ public class Newslistadapter extends BaseAdapter {
         public ImageView image;
         public TextView title;
         public TextView info;
+        public TextView click;
         public TextView articleID;
     }
 

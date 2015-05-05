@@ -3,6 +3,8 @@ package ecjtu.net.demon;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,7 +14,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
+
+import java.util.ArrayList;
+
+import ecjtu.net.demon.adapter.MainAdapter;
+import ecjtu.net.demon.fragment.CollageNificationFragment;
+import ecjtu.net.demon.fragment.MainFragment;
+import ecjtu.net.demon.fragment.TushuoFragment;
+import ecjtu.net.demon.view.SlidingTabLayout;
 
 
 public class NewMain extends ActionBarActivity {
@@ -21,6 +30,8 @@ public class NewMain extends ActionBarActivity {
     private String studentID;
     private String userName;
     private String headImage;
+    private SlidingTabLayout tab;
+    private ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,21 +44,39 @@ public class NewMain extends ActionBarActivity {
         initUserInfo();
         //使用toolbar代替actionbar
         initActionBar();
-        initMainFrament();
+        //initMainFrament();
+        initViewPager();
 
 //        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,test);
 //        listView.setAdapter(arrayAdapter);
 
     }
 
-    private void initMainFrament() {
-        FrameLayout mainLayout = (FrameLayout) findViewById(R.id.fl_main);
-        if (mainLayout != null) {
-            mainFragment mainFragment = new mainFragment();
-            mainFragment.setArguments(getIntent().getExtras());
-            getFragmentManager().beginTransaction().add(R.id.fl_main, mainFragment).commit();
-        }
+
+    private void initViewPager() {
+        tab = (SlidingTabLayout) findViewById(R.id.tab);
+        pager = (ViewPager) findViewById(R.id.pager);
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        fragments.add(new MainFragment());
+        fragments.add(new CollageNificationFragment());
+        fragments.add(new TushuoFragment());
+        MainAdapter mainAdapter = new MainAdapter(getSupportFragmentManager(), fragments);
+        pager.setAdapter(mainAdapter);
+        pager.setOffscreenPageLimit(fragments.size());
+        tab.setCustomTabView(R.layout.tab_style, 0);
+       /* tab.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+            }
+
+            @Override
+            public int getDividerColor(int position) {
+                return 0;
+            }
+        });*/
+        tab.setViewPager(pager);
     }
+
 
     private void initUserInfo() {
         UserEntity userEntity = SharedPreUtil.getInstance().getUser();

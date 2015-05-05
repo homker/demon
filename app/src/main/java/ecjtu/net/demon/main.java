@@ -52,6 +52,7 @@ import java.util.TimerTask;
 
 import cn.jpush.android.api.InstrumentedActivity;
 import cn.jpush.android.api.JPushInterface;
+import ecjtu.net.demon.adapter.Newslistadapter;
 import ecjtu.net.demon.view.CycleImageView;
 import ecjtu.net.demon.view.RefreshLayout;
 
@@ -145,8 +146,8 @@ public class main extends InstrumentedActivity {
         sm.setShadowDrawable(R.drawable.shadow);
         sm.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
         sm.setMenu(R.layout.left_menu);
-        TextView studentID1 = (TextView) findViewById(R.id.UserID);
-        studentID1.setText(studentID);
+/*        TextView studentID1 = (TextView) findViewById(R.id.UserID);
+        studentID1.setText(studentID);*/
         TextView userNameView = (TextView) findViewById(R.id.UserName);
         if (userName != null) {
             userNameView.setText(userName);

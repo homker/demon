@@ -1,9 +1,11 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.fragment;
 
-import android.app.Fragment;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,9 +27,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ecjtu.net.demon.ACache;
+import ecjtu.net.demon.HttpAsync;
+import ecjtu.net.demon.R;
+import ecjtu.net.demon.ToastMsg;
+import ecjtu.net.demon.adapter.Newslistadapter;
 import ecjtu.net.demon.view.RefreshLayout;
+import ecjtu.net.demon.webview;
 
-public class mainFragment extends Fragment {
+public class MainFragment extends Fragment {
 
     private static final int duration = 200;
     private final static String url = "http://app.ecjtu.net/api/v1/index";
@@ -36,6 +44,7 @@ public class mainFragment extends Fragment {
     private ListView newslist;
     private ProgressBar progressBar;
     private RefreshLayout refreshLayout = null;
+
 
     @Nullable
     @Override
@@ -69,6 +78,29 @@ public class mainFragment extends Fragment {
         });
         //初始化listView
         setNewslist(url, null, true);
+        initReflash(refreshLayout);
+    }
+
+    private void initReflash(final RefreshLayout refreshLayout) {
+        refreshLayout.setmListView(newslist);
+        refreshLayout.setColorSchemeColors(R.color.link_text_material_light);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setNewslist(url, null, false);
+            }
+        });
+        refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
+            @Override
+            public void onLoad() {
+                newslist.removeFooterView(upToLoad);
+                Log.i("tag", "the count is" + newslist.getCount());
+                HashMap<String, Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount() - 3));
+                String articleId = String.valueOf(hashMap.get("id"));
+                Log.i("tag", "the articleId is " + articleId);
+                setNewslist(url, articleId, false);
+            }
+        });
     }
 
     private void turn2Activity(Class activity, String url) {
@@ -177,6 +209,7 @@ public class mainFragment extends Fragment {
                 item.put("title", jsonObject.getString("title"));
                 item.put("updated_at", jsonObject.getString("updated_at"));
                 item.put("info", jsonObject.getString("info"));
+                item.put("click", jsonObject.getString("click"));
                 String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
                 item.put("thumb", imageUrl);
                 arrayList.add(item);
