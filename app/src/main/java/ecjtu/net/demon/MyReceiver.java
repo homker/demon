@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import cn.jpush.android.api.JPushInterface;
+import ecjtu.net.demon.activitys.webview;
 
 public class MyReceiver extends BroadcastReceiver {
 

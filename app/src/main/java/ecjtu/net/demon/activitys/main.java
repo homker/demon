@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -52,7 +52,15 @@ import java.util.TimerTask;
 
 import cn.jpush.android.api.InstrumentedActivity;
 import cn.jpush.android.api.JPushInterface;
+import ecjtu.net.demon.DownloadService;
+import ecjtu.net.demon.R;
 import ecjtu.net.demon.adapter.Newslistadapter;
+import ecjtu.net.demon.utils.ACache;
+import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.HttpHelper;
+import ecjtu.net.demon.utils.SharedPreUtil;
+import ecjtu.net.demon.utils.ToastMsg;
+import ecjtu.net.demon.utils.UserEntity;
 import ecjtu.net.demon.view.CycleImageView;
 import ecjtu.net.demon.view.RefreshLayout;
 

@@ -1,9 +1,11 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.app.Activity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+
+import ecjtu.net.demon.R;
 
 /**
  * Created by homker on 2015/4/22.

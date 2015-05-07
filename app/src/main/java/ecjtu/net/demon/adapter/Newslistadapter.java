@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ecjtu.net.demon.ContentWebView;
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.activitys.ContentWebView;
 import ecjtu.net.demon.view.rxViewPager;
 
 /**

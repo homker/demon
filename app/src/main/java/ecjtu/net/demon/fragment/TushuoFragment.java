@@ -68,10 +68,10 @@ public class TushuoFragment extends Fragment {
 
     }
 
-    private ArrayList<HashMap<String, String>> getcontent() {
-        ArrayList<HashMap<String, String>> content = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> getcontent() {
+        ArrayList<HashMap<String, Object>> content = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            HashMap<String, String> hashMap = new HashMap<>();
+            HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("image", "http://pic.ecjtu.net/pic/201504/15/c28ace179cff6ba9196f6b734903e627.jpg");
             hashMap.put("title", "这是测试内容标题" + i);
             hashMap.put("info", "这是测试内容标题");

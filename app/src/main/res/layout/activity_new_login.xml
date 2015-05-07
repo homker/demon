@@ -1,28 +1,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="ecjtu.net.demon.New_login"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ecjtu.net.demon.activitys.New_login"
     >
 
     <ImageView
+        android:id="@+id/site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/site"
-        android:src="@drawable/logo"
-        android:layout_gravity="center"
         android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:src="@drawable/logo"
         />
 
 
     <ImageView
+        android:id="@+id/bottom_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/bottom_log"
-        android:layout_marginBottom="39dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/bottom_logo"
+        android:layout_marginBottom="39dp"
+        android:src="@drawable/bottom_log"
         />
 
 </RelativeLayout>

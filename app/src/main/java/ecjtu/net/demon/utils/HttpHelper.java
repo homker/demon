@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

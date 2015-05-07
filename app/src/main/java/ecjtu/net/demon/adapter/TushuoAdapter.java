@@ -1,6 +1,7 @@
 package ecjtu.net.demon.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ecjtu.net.demon.R;
-import ecjtu.net.demon.ToastMsg;
+import ecjtu.net.demon.activitys.Show_image_Activity;
 
 /**
  * Created by homker on 2015/5/5.
@@ -25,12 +26,14 @@ import ecjtu.net.demon.ToastMsg;
 public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = 1;
-    private ArrayList<HashMap<String, String>> content = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> content = new ArrayList<>();
     private LayoutInflater layoutInflater;
     private DisplayImageOptions options;
+    private Context context;
 
-    public TushuoAdapter(Context context, ArrayList<HashMap<String, String>> content) {
+    public TushuoAdapter(Context context, ArrayList<HashMap<String, Object>> content) {
         this.content = content;
+        this.context = context;
         layoutInflater = LayoutInflater.from(context);
         ImageLoaderConfiguration configuration = ImageLoaderConfiguration
                 .createDefault(context);
@@ -46,7 +49,7 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .build();
     }
 
-    public ArrayList<HashMap<String, String>> getContent() {
+    public ArrayList<HashMap<String, Object>> getContent() {
         return this.content;
     }
 
@@ -62,7 +65,7 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         if (viewType == TYPE_ITEM) {
-            return new NormalTextViewHolder(layoutInflater.inflate(R.layout.tushuo_item, viewGroup, false));
+            return new NormalTextViewHolder(layoutInflater.inflate(R.layout.tushuo_item, viewGroup, false), context);
         } else if (viewType == TYPE_FOOTER) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listview_footer, null);
             view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -74,12 +77,12 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder normalTextViewHolder, int position) {
         if (normalTextViewHolder instanceof NormalTextViewHolder) {
-            ((NormalTextViewHolder) normalTextViewHolder).title.setText(content.get(position).get("title"));
-            ((NormalTextViewHolder) normalTextViewHolder).info.setText(content.get(position).get("info"));
-            ((NormalTextViewHolder) normalTextViewHolder).click.setText(content.get(position).get("click"));
-            ((NormalTextViewHolder) normalTextViewHolder).time.setText(content.get(position).get("time"));
+            ((NormalTextViewHolder) normalTextViewHolder).title.setText((String) content.get(position).get("title"));
+            ((NormalTextViewHolder) normalTextViewHolder).info.setText((String) content.get(position).get("info"));
+            ((NormalTextViewHolder) normalTextViewHolder).click.setText((String) content.get(position).get("click"));
+            ((NormalTextViewHolder) normalTextViewHolder).time.setText((String) content.get(position).get("time"));
             ((NormalTextViewHolder) normalTextViewHolder).imageView.setImageResource(R.drawable.thumb_default);
-            ImageLoader.getInstance().displayImage(content.get(position).get("image"), ((NormalTextViewHolder) normalTextViewHolder).imageView, options);
+            ImageLoader.getInstance().displayImage((String) content.get(position).get("image"), ((NormalTextViewHolder) normalTextViewHolder).imageView, options);
         }
     }
 
@@ -105,7 +108,7 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         private TextView time;
         private ImageView imageView;
 
-        public NormalTextViewHolder(View itemView) {
+        public NormalTextViewHolder(View itemView, final Context context) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
             info = (TextView) itemView.findViewById(R.id.info);
@@ -116,7 +119,9 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ToastMsg.builder.display("我被点击了啊~！", 300);
+                    Intent intent = new Intent();
+                    intent.setClass(context, Show_image_Activity.class);
+                    context.startActivity(intent);
                 }
             });
         }

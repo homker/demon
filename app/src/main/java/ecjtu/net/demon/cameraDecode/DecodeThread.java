@@ -31,7 +31,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-import ecjtu.net.demon.CaptureActivity;
+import ecjtu.net.demon.activitys.CaptureActivity;
 
 /**
  * This thread does all the heavy lifting of decoding the images.

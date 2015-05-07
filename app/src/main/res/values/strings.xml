@@ -46,4 +46,5 @@
     <string name="tool_bar_open">开</string>
     <string name="tool_bar_close">关</string>
     <string name="news_describle">image</string>
+    <string name="title_activity_show_image_">Show_image_Activity</string>
 </resources>

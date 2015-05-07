@@ -69,10 +69,10 @@ public class CollageNificationFragment extends Fragment {
 
     }
 
-    private ArrayList<HashMap<String, String>> getcontent() {
-        ArrayList<HashMap<String, String>> content = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> getcontent() {
+        ArrayList<HashMap<String, Object>> content = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
-            HashMap<String, String> hashMap = new HashMap<>();
+            HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("title", "这是测试内容标题" + i);
             hashMap.put("info", "这是测试内容标题");
             hashMap.put("click", "111");

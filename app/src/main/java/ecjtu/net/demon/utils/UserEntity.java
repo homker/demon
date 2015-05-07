@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.utils;
 
 import java.io.Serializable;
 

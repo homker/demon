@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
@@ -28,6 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ecjtu.net.demon.R;
+import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.SharedPreUtil;
+import ecjtu.net.demon.utils.ToastMsg;
+import ecjtu.net.demon.utils.UserEntity;
 import ecjtu.net.demon.view.CycleImageView;
 
 /**
@@ -146,7 +151,7 @@ public class Setting extends BaseActivity {
                         showNoticeDialog();
                     } else {
                         Log.i("tag", "我们不需要更新");
-                        ToastMsg.builder.display("已是最新版本，无需更新",duration);
+                        ToastMsg.builder.display("已是最新版本，无需更新", duration);
                         //Toast.makeText(Setting.this,"已是最新版本，无需更新",Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
@@ -158,7 +163,7 @@ public class Setting extends BaseActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ToastMsg.builder.display("网络请求失败",duration);
+                ToastMsg.builder.display("网络请求失败", duration);
                 //Toast.makeText(Setting.this, "网络请求失败", Toast.LENGTH_SHORT).show();
             }
 

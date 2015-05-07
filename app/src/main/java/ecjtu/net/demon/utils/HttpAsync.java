@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.utils;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -6,9 +6,6 @@ import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.ResponseHandlerInterface;
-
-import java.util.logging.FileHandler;
 
 /**
  * Created by homker on 2015/4/7.

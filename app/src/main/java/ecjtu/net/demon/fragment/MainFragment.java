@@ -27,13 +27,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ecjtu.net.demon.ACache;
-import ecjtu.net.demon.HttpAsync;
 import ecjtu.net.demon.R;
-import ecjtu.net.demon.ToastMsg;
+import ecjtu.net.demon.activitys.webview;
 import ecjtu.net.demon.adapter.Newslistadapter;
+import ecjtu.net.demon.utils.ACache;
+import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.ToastMsg;
 import ecjtu.net.demon.view.RefreshLayout;
-import ecjtu.net.demon.webview;
 
 public class MainFragment extends Fragment {
 
@@ -44,6 +44,7 @@ public class MainFragment extends Fragment {
     private ListView newslist;
     private ProgressBar progressBar;
     private RefreshLayout refreshLayout = null;
+    private HashMap<String, Object> content;
 
 
     @Nullable

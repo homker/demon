@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,23 +10,39 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.ArrayList;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import ecjtu.net.demon.R;
 import ecjtu.net.demon.adapter.MainAdapter;
 import ecjtu.net.demon.fragment.CollageNificationFragment;
 import ecjtu.net.demon.fragment.MainFragment;
 import ecjtu.net.demon.fragment.TushuoFragment;
+import ecjtu.net.demon.utils.ACache;
+import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.SharedPreUtil;
+import ecjtu.net.demon.utils.ToastMsg;
+import ecjtu.net.demon.utils.UserEntity;
 import ecjtu.net.demon.view.SlidingTabLayout;
 
 
 public class NewMain extends ActionBarActivity {
 
     private static final int duration = 300;
+    private static final String mainUrl = "http://app.ecjtu.net/api/v1/index";
     private String studentID;
     private String userName;
     private String headImage;
@@ -40,22 +56,28 @@ public class NewMain extends ActionBarActivity {
         View main_view = LayoutInflater.from(this).inflate(R.layout.drawlayout, null);
         main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         setContentView(main_view);
+        //实例化所有控件
+        findView();
         //出事化用户信息
         initUserInfo();
         //使用toolbar代替actionbar
         initActionBar();
         //initMainFrament();
-        initViewPager();
+        //initViewPager();
+        getAllConetnt(mainUrl, null);
 
 //        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,test);
 //        listView.setAdapter(arrayAdapter);
 
     }
 
-
-    private void initViewPager() {
+    private void findView() {
         tab = (SlidingTabLayout) findViewById(R.id.tab);
         pager = (ViewPager) findViewById(R.id.pager);
+    }
+
+
+    private void initViewPager() {
         ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(new MainFragment());
         fragments.add(new CollageNificationFragment());
@@ -85,6 +107,98 @@ public class NewMain extends ActionBarActivity {
             userName = userEntity.getUserName();
             headImage = userEntity.getHeadImage();
         }
+    }
+
+
+    private void getAllConetnt(String url, final String lastId) {
+        final HashMap<String, Object> resultlist = new HashMap<>();
+        if (lastId != null) {
+            url = url + "?until=" + lastId;
+        }
+        Log.i("tag", "请求链接：" + url);
+        final ACache newsListCache = ACache.get(this);
+        JSONObject cache = newsListCache.getAsJSONObject("newsList");
+        if (cache != null) {//判断缓存是否为空
+            Log.i("tag", "我们使用了缓存~！");
+            try {
+                JSONObject slide_article = cache.getJSONObject("slide_article");
+                JSONArray slide_articles = slide_article.getJSONArray("articles");
+                JSONObject normal_article = cache.getJSONObject("normal_article");
+                JSONArray normal_articles = normal_article.getJSONArray("articles");
+                resultlist.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                resultlist.put("normal_articles", jsonArray2Arraylist(normal_articles));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            initViewPager();
+        }
+        HttpAsync.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                ToastMsg.builder.display("正在加载...", duration);
+                //Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                if (lastId == null) {//只缓存最新的内容列表
+                    newsListCache.remove("newsList");
+                    newsListCache.put("newsList", response, 7 * ACache.TIME_DAY);
+                }
+                try {
+                    JSONObject slide_article = response.getJSONObject("slide_article");
+                    JSONArray slide_articles = slide_article.getJSONArray("articles");
+                    JSONObject normal_article = response.getJSONObject("normal_article");
+                    JSONArray normal_articles = normal_article.getJSONArray("articles");
+                    resultlist.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                    resultlist.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.i("tag", "更新线程执行成功");
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
+                //Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                initViewPager();
+            }
+        });
+    }
+
+    /**
+     * 将json数组变成arraylist
+     *
+     * @param jsonArray 输入你转换的jsonArray
+     * @return 返回arraylist
+     */
+    private ArrayList<HashMap<String, Object>> jsonArray2Arraylist(JSONArray jsonArray) {
+        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                HashMap<String, Object> item = new HashMap<>();
+                item.put("id", jsonObject.getInt("id"));
+                item.put("title", jsonObject.getString("title"));
+                item.put("updated_at", jsonObject.getString("updated_at"));
+                item.put("info", jsonObject.getString("info"));
+                item.put("click", jsonObject.getString("click"));
+                String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
+                item.put("thumb", imageUrl);
+                arrayList.add(item);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return arrayList;
     }
 
     public void slidingMenuClickListen(View view) {

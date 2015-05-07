@@ -19,8 +19,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ecjtu.net.demon.ContentWebView;
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.activitys.ContentWebView;
 
 /**
  * Created by homker on 2015/3/19.

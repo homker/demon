@@ -1,9 +1,10 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.utils;
 
 import android.content.Context;
 
 /**
  * Created by homker on 2015/4/20.
+ * 日新网新闻客户端
  */
 public class DisplayUtil {
     /**
@@ -40,7 +41,7 @@ public class DisplayUtil {
     }
 
     /**
-     * 将sp值转换为px值，保证文字大小不变
+     * &#x5c06;sp&#x503c;&#x8f6c;&#x6362;&#x4e3a;px&#x503c;&#xff0c;&#x4fdd;&#x8bc1;&#x6587;&#x5b57;&#x5927;&#x5c0f;&#x4e0d;&#x53d8;
      *
      * @param spValue
      * @return

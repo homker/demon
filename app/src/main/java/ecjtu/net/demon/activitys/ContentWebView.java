@@ -1,31 +1,34 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import ecjtu.net.demon.R;
+import ecjtu.net.demon.utils.ToastMsg;
 
-public class webview extends Activity {
-
+/**
+ * Created by homekr on 2015/4/26.
+ */
+public class ContentWebView extends Activity {
     public String title;
     private WebView webView;
     private String url;
     private ActionBar actionBar;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,25 +46,25 @@ public class webview extends Activity {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 Log.i("tag", "webview是真的拿到了title");
-                webview.this.title = title;
+                ContentWebView.this.title = title;
                 actionBar.setTitle(title);
                 super.onReceivedTitle(view, title);
             }
         });
-        WebSettings ws = webView.getSettings();
-        ws.setJavaScriptEnabled(true);
-        ws.setJavaScriptCanOpenWindowsAutomatically(true);
-        ws.setUseWideViewPort(true);
-        ws.setLoadWithOverviewMode(true);
-        ws.setCacheMode(WebSettings.LOAD_DEFAULT);
+//        WebSettings ws = webView.getSettings();
+//        ws.setJavaScriptEnabled(true);
+//        ws.setJavaScriptCanOpenWindowsAutomatically(true);
+//        ws.setUseWideViewPort(true);
+//        ws.setLoadWithOverviewMode(true);
+        /*ws.setCacheMode(WebSettings.LOAD_DEFAULT);
         ws.setDomStorageEnabled(true);
         String cachepath = getFilesDir().getAbsolutePath()+"/ws/";
         ws.setAppCachePath(cachepath);
         ws.setAppCacheMaxSize(8 * 1024 * 1024);
         ws.setDatabasePath(cachepath);
         ws.setAppCacheEnabled(true);
-        ws.setDatabaseEnabled(true);
-        ws.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        ws.setDatabaseEnabled(true);*/
+//        ws.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -78,9 +81,6 @@ public class webview extends Activity {
 //                }
             }
         });
-
-        webView.setDownloadListener(new myDownLoad());
-
 
 //        title = "你妹妹的点点";
 //
@@ -107,18 +107,18 @@ public class webview extends Activity {
         }
         if (id == R.id.action_refresh) {
             webView.reload();
-            ToastMsg.builder.display("正在刷新",300);
+            ToastMsg.builder.display("正在刷新", 300);
             return true;
         }
-        if (id == R.id.share){
-            share(url,title);
+        if (id == R.id.share) {
+            share(url, title);
         }
         if (id == R.id.homeAsUp) {
             finish();
             return true;
         }
         if (id == android.R.id.home) {
-            Intent upIntent = NavUtils.getParentActivityIntent(webview.this);
+            Intent upIntent = NavUtils.getParentActivityIntent(ContentWebView.this);
             if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
                 TaskStackBuilder.create(this)
                         .addNextIntentWithParentStack(upIntent)
@@ -134,26 +134,13 @@ public class webview extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void share(String url, String title){
-        Intent intent=new Intent(Intent.ACTION_SEND);
+    private void share(String url, String title) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
         intent.putExtra(Intent.EXTRA_TEXT, url);
         intent.putExtra(Intent.EXTRA_TITLE, title);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(intent, "分享到"));
-    }
-
-
-    class myDownLoad implements DownloadListener {
-
-        @Override
-        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-
-            // new httpThread(url);
-            Uri uri = Uri.parse(url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
-        }
     }
 }

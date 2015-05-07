@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ecjtu.net.demon.R;
-import ecjtu.net.demon.ToastMsg;
+import ecjtu.net.demon.utils.ToastMsg;
 
 /**
  * Created by homker on 2015/5/4.
@@ -21,15 +21,15 @@ public class CollageNificationAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = 1;
-    private ArrayList<HashMap<String, String>> content = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> content = new ArrayList<>();
     private LayoutInflater layoutInflater;
 
-    public CollageNificationAdapter(Context context, ArrayList<HashMap<String, String>> content) {
+    public CollageNificationAdapter(Context context, ArrayList<HashMap<String, Object>> content) {
         this.content = content;
         layoutInflater = LayoutInflater.from(context);
     }
 
-    public ArrayList<HashMap<String, String>> getContent() {
+    public ArrayList<HashMap<String, Object>> getContent() {
         return this.content;
     }
 
@@ -57,10 +57,10 @@ public class CollageNificationAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder normalTextViewHolder, int position) {
         if (normalTextViewHolder instanceof NormalTextViewHolder) {
-            ((NormalTextViewHolder) normalTextViewHolder).title.setText(content.get(position).get("title"));
-            ((NormalTextViewHolder) normalTextViewHolder).info.setText(content.get(position).get("info"));
-            ((NormalTextViewHolder) normalTextViewHolder).click.setText(content.get(position).get("click"));
-            ((NormalTextViewHolder) normalTextViewHolder).time.setText(content.get(position).get("time"));
+            ((NormalTextViewHolder) normalTextViewHolder).title.setText((String) content.get(position).get("title"));
+            ((NormalTextViewHolder) normalTextViewHolder).info.setText((String) content.get(position).get("info"));
+            ((NormalTextViewHolder) normalTextViewHolder).click.setText((String) content.get(position).get("click"));
+            ((NormalTextViewHolder) normalTextViewHolder).time.setText((String) content.get(position).get("time"));
         }
     }
 

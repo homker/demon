@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -28,6 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+
+import ecjtu.net.demon.DownloadService;
+import ecjtu.net.demon.R;
+import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.HttpHelper;
+import ecjtu.net.demon.utils.SharedPreUtil;
+import ecjtu.net.demon.utils.ToastMsg;
 
 
 public class New_login extends ActionBarActivity {

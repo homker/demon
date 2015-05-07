@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -19,6 +19,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ecjtu.net.demon.R;
+import ecjtu.net.demon.utils.HttpHelper;
 import ecjtu.net.demon.view.articleView;
 
 

@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.activitys;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +25,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ecjtu.net.demon.R;
 import ecjtu.net.demon.camera.CameraManager;
 import ecjtu.net.demon.cameraDecode.CaptureActivityHandler;
 import ecjtu.net.demon.cameraDecode.InactivityTimer;
@@ -219,10 +220,7 @@ public class CaptureActivity extends Activity implements Callback {
     private boolean isLegalUrl(String resultString) {
         Pattern p = Pattern.compile("^(http|www|ftp|)?(://)?(\\w+(-\\w+)*)(\\.(\\w+(-\\w+)*))*((:\\d+)?)(/(\\w+(-\\w+)*))*(\\.?(\\w)*)(\\?)?(((\\w*%)*(\\w*\\?)*(\\w*:)*(\\w*\\+)*(\\w*\\.)*(\\w*&)*(\\w*-)*(\\w*=)*(\\w*%)*(\\w*\\?)*(\\w*:)*(\\w*\\+)*(\\w*\\.)*(\\w*&)*(\\w*-)*(\\w*=)*)*(\\w*)*)$",Pattern.CASE_INSENSITIVE );
         Matcher m = p.matcher(resultString);
-        if (m.find()){
-            return true;
-        }
-        return false;
+        return m.find();
     }
 
     private void initBeepSound() {

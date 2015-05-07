@@ -34,8 +34,8 @@ import com.google.zxing.Result;
 
 import java.util.Vector;
 
-import ecjtu.net.demon.CaptureActivity;
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.activitys.CaptureActivity;
 import ecjtu.net.demon.camera.CameraManager;
 import ecjtu.net.demon.view.ViewfinderResultPointCallback;
 

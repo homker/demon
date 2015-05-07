@@ -1,4 +1,4 @@
-package ecjtu.net.demon;
+package ecjtu.net.demon.utils;
 
 import android.util.Base64;
 
@@ -69,7 +69,7 @@ public class SerializableUtil {
      * @throws StreamCorruptedException
      * @throws IOException
      */
-    public static Object str2Obj(String str) throws StreamCorruptedException, IOException {
+    public static Object str2Obj(String str) throws IOException {
         byte[] mByte = Base64.decode(str.getBytes(), Base64.DEFAULT);
         ByteArrayInputStream bais = new ByteArrayInputStream(mByte);
         ObjectInputStream ois = new ObjectInputStream(bais);
@@ -93,7 +93,7 @@ public class SerializableUtil {
      * @throws StreamCorruptedException
      * @throws IOException
      */
-    public static <E> List<E> string2List(String str) throws StreamCorruptedException, IOException {
+    public static <E> List<E> string2List(String str) throws IOException {
         byte[] mByte = Base64.decode(str.getBytes(), Base64.DEFAULT);
         ByteArrayInputStream bais = new ByteArrayInputStream(mByte);
         ObjectInputStream ois = new ObjectInputStream(bais);

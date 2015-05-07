@@ -16,6 +16,8 @@ import org.apache.http.Header;
 
 import java.io.File;
 
+import ecjtu.net.demon.utils.HttpAsync;
+
 /*
 * download Service
 * */
