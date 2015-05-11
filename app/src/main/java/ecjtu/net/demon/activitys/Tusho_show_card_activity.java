@@ -28,26 +28,16 @@ public class Tusho_show_card_activity extends BaseActivity {
         initActionBar();
         loadViewForCode();
         scrollView = (PullToZoomScrollViewEx) findViewById(R.id.scroll_view);
-        scrollView.getPullRootView().findViewById(R.id.tv_test1).setOnClickListener(new View.OnClickListener() {
+        scrollView.getPullRootView().findViewById(R.id.showImage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("zhuwenwu", "onClick -->");
+                Intent intent = new Intent();
+                intent.setClass(Tusho_show_card_activity.this, Show_image_Activity.class);
+                startActivity(intent);
             }
         });
 
-        scrollView.getPullRootView().findViewById(R.id.tv_test2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("zhuwenwu", "onClick -->");
-            }
-        });
 
-        scrollView.getPullRootView().findViewById(R.id.tv_test3).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("zhuwenwu", "onClick -->");
-            }
-        });
         DisplayMetrics localDisplayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(localDisplayMetrics);
         int mScreenHeight = localDisplayMetrics.heightPixels;

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -13,6 +15,8 @@ import android.view.MenuItem;
 import ecjtu.net.demon.R;
 
 public class Show_image_Activity extends BaseActivity {
+
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,10 @@ public class Show_image_Activity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_show_image_, menu);
+        MenuItem shareItem = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider)
+                MenuItemCompat.getActionProvider(shareItem);
+        mShareActionProvider.setShareIntent(getDefaultIntent());
         return true;
     }
 
@@ -68,5 +76,11 @@ public class Show_image_Activity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Intent getDefaultIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        return intent;
     }
 }

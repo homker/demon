@@ -3,189 +3,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:orientation="vertical">
+    android:background="@color/main_bg"
+    android:minHeight="480dp"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="8dp">
 
-    <TextView
-        android:id="@+id/tv_test1"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test1"
-        android:textSize="20sp" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tv_test2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test1"
-        android:textSize="20sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_test3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test1"
-        android:textSize="20sp" />
+            <ImageView
+                android:id="@+id/showImage"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:src="@drawable/t2" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test1"
-        android:textSize="20sp" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#eeeeee" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test2"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test2"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test2"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test2"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#eeeeee" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test3"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test3"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test3"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test3"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#eeeeee" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test4"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test4"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test4"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test4"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#eeeeee" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test5"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test5"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test5"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:padding="20dp"
-        android:text="test5"
-        android:textSize="20sp" />
 </LinearLayout>

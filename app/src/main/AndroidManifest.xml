@@ -216,19 +216,19 @@
         <activity
             android:name=".activitys.Show_image_Activity"
             android:label="@string/title_activity_show_image_"
-            android:parentActivityName=".activitys.NewMain"
+            android:parentActivityName=".activitys.Tusho_show_card_activity"
             android:theme="@style/NewTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.NewMain" />
+                android:value=".activitys.Tusho_show_card_activity" />
         </activity>
         <activity
             android:name=".activitys.Tusho_show_card_activity"
             android:label="@string/title_activity_tusho_show_card_activity"
-            android:parentActivityName=".activitys.Show_image_Activity">
+            android:parentActivityName=".activitys.NewMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.Show_image_Activity" />
+                android:value=".activitys.NewMain" />
         </activity>
     </application>
 
