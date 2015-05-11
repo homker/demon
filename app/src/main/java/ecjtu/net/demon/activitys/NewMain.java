@@ -56,8 +56,6 @@ public class NewMain extends ActionBarActivity {
         View main_view = LayoutInflater.from(this).inflate(R.layout.drawlayout, null);
         main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         setContentView(main_view);
-        //实例化所有控件
-        findView();
         //出事化用户信息
         initUserInfo();
         //使用toolbar代替actionbar
@@ -78,6 +76,7 @@ public class NewMain extends ActionBarActivity {
 
 
     private void initViewPager() {
+        findView();
         ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(new MainFragment());
         fragments.add(new CollageNificationFragment());
