@@ -1,6 +1,6 @@
 package ecjtu.net.demon.activitys;
 
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -10,7 +10,7 @@ import ecjtu.net.demon.R;
 /**
  * Created by homker on 2015/4/22.
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends ActionBarActivity {
     //手指向右滑动时的最小速度
     private static final int XSPEED_MIN = 200;
 

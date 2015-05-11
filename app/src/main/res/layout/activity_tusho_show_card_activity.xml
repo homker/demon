@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="ecjtu.net.demon.activitys.webview">
+    tools:context="ecjtu.net.demon.activitys.Tusho_show_card_activity">
 
     <include layout="@layout/tool_bar" />
 
-    <WebView
-        android:id="@+id/webView"
+    <ecjtu.net.demon.view.pulltozoomview.PullToZoomScrollViewEx
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </LinearLayout>

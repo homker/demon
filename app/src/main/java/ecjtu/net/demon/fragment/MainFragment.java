@@ -37,7 +37,7 @@ import ecjtu.net.demon.view.RefreshLayout;
 
 public class MainFragment extends Fragment {
 
-    private static final int duration = 200;
+    private static final int duration = 100;
     private final static String url = "http://app.ecjtu.net/api/v1/index";
     private TextView upToLoad;
     private Newslistadapter newslistadapter;
@@ -59,6 +59,8 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         newslist = (ListView) getView().findViewById(R.id.newslist);
+        //初始化listView
+        setNewslist(url, null, true);
         progressBar = (ProgressBar) getView().findViewById(R.id.progressBarCircularIndetermininate);
         refreshLayout = (RefreshLayout) getView().findViewById(R.id.fresh_layout);
 
@@ -77,8 +79,7 @@ public class MainFragment extends Fragment {
                 turn2Activity(webview.class, articleUrl);
             }
         });
-        //初始化listView
-        setNewslist(url, null, true);
+
         initReflash(refreshLayout);
     }
 
@@ -117,12 +118,13 @@ public class MainFragment extends Fragment {
 
     private void setNewslist(String url, final String lastId, Boolean isInit) {
         final HashMap<String, Object> list = new HashMap<>();
+        final HashMap<String, Object> cachelist = new HashMap<>();
         if (lastId != null) {
             url = url + "?until=" + lastId;
         }
         Log.i("tag", "请求链接：" + url);
         final ACache newsListCache = ACache.get(getActivity());
-        JSONObject cache = newsListCache.getAsJSONObject("newsList");
+        final JSONObject cache = newsListCache.getAsJSONObject("newsList");
         if (cache != null) {//判断缓存是否为空
             Log.i("tag", "我们使用了缓存~！");
             try {
@@ -130,25 +132,23 @@ public class MainFragment extends Fragment {
                 JSONArray slide_articles = slide_article.getJSONArray("articles");
                 JSONObject normal_article = cache.getJSONObject("normal_article");
                 JSONArray normal_articles = normal_article.getJSONArray("articles");
-                list.put("slide_articles", jsonArray2Arraylist(slide_articles));
-                list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                cachelist.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                cachelist.put("normal_articles", jsonArray2Arraylist(normal_articles));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             if (newslistadapter == null) {
-                newslistadapter = new Newslistadapter(getActivity(), list);
+                newslistadapter = new Newslistadapter(getActivity(), cachelist);
                 newslist.setAdapter(newslistadapter);
             } else {
-                newslistadapter.onDateChange(list);
+                // newslistadapter.onDateChange(cachelist);
             }
-            progressBar.setVisibility(View.GONE);//影藏进度条，显示listview
             newslist.setVisibility(View.VISIBLE);
         }
         HttpAsync.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 ToastMsg.builder.display("正在加载...", duration);
-                //Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -170,7 +170,9 @@ public class MainFragment extends Fragment {
                 }
                 Log.i("tag", "更新线程执行成功");
                 if (newslistadapter != null) {
-                    newslistadapter.onDateChange(list);
+                    if (list != null) {
+                        newslistadapter.onDateChange(list);
+                    }
                 } else {
                     newslistadapter = new Newslistadapter(getActivity(), list);
                     newslist.setAdapter(newslistadapter);
@@ -183,12 +185,10 @@ public class MainFragment extends Fragment {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
-                //Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFinish() {
-                progressBar.setVisibility(View.GONE);//影藏进度条，显示listview
                 newslist.setVisibility(View.VISIBLE);
             }
         });

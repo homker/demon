@@ -3,12 +3,13 @@ package ecjtu.net.demon.activitys;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +21,10 @@ import ecjtu.net.demon.R;
 import ecjtu.net.demon.utils.ToastMsg;
 
 /**
- * Created by homekr on 2015/4/26.
+ * Created by homker on 2015/4/26.
+ * 日新网新闻客户端
  */
-public class ContentWebView extends Activity {
+public class ContentWebView extends BaseActivity {
     public String title;
     private WebView webView;
     private String url;
@@ -33,10 +35,14 @@ public class ContentWebView extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
-        actionBar = getActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar.setTitle("花椒助手");
+        toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         webView = (WebView) findViewById(R.id.webView);
         Intent intent = getIntent();
         url = intent.getStringExtra("url");

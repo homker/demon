@@ -47,4 +47,5 @@
     <string name="tool_bar_close">关</string>
     <string name="news_describle">image</string>
     <string name="title_activity_show_image_">Show_image_Activity</string>
+    <string name="title_activity_tusho_show_card_activity">Tusho_show_card_activity</string>
 </resources>

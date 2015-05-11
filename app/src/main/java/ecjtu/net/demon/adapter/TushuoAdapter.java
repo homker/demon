@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ecjtu.net.demon.R;
-import ecjtu.net.demon.activitys.Show_image_Activity;
+import ecjtu.net.demon.activitys.Tusho_show_card_activity;
 
 /**
  * Created by homker on 2015/5/5.
@@ -120,7 +120,7 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
-                    intent.setClass(context, Show_image_Activity.class);
+                    intent.setClass(context, Tusho_show_card_activity.class);
                     context.startActivity(intent);
                 }
             });

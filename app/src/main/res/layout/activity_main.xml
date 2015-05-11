@@ -11,7 +11,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
-        android:visibility="visible"
+        android:visibility="gone"
         >
 
     </ProgressBar>
@@ -32,8 +32,7 @@
             android:background="#ffffffff"
             android:divider="@color/list_view_divier"
             android:dividerHeight="1dp"
-            android:overScrollMode="never"
-            android:visibility="gone">
+            android:overScrollMode="never">
         </ListView>
 
     </ecjtu.net.demon.view.RefreshLayout>

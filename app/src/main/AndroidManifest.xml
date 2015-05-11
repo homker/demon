@@ -39,7 +39,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/NewTheme">
 
         <!--
             <activity
@@ -71,43 +71,43 @@
         <activity
             android:name=".activitys.newscontent"
             android:label="@string/title_activity_newscontent"
-            android:parentActivityName=".activitys.main">
+            android:parentActivityName=".activitys.NewMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.main" />
+                android:value=".activitys.NewMain" />
         </activity>
         <activity
             android:name=".activitys.ContentWebView"
             android:label="@string/title_activity_newscontent"
-            android:parentActivityName=".activitys.main">
+            android:parentActivityName=".activitys.NewMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.main" />
+                android:value=".activitys.NewMain" />
         </activity>
         <activity
             android:name=".activitys.webview"
             android:label="@string/title_activity_webview"
-            android:parentActivityName=".activitys.main">
+            android:parentActivityName=".activitys.NewMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.main" />
+                android:value=".activitys.NewMain" />
         </activity>
         <activity
             android:name=".activitys.LoginActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName=".activitys.main"
+            android:parentActivityName=".activitys.NewMain"
             android:windowSoftInputMode="adjustResize|stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.main" />
+                android:value=".activitys.NewMain" />
         </activity>
         <activity
             android:name=".activitys.Setting"
             android:label="@string/setting"
-            android:parentActivityName=".activitys.main">
+            android:parentActivityName=".activitys.NewMain">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activitys.main" />
+                android:value=".activitys.NewMain" />
         </activity>
         <activity
             android:name=".activitys.CaptureActivity"
@@ -216,7 +216,19 @@
         <activity
             android:name=".activitys.Show_image_Activity"
             android:label="@string/title_activity_show_image_"
+            android:parentActivityName=".activitys.NewMain"
             android:theme="@style/NewTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activitys.NewMain" />
+        </activity>
+        <activity
+            android:name=".activitys.Tusho_show_card_activity"
+            android:label="@string/title_activity_tusho_show_card_activity"
+            android:parentActivityName=".activitys.Show_image_Activity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activitys.Show_image_Activity" />
         </activity>
     </application>
 

@@ -1,6 +1,5 @@
 package ecjtu.net.demon.fragment;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
@@ -8,6 +7,10 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import ecjtu.net.demon.R;
 import uk.co.senab.photoview.PhotoView;
@@ -17,18 +20,36 @@ import uk.co.senab.photoview.PhotoView;
  */
 public class Show_image_ActivityFragment extends Fragment {
 
+    private DisplayImageOptions options;
+
     public Show_image_ActivityFragment() {
+
+
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         return inflater.inflate(R.layout.fragment_show_image_, container, false);
     }
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ImageLoaderConfiguration configuration = ImageLoaderConfiguration
+                .createDefault(getActivity());
+
+        //Initialize ImageLoader with configuration.
+        ImageLoader.getInstance().init(configuration);
+
+        options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.thumb_default)
+                .showImageOnFail(R.drawable.thumb_default)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
         ViewPager viewPager = (ViewPager) getView().findViewById(R.id.tushuo_viewpager);
         TushuoImageAdapeter tushuoImageAdapeter = new TushuoImageAdapeter();
         tushuoImageAdapeter.setContent(getcontent());
@@ -65,9 +86,8 @@ public class Show_image_ActivityFragment extends Fragment {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            super.instantiateItem(container, position);
             PhotoView photoView = new PhotoView(container.getContext());
-            photoView.setImageURI(Uri.parse(urls[position]));
+            ImageLoader.getInstance().displayImage(urls[position], photoView, options);
             container.addView(photoView);
             return photoView;
         }

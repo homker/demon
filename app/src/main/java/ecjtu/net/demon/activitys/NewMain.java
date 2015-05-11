@@ -135,7 +135,6 @@ public class NewMain extends ActionBarActivity {
             @Override
             public void onStart() {
                 ToastMsg.builder.display("正在加载...", duration);
-                //Toast.makeText(main.this,"正在加载。。。",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -155,7 +154,6 @@ public class NewMain extends ActionBarActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.i("tag", "更新线程执行成功");
 
             }
 
