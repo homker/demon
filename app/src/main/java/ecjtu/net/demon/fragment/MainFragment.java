@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -42,7 +41,6 @@ public class MainFragment extends Fragment {
     private TextView upToLoad;
     private Newslistadapter newslistadapter;
     private ListView newslist;
-    private ProgressBar progressBar;
     private RefreshLayout refreshLayout = null;
     private HashMap<String, Object> content;
 
@@ -57,11 +55,8 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         newslist = (ListView) getView().findViewById(R.id.newslist);
         //初始化listView
-        setNewslist(url, null, true);
-        progressBar = (ProgressBar) getView().findViewById(R.id.progressBarCircularIndetermininate);
         refreshLayout = (RefreshLayout) getView().findViewById(R.id.fresh_layout);
 
         upToLoad = new TextView(getActivity());
@@ -79,7 +74,7 @@ public class MainFragment extends Fragment {
                 turn2Activity(webview.class, articleUrl);
             }
         });
-
+        setNewslist(url, null, true);
         initReflash(refreshLayout);
     }
 
@@ -118,12 +113,12 @@ public class MainFragment extends Fragment {
 
     private void setNewslist(String url, final String lastId, Boolean isInit) {
         final HashMap<String, Object> list = new HashMap<>();
-        final HashMap<String, Object> cachelist = new HashMap<>();
         if (lastId != null) {
             url = url + "?until=" + lastId;
         }
         Log.i("tag", "请求链接：" + url);
         final ACache newsListCache = ACache.get(getActivity());
+        if (isInit) {
         final JSONObject cache = newsListCache.getAsJSONObject("newsList");
         if (cache != null) {//判断缓存是否为空
             Log.i("tag", "我们使用了缓存~！");
@@ -132,19 +127,15 @@ public class MainFragment extends Fragment {
                 JSONArray slide_articles = slide_article.getJSONArray("articles");
                 JSONObject normal_article = cache.getJSONObject("normal_article");
                 JSONArray normal_articles = normal_article.getJSONArray("articles");
-                cachelist.put("slide_articles", jsonArray2Arraylist(slide_articles));
-                cachelist.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                list.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                list.put("normal_articles", jsonArray2Arraylist(normal_articles));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (newslistadapter == null) {
-                newslistadapter = new Newslistadapter(getActivity(), cachelist);
-                newslist.setAdapter(newslistadapter);
-            } else {
-                // newslistadapter.onDateChange(cachelist);
-            }
-            newslist.setVisibility(View.VISIBLE);
+            newslistadapter = new Newslistadapter(getActivity(), list);
+            newslist.setAdapter(newslistadapter);
         }
+        } else {
         HttpAsync.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -170,9 +161,8 @@ public class MainFragment extends Fragment {
                 }
                 Log.i("tag", "更新线程执行成功");
                 if (newslistadapter != null) {
-                    if (list != null) {
+                    Log.i("tag", "list is " + String.valueOf(list));
                         newslistadapter.onDateChange(list);
-                    }
                 } else {
                     newslistadapter = new Newslistadapter(getActivity(), list);
                     newslist.setAdapter(newslistadapter);
@@ -189,9 +179,10 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                newslist.setVisibility(View.VISIBLE);
+
             }
         });
+    }
     }
 
     /**
