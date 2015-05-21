@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,12 +15,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.adapter.tushuShowCardAdapter;
+import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.ToastMsg;
 import ecjtu.net.demon.view.pulltozoomview.PullToZoomScrollViewEx;
 
 public class Tusho_show_card_activity extends BaseActivity {
 
+    private static final String url = "http://pic.ecjtu.net/api.php/list";
+    private static final int duration = 100;
     private PullToZoomScrollViewEx scrollView;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +45,10 @@ public class Tusho_show_card_activity extends BaseActivity {
         initActionBar();
         loadViewForCode();
         scrollView = (PullToZoomScrollViewEx) findViewById(R.id.scroll_view);
-        scrollView.getPullRootView().findViewById(R.id.showImage).setOnClickListener(new View.OnClickListener() {
+        recyclerView = (RecyclerView) scrollView.getPullRootView().findViewById(R.id.profile_show_card_recyclerview);
+        recyclerView.setAdapter(new tushuShowCardAdapter(this, getContent()));
+
+        /*scrollView.getPullRootView().findViewById(R.id.showImage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -36,7 +56,7 @@ public class Tusho_show_card_activity extends BaseActivity {
                 startActivity(intent);
             }
         });
-
+*/
 
         DisplayMetrics localDisplayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(localDisplayMetrics);
@@ -44,6 +64,43 @@ public class Tusho_show_card_activity extends BaseActivity {
         int mScreenWidth = localDisplayMetrics.widthPixels;
         LinearLayout.LayoutParams localObject = new LinearLayout.LayoutParams(mScreenWidth, (int) (9.0F * (mScreenWidth / 16.0F)));
         scrollView.setHeaderLayoutParams(localObject);
+    }
+
+    private ArrayList<HashMap<String, Object>> getContent() {
+        ArrayList<HashMap<String, Object>> content = new ArrayList<>();
+        HttpAsync.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                ToastMsg.builder.display("正在加载...", duration);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                try {
+                    int count = response.getInt("count");
+                    JSONArray list = response.getJSONArray("list");
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                ToastMsg.builder.display("加载失败，请稍后重试。", duration);
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+
+            }
+        });
+        return content;
     }
 
     private void initActionBar() {
