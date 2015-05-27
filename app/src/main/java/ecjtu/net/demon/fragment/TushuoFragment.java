@@ -92,10 +92,6 @@ public class TushuoFragment extends Fragment {
 
         if (lastId != null) {
             url = url + "?before=" + lastId;
-            Log.i("TAG",url+"------------------>url");
-        }
-        else {
-            Log.i("TAG",url+"------------------>url");
         }
         final ACache tushuoListCache = ACache.get(getActivity());
         if (isInit) {
@@ -130,7 +126,6 @@ public class TushuoFragment extends Fragment {
                             JSONArray list = response.getJSONArray("list");
                             content = jsonArray2Arraylist(list);
                             adapter = new TushuoAdapter(getActivity(),content);
-                            Log.i("tag", "初始化Adapter------->");
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

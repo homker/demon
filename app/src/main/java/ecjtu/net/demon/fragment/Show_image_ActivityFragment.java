@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,11 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.util.ArrayList;
+
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.activitys.Tusho_show_card_activity;
+import ecjtu.net.demon.adapter.tushuShowCardAdapter;
 import uk.co.senab.photoview.PhotoView;
 
 /**
@@ -24,9 +29,7 @@ public class Show_image_ActivityFragment extends Fragment {
 
     public Show_image_ActivityFragment() {
 
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,29 +57,26 @@ public class Show_image_ActivityFragment extends Fragment {
         TushuoImageAdapeter tushuoImageAdapeter = new TushuoImageAdapeter();
         tushuoImageAdapeter.setContent(getcontent());
         viewPager.setAdapter(tushuoImageAdapeter);
+        viewPager.setCurrentItem(tushuShowCardAdapter.position);
     }
 
-    private String[] getcontent() {
-        String[] content = {
-                "http://h.hiphotos.baidu.com/image/pic/item/00e93901213fb80e94fdd9d634d12f2eb9389487.jpg",
-                "http://h.hiphotos.baidu.com/image/pic/item/03087bf40ad162d9651bdb1b13dfa9ec8b13cdc4.jpg",
-                "http://c.hiphotos.baidu.com/image/pic/item/91529822720e0cf305a117f60846f21fbe09aa6d.jpg"
-        };
+    private ArrayList<String> getcontent() {
+        ArrayList<String> content = Tusho_show_card_activity.urlList;
         return content;
     }
 
     public class TushuoImageAdapeter extends PagerAdapter {
 
-        private String[] urls;
+        private ArrayList<String> urls;
 
-        public void setContent(String[] urls) {
+        public void setContent(ArrayList<String> urls) {
             this.urls = urls;
         }
 
 
         @Override
         public int getCount() {
-            return urls.length;
+            return urls.size();
         }
 
         @Override
@@ -87,14 +87,13 @@ public class Show_image_ActivityFragment extends Fragment {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             PhotoView photoView = new PhotoView(container.getContext());
-            ImageLoader.getInstance().displayImage(urls[position], photoView, options);
+            ImageLoader.getInstance().displayImage(urls.get(position), photoView, options);
             container.addView(photoView);
             return photoView;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
             container.removeView((View) object);
         }
     }

@@ -32,6 +32,8 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
     private LayoutInflater layoutInflater;
     private DisplayImageOptions options;
 
+    public static int position = 0;
+
     public tushuShowCardAdapter(Context context, ArrayList<HashMap<String, Object>> content) {
         this.content = content;
         layoutInflater = LayoutInflater.from(context);
@@ -64,12 +66,12 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        Log.i("TAG","生成图说card------------");
         return new NormalTextViewHolder(layoutInflater.inflate(R.layout.show_card_item, viewGroup, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder normalTextViewHolder, int position) {
+        ((NormalTextViewHolder)normalTextViewHolder).position = position;
         ((NormalTextViewHolder) normalTextViewHolder).detail.setText((String) content.get(position).get("detail"));
         ((NormalTextViewHolder) normalTextViewHolder).image.setImageResource(R.drawable.thumb_default);
         ImageLoader.getInstance().displayImage((String) content.get(position).get("url"), ((NormalTextViewHolder) normalTextViewHolder).image, options);
@@ -96,6 +98,7 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView click;
         private TextView detail;
         private ImageView image;
+        private int position;
 
         public NormalTextViewHolder(final View itemView) {
             super(itemView);
@@ -106,14 +109,15 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
             click = (TextView) itemView.findViewById(R.id.click);
 
 
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent();
-//                    intent.setClass(itemView.getContext(), Show_image_Activity.class);
-//                    itemView.getContext().startActivity(intent);
-//                }
-//            });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tushuShowCardAdapter.position = position;
+                    Intent intent = new Intent();
+                    intent.setClass(itemView.getContext(), Show_image_Activity.class);
+                    itemView.getContext().startActivity(intent);
+                }
+            });
         }
     }
 }

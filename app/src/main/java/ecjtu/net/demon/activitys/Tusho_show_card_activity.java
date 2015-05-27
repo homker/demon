@@ -51,8 +51,9 @@ public class Tusho_show_card_activity extends BaseActivity {
     private RecyclerView recyclerView;
     private tushuShowCardAdapter adapeter;
     private FullyLinearLayoutManager linearLayoutManager;
+    ArrayList<HashMap<String, Object>> content = new ArrayList<>();
     private static String pid;
-    private LinearLayout layout;
+    public static ArrayList<String> urlList = new ArrayList<>();
 
     public static void setPid(String pid) {
         Tusho_show_card_activity.pid = pid;
@@ -64,24 +65,12 @@ public class Tusho_show_card_activity extends BaseActivity {
         setContentView(R.layout.activity_tusho_show_card_activity);
         initActionBar();
         loadViewForCode();
-        layout = (LinearLayout) scrollView.getPullRootView().findViewById(R.id.profile_show_card_layout);
         recyclerView = (RecyclerView) scrollView.getPullRootView().findViewById(R.id.profile_show_card_recyclerview);
         linearLayoutManager = new FullyLinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapeter =  new tushuShowCardAdapter(Tusho_show_card_activity.this,getContent(url));
-        //Log.i("TGA","-------viewId-------"+String.valueOf(recyclerView));
-        recyclerView.setAdapter(adapeter);
         getContent(url);
-        //Log.i("tag", "我空了么？" + String.valueOf(recyclerView));
-        /*scrollView.getPullRootView().findViewById(R.id.showImage).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(Tusho_show_card_activity.this, Show_image_Activity.class);
-                startActivity(intent);
-            }
-        });
-*/
+        adapeter =  new tushuShowCardAdapter(Tusho_show_card_activity.this,content);
+        recyclerView.setAdapter(adapeter);
 
         DisplayMetrics localDisplayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(localDisplayMetrics);
@@ -93,54 +82,51 @@ public class Tusho_show_card_activity extends BaseActivity {
     }
 
 
-
     private ArrayList<HashMap<String, Object>> getContent(String url) {
-        url = url + "/" + pid;
-        final ArrayList<HashMap<String, Object>> content = new ArrayList<>();
-        HttpAsync.get(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                super.onStart();
-                Log.i("tag", "尼玛  我开始了！！！");
-                //ToastMsg.builder.display("正在加载...", duration);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                Log.i("tag", "尼玛  chenggong！！！");
-                try {
-                    ((TextView)headView.findViewById(R.id.title)).setText(response.get("title").toString());
-                    ((TextView)headView.findViewById(R.id.author)).setText(response.get("author").toString());
-                    ((TextView)headView.findViewById(R.id.count)).setText(response.get("count").toString());
-                    ((TextView)headView.findViewById(R.id.click)).setText(response.get("click").toString());
-                    JSONArray jsonArray = response.getJSONArray("pictures");
-                    for (int i=0 ; i < jsonArray.length();i++) {
-                        HashMap<String,Object> item = new HashMap<>();
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String url = "http://pic.ecjtu.net/"+jsonObject.getString("url");
-                        item.put("url",url);
-                        item.put("detail", jsonObject.getString("detail"));
-                        content.add(item);
-                    }
-                    adapeter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        urlList.clear();
+            url = url + "/" + pid;
+            HttpAsync.get(url, new JsonHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    super.onStart();
                 }
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-                ToastMsg.builder.display("加载失败，请稍后重试。", duration);
-            }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                    try {
+                        ((TextView) headView.findViewById(R.id.title)).setText(response.get("title").toString());
+                        ((TextView) headView.findViewById(R.id.author)).setText(response.get("author").toString());
+                        ((TextView) headView.findViewById(R.id.count)).setText(response.get("count").toString());
+                        ((TextView) headView.findViewById(R.id.click)).setText(response.get("click").toString());
+                        JSONArray jsonArray = response.getJSONArray("pictures");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            HashMap<String, Object> item = new HashMap<>();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            String url = "http://pic.ecjtu.net/" + jsonObject.getString("url");
+                            urlList.add(i, url);
+                            item.put("url", url);
+                            item.put("detail", jsonObject.getString("detail"));
+                            content.add(item);
+                        }
+                        adapeter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-            @Override
-            public void onFinish() {
-                super.onFinish();
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    ToastMsg.builder.display("加载失败，请稍后重试。", duration);
+                }
 
-            }
-        });
+                @Override
+                public void onFinish() {
+                    super.onFinish();
+
+                }
+            });
         return content;
     }
 
