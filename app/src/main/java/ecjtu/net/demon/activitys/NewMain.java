@@ -60,9 +60,10 @@ public class NewMain extends ActionBarActivity {
         initUserInfo();
         //使用toolbar代替actionbar
         initActionBar();
+        initViewPager();
         //initMainFrament();
         //initViewPager();
-        getAllConetnt(mainUrl, null);
+        //getAllConetnt(mainUrl, null);
 
 //        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,test);
 //        listView.setAdapter(arrayAdapter);
@@ -108,7 +109,7 @@ public class NewMain extends ActionBarActivity {
         }
     }
 
-
+/**
     private void getAllConetnt(String url, final String lastId) {
         final HashMap<String, Object> resultlist = new HashMap<>();
         if (lastId != null) {
@@ -170,13 +171,14 @@ public class NewMain extends ActionBarActivity {
             }
         });
     }
+ **/
 
     /**
      * 将json数组变成arraylist
      *
      * @param jsonArray 输入你转换的jsonArray
      * @return 返回arraylist
-     */
+
     private ArrayList<HashMap<String, Object>> jsonArray2Arraylist(JSONArray jsonArray) {
         ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -197,6 +199,7 @@ public class NewMain extends ActionBarActivity {
         }
         return arrayList;
     }
+     **/
 
     public void slidingMenuClickListen(View view) {
         String url = null;

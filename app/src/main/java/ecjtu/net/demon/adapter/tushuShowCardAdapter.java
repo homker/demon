@@ -3,6 +3,7 @@ package ecjtu.net.demon.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public ArrayList<HashMap<String, Object>> getContent() {
-        return this.content;
+        return content;
     }
 
     @Override
@@ -63,26 +64,15 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        if (viewType == TYPE_ITEM) {
-            return new NormalTextViewHolder(layoutInflater.inflate(R.layout.show_card_item, viewGroup, false));
-        } else if (viewType == TYPE_FOOTER) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listview_footer, null);
-            view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            return new FooterViewHolder(view);
-        }
-        return null;
+        Log.i("TAG","生成图说card------------");
+        return new NormalTextViewHolder(layoutInflater.inflate(R.layout.show_card_item, viewGroup, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder normalTextViewHolder, int position) {
-        if (normalTextViewHolder instanceof NormalTextViewHolder) {
-            ((NormalTextViewHolder) normalTextViewHolder).title.setText((String) content.get(position).get("title"));
-            ((NormalTextViewHolder) normalTextViewHolder).info.setText((String) content.get(position).get("info"));
-            ((NormalTextViewHolder) normalTextViewHolder).click.setText((String) content.get(position).get("click"));
-            ((NormalTextViewHolder) normalTextViewHolder).image.setImageResource(R.drawable.thumb_default);
-            ImageLoader.getInstance().displayImage((String) content.get(position).get("image"), ((NormalTextViewHolder) normalTextViewHolder).image, options);
-
-        }
+        ((NormalTextViewHolder) normalTextViewHolder).detail.setText((String) content.get(position).get("detail"));
+        ((NormalTextViewHolder) normalTextViewHolder).image.setImageResource(R.drawable.thumb_default);
+        ImageLoader.getInstance().displayImage((String) content.get(position).get("url"), ((NormalTextViewHolder) normalTextViewHolder).image, options);
     }
 
 
@@ -102,26 +92,28 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
     public class NormalTextViewHolder extends RecyclerView.ViewHolder {
 
         private TextView title;
-        private TextView info;
+        private TextView time;
         private TextView click;
+        private TextView detail;
         private ImageView image;
 
-        public NormalTextViewHolder(View itemView) {
+        public NormalTextViewHolder(final View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.title);
-            info = (TextView) itemView.findViewById(R.id.info);
-            click = (TextView) itemView.findViewById(R.id.click);
+            detail = (TextView) itemView.findViewById(R.id.info);
             image = (ImageView) itemView.findViewById(R.id.tushuo_image);
+            title = (TextView) itemView.findViewById(R.id.title);
+            time = (TextView) itemView.findViewById(R.id.time);
+            click = (TextView) itemView.findViewById(R.id.click);
 
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setClass(itemView.getContext(), Show_image_Activity.class);
-                    itemView.getContext().startActivity(intent);
-                }
-            });
+//            itemView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent();
+//                    intent.setClass(itemView.getContext(), Show_image_Activity.class);
+//                    itemView.getContext().startActivity(intent);
+//                }
+//            });
         }
     }
 }

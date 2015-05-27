@@ -1,10 +1,13 @@
 package ecjtu.net.demon.activitys;
 
+import android.annotation.TargetApi;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -13,7 +16,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -25,18 +32,31 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ecjtu.net.demon.LayoutManager.FullyLinearLayoutManager;
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.adapter.TushuoAdapter;
+import ecjtu.net.demon.adapter.TushuoShowCardAdapter;
 import ecjtu.net.demon.adapter.tushuShowCardAdapter;
+import ecjtu.net.demon.fragment.Show_image_ActivityFragment;
+import ecjtu.net.demon.fragment.TushuoFragment;
 import ecjtu.net.demon.utils.HttpAsync;
 import ecjtu.net.demon.utils.ToastMsg;
 import ecjtu.net.demon.view.pulltozoomview.PullToZoomScrollViewEx;
 
 public class Tusho_show_card_activity extends BaseActivity {
 
-    private static final String url = "http://pic.ecjtu.net/api.php/list";
+    private static final String url = "http://pic.ecjtu.net/api.php/post";
     private static final int duration = 100;
     private PullToZoomScrollViewEx scrollView;
     private RecyclerView recyclerView;
+    private tushuShowCardAdapter adapeter;
+    private FullyLinearLayoutManager linearLayoutManager;
+    private static String pid;
+    private LinearLayout layout;
+
+    public static void setPid(String pid) {
+        Tusho_show_card_activity.pid = pid;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +64,15 @@ public class Tusho_show_card_activity extends BaseActivity {
         setContentView(R.layout.activity_tusho_show_card_activity);
         initActionBar();
         loadViewForCode();
-        scrollView = (PullToZoomScrollViewEx) findViewById(R.id.scroll_view);
+        layout = (LinearLayout) scrollView.getPullRootView().findViewById(R.id.profile_show_card_layout);
         recyclerView = (RecyclerView) scrollView.getPullRootView().findViewById(R.id.profile_show_card_recyclerview);
-        recyclerView.setAdapter(new tushuShowCardAdapter(this, getContent()));
-
+        linearLayoutManager = new FullyLinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        adapeter =  new tushuShowCardAdapter(Tusho_show_card_activity.this,getContent(url));
+        //Log.i("TGA","-------viewId-------"+String.valueOf(recyclerView));
+        recyclerView.setAdapter(adapeter);
+        getContent(url);
+        //Log.i("tag", "我空了么？" + String.valueOf(recyclerView));
         /*scrollView.getPullRootView().findViewById(R.id.showImage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,25 +89,41 @@ public class Tusho_show_card_activity extends BaseActivity {
         int mScreenWidth = localDisplayMetrics.widthPixels;
         LinearLayout.LayoutParams localObject = new LinearLayout.LayoutParams(mScreenWidth, (int) (9.0F * (mScreenWidth / 16.0F)));
         scrollView.setHeaderLayoutParams(localObject);
+
     }
 
-    private ArrayList<HashMap<String, Object>> getContent() {
-        ArrayList<HashMap<String, Object>> content = new ArrayList<>();
+
+
+    private ArrayList<HashMap<String, Object>> getContent(String url) {
+        url = url + "/" + pid;
+        final ArrayList<HashMap<String, Object>> content = new ArrayList<>();
         HttpAsync.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 super.onStart();
-                ToastMsg.builder.display("正在加载...", duration);
+                Log.i("tag", "尼玛  我开始了！！！");
+                //ToastMsg.builder.display("正在加载...", duration);
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
+                Log.i("tag", "尼玛  chenggong！！！");
                 try {
-                    int count = response.getInt("count");
-                    JSONArray list = response.getJSONArray("list");
-
-
+                    ((TextView)headView.findViewById(R.id.title)).setText(response.get("title").toString());
+                    ((TextView)headView.findViewById(R.id.author)).setText(response.get("author").toString());
+                    ((TextView)headView.findViewById(R.id.count)).setText(response.get("count").toString());
+                    ((TextView)headView.findViewById(R.id.click)).setText(response.get("click").toString());
+                    JSONArray jsonArray = response.getJSONArray("pictures");
+                    for (int i=0 ; i < jsonArray.length();i++) {
+                        HashMap<String,Object> item = new HashMap<>();
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String url = "http://pic.ecjtu.net/"+jsonObject.getString("url");
+                        item.put("url",url);
+                        item.put("detail", jsonObject.getString("detail"));
+                        content.add(item);
+                    }
+                    adapeter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -120,6 +161,7 @@ public class Tusho_show_card_activity extends BaseActivity {
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -149,11 +191,15 @@ public class Tusho_show_card_activity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private View headView;
+    private View zoomView;
+    private View contentView;
+
     private void loadViewForCode() {
-        PullToZoomScrollViewEx scrollView = (PullToZoomScrollViewEx) findViewById(R.id.scroll_view);
-        View headView = LayoutInflater.from(this).inflate(R.layout.profile_head_view, null, false);
-        View zoomView = LayoutInflater.from(this).inflate(R.layout.profile_zoom_view, null, false);
-        View contentView = LayoutInflater.from(this).inflate(R.layout.profile_content_view, null, false);
+        scrollView = (PullToZoomScrollViewEx) findViewById(R.id.scroll_view);
+        headView = LayoutInflater.from(this).inflate(R.layout.profile_head_view, null, false);
+        zoomView = LayoutInflater.from(this).inflate(R.layout.profile_zoom_view, null, false);
+        contentView = LayoutInflater.from(this).inflate(R.layout.profile_content_view, null, false);
         scrollView.setHeaderView(headView);
         scrollView.setZoomView(zoomView);
         scrollView.setScrollContentView(contentView);

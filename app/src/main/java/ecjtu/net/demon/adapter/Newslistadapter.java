@@ -102,6 +102,13 @@ public class Newslistadapter extends BaseAdapter {
 
     }
 
+    public ArrayList<HashMap<String,Object>> getListItem() {
+        return listItem;
+    }
+    public ArrayList<HashMap<String,Object>> getSlide_articles() {
+        return slide_articles;
+    }
+
     @Override
     public int getCount() {
         return listItem.size() + 1;

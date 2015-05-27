@@ -3,6 +3,7 @@ package ecjtu.net.demon.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +65,9 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        Log.i("TAG","生成图说card------------");
         if (viewType == TYPE_ITEM) {
-            return new NormalTextViewHolder(layoutInflater.inflate(R.layout.tushuo_item, viewGroup, false), context);
+            return new NormalTextViewHolder(layoutInflater.inflate(R.layout.tushuo_item, viewGroup, false), this.context);
         } else if (viewType == TYPE_FOOTER) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listview_footer, null);
             view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -77,12 +79,13 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder normalTextViewHolder, int position) {
         if (normalTextViewHolder instanceof NormalTextViewHolder) {
-            ((NormalTextViewHolder) normalTextViewHolder).title.setText((String) content.get(position).get("title"));
-            ((NormalTextViewHolder) normalTextViewHolder).info.setText((String) content.get(position).get("info"));
-            ((NormalTextViewHolder) normalTextViewHolder).click.setText((String) content.get(position).get("click"));
-            ((NormalTextViewHolder) normalTextViewHolder).time.setText((String) content.get(position).get("time"));
-            ((NormalTextViewHolder) normalTextViewHolder).imageView.setImageResource(R.drawable.thumb_default);
-            ImageLoader.getInstance().displayImage((String) content.get(position).get("image"), ((NormalTextViewHolder) normalTextViewHolder).imageView, options);
+            ((NormalTextViewHolder) normalTextViewHolder).pid.setText((String) content.get(position).get("pid"));
+                ((NormalTextViewHolder) normalTextViewHolder).title.setText((String) content.get(position).get("title"));
+                ((NormalTextViewHolder) normalTextViewHolder).info.setText((String) content.get(position).get("info"));
+                ((NormalTextViewHolder) normalTextViewHolder).click.setText((String) content.get(position).get("click"));
+                ((NormalTextViewHolder) normalTextViewHolder).time.setText((String) content.get(position).get("time"));
+                ((NormalTextViewHolder) normalTextViewHolder).imageView.setImageResource(R.drawable.thumb_default);
+                ImageLoader.getInstance().displayImage((String) content.get(position).get("image"), ((NormalTextViewHolder) normalTextViewHolder).imageView, options);
         }
     }
 
@@ -107,23 +110,26 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         private TextView click;
         private TextView time;
         private ImageView imageView;
+        private TextView pid;
 
-        public NormalTextViewHolder(View itemView, final Context context) {
+        public NormalTextViewHolder(final View itemView, final Context context) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
             info = (TextView) itemView.findViewById(R.id.info);
             click = (TextView) itemView.findViewById(R.id.click);
             time = (TextView) itemView.findViewById(R.id.time);
             imageView = (ImageView) itemView.findViewById(R.id.image);
+            pid = new TextView(context);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setClass(context, Tusho_show_card_activity.class);
+                    Tusho_show_card_activity.setPid(pid.getText().toString());
+                    Intent intent = new Intent(context, Tusho_show_card_activity.class);
                     context.startActivity(intent);
                 }
             });
         }
     }
+
 }

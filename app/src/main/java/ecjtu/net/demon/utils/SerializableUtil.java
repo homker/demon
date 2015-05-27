@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -74,12 +75,11 @@ public class SerializableUtil {
         ByteArrayInputStream bais = new ByteArrayInputStream(mByte);
         ObjectInputStream ois = new ObjectInputStream(bais);
 
-        try {
-            return ois.readObject();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+            try {
+                return ois.readObject();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         return null;
 
     }

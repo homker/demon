@@ -84,6 +84,8 @@ public class MainFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                newslistadapter.getListItem().clear();
+                newslistadapter.getSlide_articles().clear();
                 setNewslist(url, null, false);
             }
         });
@@ -119,22 +121,71 @@ public class MainFragment extends Fragment {
         Log.i("tag", "请求链接：" + url);
         final ACache newsListCache = ACache.get(getActivity());
         if (isInit) {
-        final JSONObject cache = newsListCache.getAsJSONObject("newsList");
-        if (cache != null) {//判断缓存是否为空
-            Log.i("tag", "我们使用了缓存~！");
-            try {
-                JSONObject slide_article = cache.getJSONObject("slide_article");
-                JSONArray slide_articles = slide_article.getJSONArray("articles");
-                JSONObject normal_article = cache.getJSONObject("normal_article");
-                JSONArray normal_articles = normal_article.getJSONArray("articles");
-                list.put("slide_articles", jsonArray2Arraylist(slide_articles));
-                list.put("normal_articles", jsonArray2Arraylist(normal_articles));
-            } catch (JSONException e) {
-                e.printStackTrace();
+            final JSONObject cache = newsListCache.getAsJSONObject("newsList");
+            if (cache != null) {//判断缓存是否为空
+                Log.i("tag", "我们使用了缓存~！");
+                try {
+                    JSONObject slide_article = cache.getJSONObject("slide_article");
+                    JSONArray slide_articles = slide_article.getJSONArray("articles");
+                    JSONObject normal_article = cache.getJSONObject("normal_article");
+                    JSONArray normal_articles = normal_article.getJSONArray("articles");
+                    list.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                    list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                newslistadapter = new Newslistadapter(getActivity(), list);
+                newslist.setAdapter(newslistadapter);
             }
-            newslistadapter = new Newslistadapter(getActivity(), list);
-            newslist.setAdapter(newslistadapter);
-        }
+            if (cache == null) {
+                HttpAsync.get(url, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onStart() {
+                        ToastMsg.builder.display("正在加载...", duration);
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        super.onSuccess(statusCode, headers, response);
+                        if (lastId == null) {//只缓存最新的内容列表
+                            newsListCache.remove("newsList");
+                            newsListCache.put("newsList", response, 7 * ACache.TIME_DAY);
+                        }
+                        try {
+                            JSONObject slide_article = response.getJSONObject("slide_article");
+                            JSONArray slide_articles = slide_article.getJSONArray("articles");
+                            JSONObject normal_article = response.getJSONObject("normal_article");
+                            JSONArray normal_articles = normal_article.getJSONArray("articles");
+                            list.put("slide_articles", jsonArray2Arraylist(slide_articles));
+                            list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.i("tag", "更新线程执行成功");
+                        if (newslistadapter != null) {
+                            Log.i("tag", "list is " + String.valueOf(list));
+                            newslistadapter.onDateChange(list);
+                        } else {
+                            newslistadapter = new Newslistadapter(getActivity(), list);
+                            newslist.setAdapter(newslistadapter);
+                        }
+                        refreshLayout.setLoading(false);
+                        refreshLayout.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+
+                });
+            }
         } else {
         HttpAsync.get(url, new JsonHttpResponseHandler() {
             @Override
@@ -162,7 +213,7 @@ public class MainFragment extends Fragment {
                 Log.i("tag", "更新线程执行成功");
                 if (newslistadapter != null) {
                     Log.i("tag", "list is " + String.valueOf(list));
-                        newslistadapter.onDateChange(list);
+                    newslistadapter.onDateChange(list);
                 } else {
                     newslistadapter = new Newslistadapter(getActivity(), list);
                     newslist.setAdapter(newslistadapter);
@@ -181,6 +232,7 @@ public class MainFragment extends Fragment {
             public void onFinish() {
 
             }
+
         });
     }
     }

@@ -1,8 +1,10 @@
 package ecjtu.net.demon.activitys;
 
+import android.annotation.TargetApi;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
@@ -48,6 +50,7 @@ public class Show_image_Activity extends BaseActivity {
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
