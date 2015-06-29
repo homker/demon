@@ -8,12 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ecjtu.net.demon.R;
 import ecjtu.net.demon.activitys.Tusho_show_card_activity;
@@ -26,10 +28,10 @@ import uk.co.senab.photoview.PhotoView;
 public class Show_image_ActivityFragment extends Fragment {
 
     private DisplayImageOptions options;
-
-    public Show_image_ActivityFragment() {
-
-    }
+    public ArrayList<String> content;
+    public TushuoImageAdapeter tushuoImageAdapeter;
+    public static String[] uri = new String[30];
+    public static ViewPager viewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,11 +43,12 @@ public class Show_image_ActivityFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-                .createDefault(getActivity());
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+                getActivity())
+                .diskCacheFileNameGenerator(null)
+                .build();
 
-        //Initialize ImageLoader with configuration.
-        ImageLoader.getInstance().init(configuration);
+        ImageLoader.getInstance().init(config);
 
         options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.thumb_default)
@@ -53,17 +56,19 @@ public class Show_image_ActivityFragment extends Fragment {
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
-        ViewPager viewPager = (ViewPager) getView().findViewById(R.id.tushuo_viewpager);
-        TushuoImageAdapeter tushuoImageAdapeter = new TushuoImageAdapeter();
+        viewPager = (ViewPager) getView().findViewById(R.id.tushuo_viewpager);
+        tushuoImageAdapeter = new TushuoImageAdapeter();
         tushuoImageAdapeter.setContent(getcontent());
         viewPager.setAdapter(tushuoImageAdapeter);
         viewPager.setCurrentItem(tushuShowCardAdapter.position);
     }
 
+
     private ArrayList<String> getcontent() {
-        ArrayList<String> content = Tusho_show_card_activity.urlList;
+        content = Tusho_show_card_activity.urlList;
         return content;
     }
+
 
     public class TushuoImageAdapeter extends PagerAdapter {
 
@@ -88,6 +93,7 @@ public class Show_image_ActivityFragment extends Fragment {
         public Object instantiateItem(ViewGroup container, int position) {
             PhotoView photoView = new PhotoView(container.getContext());
             ImageLoader.getInstance().displayImage(urls.get(position), photoView, options);
+            uri[position] = ImageLoader.getInstance().getDiskCache().get(urls.get(position)).getPath();
             container.addView(photoView);
             return photoView;
         }

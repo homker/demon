@@ -2,6 +2,10 @@ package ecjtu.net.demon.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,11 +18,17 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import ecjtu.net.demon.R;
 import ecjtu.net.demon.activitys.Show_image_Activity;
+import ecjtu.net.demon.activitys.Tusho_show_card_activity;
 
 /**
  * Created by homker on 2015/5/21.
@@ -29,6 +39,7 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = 1;
     private ArrayList<HashMap<String, Object>> content = new ArrayList<>();
+    private Context context;
     private LayoutInflater layoutInflater;
     private DisplayImageOptions options;
 
@@ -39,7 +50,6 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
         layoutInflater = LayoutInflater.from(context);
         ImageLoaderConfiguration configuration = ImageLoaderConfiguration
                 .createDefault(context);
-
         //Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(configuration);
 
@@ -49,6 +59,7 @@ public class tushuShowCardAdapter extends RecyclerView.Adapter<RecyclerView.View
                 .cacheInMemory(false)
                 .cacheOnDisk(true)
                 .build();
+
     }
 
     public ArrayList<HashMap<String, Object>> getContent() {

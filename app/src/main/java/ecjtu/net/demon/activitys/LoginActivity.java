@@ -322,7 +322,7 @@ public class LoginActivity extends BaseActivity implements LoaderCallbacks<Curso
 
             if (success) {
                 Intent intent = new Intent();
-                intent.setClass(LoginActivity.this, main.class);
+                intent.setClass(LoginActivity.this, Setting.class);
                 startActivity(intent);
                 finish();
             } else {

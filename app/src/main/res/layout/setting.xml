@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/bg"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     >
 
+    <include layout="@layout/tool_bar" />
+
+    <LinearLayout
+        android:background="@color/bg"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <ecjtu.net.demon.view.CycleImageView
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -52,5 +58,6 @@
         android:text="退出登录"
         android:id="@+id/exit"
         android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 
 </LinearLayout>

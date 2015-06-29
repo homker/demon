@@ -125,6 +125,7 @@ public class TushuoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 @Override
                 public void onClick(View v) {
                     Tusho_show_card_activity.setPid(pid.getText().toString());
+                    Tusho_show_card_activity.zoomImage = imageView.getDrawable();
                     Intent intent = new Intent(context, Tusho_show_card_activity.class);
                     context.startActivity(intent);
                 }

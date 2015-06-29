@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-/**
- * Created by 圣麟 on 2015/5/27.
- */
+
 public class FullyLinearLayoutManager extends LinearLayoutManager {
     private int[] mMeasuredDimension = new int[2];
 
@@ -73,7 +71,7 @@ public class FullyLinearLayoutManager extends LinearLayoutManager {
     private void measureScrapChild(RecyclerView.Recycler recycler, int position, int widthSpec,
                                    int heightSpec, int[] measuredDimension) {
         try {
-            View view = recycler.getViewForPosition(0);//fix 动态添加时报IndexOutOfBoundsException
+            View view = recycler.getViewForPosition(0);
 
             if (view != null) {
                 RecyclerView.LayoutParams p = (RecyclerView.LayoutParams) view.getLayoutParams();

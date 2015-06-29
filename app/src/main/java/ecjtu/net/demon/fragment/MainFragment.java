@@ -3,7 +3,6 @@ package ecjtu.net.demon.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -42,10 +41,10 @@ public class MainFragment extends Fragment {
     private Newslistadapter newslistadapter;
     private ListView newslist;
     private RefreshLayout refreshLayout = null;
-    private HashMap<String, Object> content;
+    private HashMap<String, Object> list = new HashMap<>();
+    private boolean isbottom;
 
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -55,6 +54,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        isbottom = false;
         newslist = (ListView) getView().findViewById(R.id.newslist);
         //初始化listView
         refreshLayout = (RefreshLayout) getView().findViewById(R.id.fresh_layout);
@@ -74,7 +74,10 @@ public class MainFragment extends Fragment {
                 turn2Activity(webview.class, articleUrl);
             }
         });
-        setNewslist(url, null, true);
+
+        newslistadapter = new Newslistadapter(getActivity(),list);
+        newslist.setAdapter(newslistadapter);
+        setNewslist(url, null, true, false);
         initReflash(refreshLayout);
     }
 
@@ -84,20 +87,18 @@ public class MainFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                newslistadapter.getListItem().clear();
-                newslistadapter.getSlide_articles().clear();
-                setNewslist(url, null, false);
+                setNewslist(url, null, false,true);
             }
         });
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
                 newslist.removeFooterView(upToLoad);
-                Log.i("tag", "the count is" + newslist.getCount());
-                HashMap<String, Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem((newslist.getCount() - 3));
-                String articleId = String.valueOf(hashMap.get("id"));
-                Log.i("tag", "the articleId is " + articleId);
-                setNewslist(url, articleId, false);
+                    Log.i("tag", "the count is" + newslist.getCount());
+                    HashMap<String, Object> hashMap = (HashMap<String, Object>) newslist.getAdapter().getItem(newslist.getCount() - 3);
+                    String articleId = String.valueOf(hashMap.get("id"));
+                    Log.i("tag", "the articleId is " + articleId);
+                    setNewslist(url, articleId, false, false);
             }
         });
     }
@@ -113,8 +114,8 @@ public class MainFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void setNewslist(String url, final String lastId, Boolean isInit) {
-        final HashMap<String, Object> list = new HashMap<>();
+    private HashMap<String,Object> setNewslist(String url, final String lastId,final boolean isInit, final boolean isRefresh) {
+        isbottom = false;
         if (lastId != null) {
             url = url + "?until=" + lastId;
         }
@@ -134,8 +135,8 @@ public class MainFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                newslistadapter = new Newslistadapter(getActivity(), list);
-                newslist.setAdapter(newslistadapter);
+                newslistadapter.getContent().putAll(list);
+                newslistadapter.notifyDataSetChanged();
             }
             if (cache == null) {
                 HttpAsync.get(url, new JsonHttpResponseHandler() {
@@ -162,15 +163,8 @@ public class MainFragment extends Fragment {
                             e.printStackTrace();
                         }
                         Log.i("tag", "更新线程执行成功");
-                        if (newslistadapter != null) {
-                            Log.i("tag", "list is " + String.valueOf(list));
-                            newslistadapter.onDateChange(list);
-                        } else {
-                            newslistadapter = new Newslistadapter(getActivity(), list);
-                            newslist.setAdapter(newslistadapter);
-                        }
-                        refreshLayout.setLoading(false);
-                        refreshLayout.setRefreshing(false);
+                        newslistadapter.getContent().putAll(list);
+                        newslistadapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -205,27 +199,53 @@ public class MainFragment extends Fragment {
                     JSONArray slide_articles = slide_article.getJSONArray("articles");
                     JSONObject normal_article = response.getJSONObject("normal_article");
                     JSONArray normal_articles = normal_article.getJSONArray("articles");
-                    list.put("slide_articles", jsonArray2Arraylist(slide_articles));
-                    list.put("normal_articles", jsonArray2Arraylist(normal_articles));
+                    if (normal_article.getInt("count") == 0) {
+                        isbottom = true;
+                        ToastMsg.builder.display("到底啦~！", duration);
+                    }
+                    else {
+                        if(isRefresh) {
+                            if (newslistadapter.getListItem() != null) {
+                                newslistadapter.getListItem().clear();
+                            }
+                            if (newslistadapter.getSlide_articles() != null) {
+                                newslistadapter.getSlide_articles().clear();
+                                newslistadapter.getSlide_articles().addAll(jsonArray2Arraylist(slide_articles));
+                            } else {
+                                newslistadapter.getSlide_articles().addAll(jsonArray2Arraylist(slide_articles));
+                            }
+                        }
+                        newslistadapter.getListItem().addAll(jsonArray2Arraylist(normal_articles));
+                        list.put("slide_articles", newslistadapter.getSlide_articles());
+                        list.put("normal_articles", newslistadapter.getListItem());
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 Log.i("tag", "更新线程执行成功");
-                if (newslistadapter != null) {
+                if (!isRefresh) {
                     Log.i("tag", "list is " + String.valueOf(list));
-                    newslistadapter.onDateChange(list);
+                    if(!isbottom) {
+                        newslistadapter.getContent().putAll(list);
+                        newslistadapter.notifyDataSetChanged();
+                    }
+                    refreshLayout.setLoading(false);
                 } else {
-                    newslistadapter = new Newslistadapter(getActivity(), list);
-                    newslist.setAdapter(newslistadapter);
+                    newslistadapter.getContent().putAll(list);
+                    newslistadapter.notifyDataSetChanged();
+                    refreshLayout.setRefreshing(false);
                 }
-                refreshLayout.setLoading(false);
-                refreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
+                if(!isRefresh) {
+                    refreshLayout.setLoading(false);
+                } else {
+                    refreshLayout.setRefreshing(false);
+                }
             }
 
             @Override
@@ -235,6 +255,7 @@ public class MainFragment extends Fragment {
 
         });
     }
+        return list;
     }
 
     /**
@@ -245,22 +266,24 @@ public class MainFragment extends Fragment {
      */
     private ArrayList<HashMap<String, Object>> jsonArray2Arraylist(JSONArray jsonArray) {
         ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            try {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                HashMap<String, Object> item = new HashMap<>();
-                item.put("id", jsonObject.getInt("id"));
-                item.put("title", jsonObject.getString("title"));
-                item.put("updated_at", jsonObject.getString("updated_at"));
-                item.put("info", jsonObject.getString("info"));
-                item.put("click", jsonObject.getString("click"));
-                String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
-                item.put("thumb", imageUrl);
-                arrayList.add(item);
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    HashMap<String, Object> item = new HashMap<>();
+                    item.put("id", jsonObject.getInt("id"));
+                    item.put("title", jsonObject.getString("title"));
+                    item.put("updated_at", jsonObject.getString("updated_at"));
+                    item.put("info", jsonObject.getString("info"));
+                    item.put("click", jsonObject.getString("click"));
+                    String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
+                    item.put("thumb", imageUrl);
+                    arrayList.add(item);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+
         return arrayList;
     }
 

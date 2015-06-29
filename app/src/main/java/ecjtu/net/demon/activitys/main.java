@@ -453,7 +453,7 @@ public class main extends InstrumentedActivity {
                 newslistadapter = new Newslistadapter(main.this, list);
                 newslist.setAdapter(newslistadapter);
             } else {
-                newslistadapter.onDateChange(list);
+            //    newslistadapter.onDateChange(list);
             }
             progressBarCircularIndeterminate.setVisibility(View.GONE);//影藏进度条，显示listview
             newslist.setVisibility(View.VISIBLE);
@@ -484,7 +484,7 @@ public class main extends InstrumentedActivity {
                 }
                 Log.i("tag", "更新线程执行成功");
                 if (newslistadapter != null) {
-                    newslistadapter.onDateChange(list);
+                   // newslistadapter.onDateChange(list);
                 } else {
                     newslistadapter = new Newslistadapter(main.this, list);
                     newslist.setAdapter(newslistadapter);

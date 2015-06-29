@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class MainAdapter extends FragmentPagerAdapter {
 
-    private String[] titles = {"日新新闻", "学院专题", "社团动态"};
+    private String[] titles = {"日新新闻", "学院专题", "日新图说"};
     private ArrayList<Fragment> fragments = new ArrayList<>();
     private FragmentTransaction mCurTransaction = null;
     private FragmentManager mFragmentManager;

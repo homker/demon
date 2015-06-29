@@ -1,13 +1,26 @@
 package ecjtu.net.demon.activitys;
 
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -23,9 +37,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cn.jpush.android.api.JPushInterface;
+import ecjtu.net.demon.DownloadService;
 import ecjtu.net.demon.R;
 import ecjtu.net.demon.adapter.MainAdapter;
 import ecjtu.net.demon.fragment.CollageNificationFragment;
@@ -33,6 +50,7 @@ import ecjtu.net.demon.fragment.MainFragment;
 import ecjtu.net.demon.fragment.TushuoFragment;
 import ecjtu.net.demon.utils.ACache;
 import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.HttpHelper;
 import ecjtu.net.demon.utils.SharedPreUtil;
 import ecjtu.net.demon.utils.ToastMsg;
 import ecjtu.net.demon.utils.UserEntity;
@@ -41,26 +59,45 @@ import ecjtu.net.demon.view.SlidingTabLayout;
 
 public class NewMain extends ActionBarActivity {
 
-    private static final int duration = 300;
-    private static final String mainUrl = "http://app.ecjtu.net/api/v1/index";
     private String studentID;
     private String userName;
     private String headImage;
     private SlidingTabLayout tab;
     private ViewPager pager;
+    private DrawerLayout drawerLayout;
+    private View drawer;
+    private String VersionUrl = "http://app.ecjtu.net/api/v1/version";
+    private int duration = 300;
+    private DownLoadServiceConnect downLoadServiceConnect;
+    private DownLoadReceiver downLoadReceiver;
+    private DownloadService downLoadService;
+    private boolean isDownLoad = false;
+    private String md5 = null;
+    private String mSavePath;
+    private static Fragment mainFragment;
+    private static Fragment collageNificationFragment;
+    private static Fragment tushoFragment;
+    private final static String apkUrl = "http://app.ecjtu.net/download";
+    private final static String rxApk = "rixin.apk";
+
+
+    public static void initFragment() {
+        mainFragment = new MainFragment();
+        collageNificationFragment = new CollageNificationFragment();
+        tushoFragment = new TushuoFragment();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreUtil.initSharedPreference(getApplicationContext());
         View main_view = LayoutInflater.from(this).inflate(R.layout.drawlayout, null);
         main_view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         setContentView(main_view);
-        //出事化用户信息
-        initUserInfo();
         //使用toolbar代替actionbar
+        initFragment();
         initActionBar();
         initViewPager();
+        checkVersionAsync();
         //initMainFrament();
         //initViewPager();
         //getAllConetnt(mainUrl, null);
@@ -68,6 +105,12 @@ public class NewMain extends ActionBarActivity {
 //        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,test);
 //        listView.setAdapter(arrayAdapter);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initUserInfo();
     }
 
     private void findView() {
@@ -79,9 +122,9 @@ public class NewMain extends ActionBarActivity {
     private void initViewPager() {
         findView();
         ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(new MainFragment());
-        fragments.add(new CollageNificationFragment());
-        fragments.add(new TushuoFragment());
+        fragments.add(mainFragment);
+        fragments.add(collageNificationFragment);
+        fragments.add(tushoFragment);
         MainAdapter mainAdapter = new MainAdapter(getSupportFragmentManager(), fragments);
         pager.setAdapter(mainAdapter);
         pager.setOffscreenPageLimit(fragments.size());
@@ -107,103 +150,15 @@ public class NewMain extends ActionBarActivity {
             userName = userEntity.getUserName();
             headImage = userEntity.getHeadImage();
         }
+        else {
+            studentID = null;
+        }
     }
 
-/**
-    private void getAllConetnt(String url, final String lastId) {
-        final HashMap<String, Object> resultlist = new HashMap<>();
-        if (lastId != null) {
-            url = url + "?until=" + lastId;
-        }
-        Log.i("tag", "请求链接：" + url);
-        final ACache newsListCache = ACache.get(this);
-        JSONObject cache = newsListCache.getAsJSONObject("newsList");
-        if (cache != null) {//判断缓存是否为空
-            Log.i("tag", "我们使用了缓存~！");
-            try {
-                JSONObject slide_article = cache.getJSONObject("slide_article");
-                JSONArray slide_articles = slide_article.getJSONArray("articles");
-                JSONObject normal_article = cache.getJSONObject("normal_article");
-                JSONArray normal_articles = normal_article.getJSONArray("articles");
-                resultlist.put("slide_articles", jsonArray2Arraylist(slide_articles));
-                resultlist.put("normal_articles", jsonArray2Arraylist(normal_articles));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            initViewPager();
-        }
-        HttpAsync.get(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                ToastMsg.builder.display("正在加载...", duration);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                if (lastId == null) {//只缓存最新的内容列表
-                    newsListCache.remove("newsList");
-                    newsListCache.put("newsList", response, 7 * ACache.TIME_DAY);
-                }
-                try {
-                    JSONObject slide_article = response.getJSONObject("slide_article");
-                    JSONArray slide_articles = slide_article.getJSONArray("articles");
-                    JSONObject normal_article = response.getJSONObject("normal_article");
-                    JSONArray normal_articles = normal_article.getJSONArray("articles");
-                    resultlist.put("slide_articles", jsonArray2Arraylist(slide_articles));
-                    resultlist.put("normal_articles", jsonArray2Arraylist(normal_articles));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-                ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
-                //Toast.makeText(main.this,"网络环境好像不是很好呀~！",Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                initViewPager();
-            }
-        });
-    }
- **/
-
-    /**
-     * 将json数组变成arraylist
-     *
-     * @param jsonArray 输入你转换的jsonArray
-     * @return 返回arraylist
-
-    private ArrayList<HashMap<String, Object>> jsonArray2Arraylist(JSONArray jsonArray) {
-        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            try {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                HashMap<String, Object> item = new HashMap<>();
-                item.put("id", jsonObject.getInt("id"));
-                item.put("title", jsonObject.getString("title"));
-                item.put("updated_at", jsonObject.getString("updated_at"));
-                item.put("info", jsonObject.getString("info"));
-                item.put("click", jsonObject.getString("click"));
-                String imageUrl = "http://app.ecjtu.net" + jsonObject.getString("thumb");
-                item.put("thumb", imageUrl);
-                arrayList.add(item);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return arrayList;
-    }
-     **/
 
     public void slidingMenuClickListen(View view) {
         String url = null;
-        if (studentID != null) {
+        if (!TextUtils.isEmpty(studentID)) {
             switch (view.getId()) {
                 case R.id.score:
                     url = "http://score.ecjtu.net/";
@@ -227,7 +182,7 @@ public class NewMain extends ActionBarActivity {
                 */
             }
             if (url != null) {
-                turn2ActivityWithUrl(webview.class, url);
+                turn2ActivityWithUrl(ContentWebView.class, url);
             }
         } else {
             turn2ActivityWithUrl(LoginActivity.class, null);
@@ -249,8 +204,9 @@ public class NewMain extends ActionBarActivity {
 
     private void initActionBar() {
         setContentView(R.layout.activity_new_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.DrawLayout);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        drawerLayout = (DrawerLayout) findViewById(R.id.DrawLayout);
+        drawer = findViewById(R.id.drawer);
         toolbar.setTitle("首页");
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         setSupportActionBar(toolbar);
@@ -261,16 +217,27 @@ public class NewMain extends ActionBarActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                toolbar.setTitle("花椒助手");
+                invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
+        super.onDrawerClosed(drawerView);
+        toolbar.setTitle("首页");
+        invalidateOptionsMenu();
+    }
+};
 
-        actionBarDrawerToggle.syncState();
+actionBarDrawerToggle.syncState();
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        }
+
+@Override
+public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isDrawerOpen = drawerLayout.isDrawerOpen(drawer);
+        menu.findItem(R.id.searchView).setVisible(!isDrawerOpen);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -288,10 +255,153 @@ public class NewMain extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void showNoticeDialog()
+    {
+        // 构造对话框
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.soft_update_title);
+        builder.setMessage(R.string.soft_update_info);
+        // 更新
+        builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+                // 显示下载对话框
+                if (!TextUtils.isEmpty(studentID)) {
+                    turn2ActivityWithUrl(Setting.class,null);
+                } else {
+                    turn2ActivityWithUrl(LoginActivity.class,null);
+                }
+                ToastMsg.builder.display("更新过程中会比较卡（正在努力优化中），请稍等片刻~~", duration);
+                initService();
+            }
+        });
+        // 稍后更新
+        builder.setNegativeButton(R.string.soft_update_later, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog noticeDialog = builder.create();
+        noticeDialog.show();
+    }
+
+    private void checkVersionAsync(){
+        HttpAsync.get(VersionUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                Log.i("tag", "it start");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    int versionCode = response.getInt("version_code");
+                    md5 = response.getString("md5");
+                    if (versionCode > getVersionCode()) {
+                        Log.i("tag", "需要更新");
+                        showNoticeDialog();
+                    } else {
+                        Log.i("tag", "我们不需要更新");
+                        ToastMsg.builder.display("已是最新版本，无需更新", duration);
+                        //Toast.makeText(Setting.this,"已是最新版本，无需更新",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                ToastMsg.builder.display("网络请求失败", duration);
+                //Toast.makeText(Setting.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+    }
+    private int getVersionCode() throws Exception{
+        //获取packagemanager的实例
+        PackageManager packageManager = getPackageManager();
+        //getPackageName()是你当前类的包名，0代表是获取版本信息
+        PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+        return packInfo.versionCode;
+    }
+
+    private void initService() {
+        downLoadServiceConnect = new DownLoadServiceConnect();
+//        bindService(new Intent(NewMain.this, DownloadService.class), downLoadServiceConnect, BIND_AUTO_CREATE);
+        startService(new Intent(NewMain.this, DownloadService.class));
+        doRegisterReceiver();
+    }
+
+
+    private void doRegisterReceiver() {
+        if (downLoadReceiver != null) {
+            downLoadReceiver = new DownLoadReceiver();
+            IntentFilter intentFilter = new IntentFilter("ecjtu.net.demon.DownLoadService.isDownLoad");
+            registerReceiver(downLoadReceiver, intentFilter);
+        }
+    }
+
+    public final class DownLoadServiceConnect implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            downLoadService = ((DownloadService.MyBinder) service).getDownLoadSercice();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            downLoadService = null;
+        }
+    }
+
+    public class DownLoadReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("tag", "收到了~！");
+            isDownLoad = intent.getBooleanExtra("isDownLoad", false);
+            md5 = intent.getStringExtra("md5");
+            String sdpath = Environment.getExternalStorageDirectory() + "/";
+            mSavePath = sdpath + "download";
+            if (isDownLoad) {
+                installApk(new File(mSavePath, rxApk));
+            } else {
+                ToastMsg.builder.display("更新失败", duration);
+                DownloadByAndroid(apkUrl);
+            }
+        }
+    }
+
+    private void DownloadByAndroid(String url){
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
+    private void installApk(File apkfile)
+    {
+        if (!apkfile.exists() && md5 == HttpHelper.getFileMD5(apkfile))
+        {
+            return;
+        }
+        // 通过Intent安装APK文件
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setDataAndType(Uri.parse("file://" + apkfile.toString()), "application/vnd.android.package-archive");
+        this.startActivity(i);
+    }
+
 }

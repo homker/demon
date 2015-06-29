@@ -59,7 +59,7 @@ public class New_login extends ActionBarActivity {
         if (bundle != null) {
             intent.putExtras(bundle);
         }
-        intent.setClass(this, main.class);
+        intent.setClass(this, NewMain.class);
         startActivity(intent);
         finish();
     }
@@ -77,7 +77,7 @@ public class New_login extends ActionBarActivity {
         }else background.setBackground(readBitMap(this, R.drawable.backgroud));
         site = (ImageView) findViewById(R.id.site);
         propertyValuesHolder(site);
-        checkVersionAsync();
+        //checkVersionAsync();
     }
 
     private void checkVersionAsync(){
@@ -136,9 +136,8 @@ public class New_login extends ActionBarActivity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (!update) {
-                    turn2mianActivity(null);
-                }
+                turn2mianActivity(null);
+
             }
 
             @Override
@@ -167,9 +166,7 @@ public class New_login extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }

@@ -1,13 +1,25 @@
 package ecjtu.net.demon.activitys;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +35,16 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ecjtu.net.demon.DownloadService;
 import ecjtu.net.demon.R;
 import ecjtu.net.demon.utils.HttpAsync;
+import ecjtu.net.demon.utils.HttpHelper;
 import ecjtu.net.demon.utils.SharedPreUtil;
 import ecjtu.net.demon.utils.ToastMsg;
 import ecjtu.net.demon.utils.UserEntity;
@@ -45,10 +60,11 @@ public class Setting extends BaseActivity {
     private CycleImageView headImage;
     private SimpleAdapter listAdapter;
     private UserEntity userEntity;
-    private String md5;
     private Button exit;
     private String VersionUrl = "http://app.ecjtu.net/api/v1/version";
     private int duration = 300;
+    private String md5 = null;
+
 
 
     private void showNoticeDialog()
@@ -66,6 +82,7 @@ public class Setting extends BaseActivity {
                 dialog.dismiss();
                 // 显示下载对话框
                 downloadApk();
+
             }
         });
         // 稍后更新
@@ -90,7 +107,7 @@ public class Setting extends BaseActivity {
         if (bundle != null) {
             intent.putExtras(bundle);
         }
-        intent.setClass(this, main.class);
+        intent.setClass(this, NewMain.class);
         startActivity(intent);
         finish();
     }
@@ -100,6 +117,7 @@ public class Setting extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
+        initAcitonBar();
         userEntity = SharedPreUtil.getInstance().getUser();
         exit = (Button) findViewById(R.id.exit);
         exit.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +127,6 @@ public class Setting extends BaseActivity {
                 turn2mianActivity(null);
             }
         });
-        getActionBar().setDisplayHomeAsUpEnabled(true);
         userListView = (ListView) findViewById(R.id.userlist);
         SimpleAdapter userAdapter = new SimpleAdapter(this, getUserData(), R.layout.list_item, new String[] { "notes","information" }, new int[] { R.id.notes, R.id.information});
         userListView.setAdapter(userAdapter);
@@ -132,6 +149,16 @@ public class Setting extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void initAcitonBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar.setTitle("设置");
+        toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void checkVersionAsync(){
@@ -220,10 +247,11 @@ public class Setting extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_setting, menu);
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

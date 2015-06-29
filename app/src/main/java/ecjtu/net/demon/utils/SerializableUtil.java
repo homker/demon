@@ -2,9 +2,11 @@ package ecjtu.net.demon.utils;
 
 import android.util.Base64;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -70,16 +72,15 @@ public class SerializableUtil {
      * @throws StreamCorruptedException
      * @throws IOException
      */
-    public static Object str2Obj(String str) throws IOException {
-        byte[] mByte = Base64.decode(str.getBytes(), Base64.DEFAULT);
+    public static Object str2Obj(String str) throws IOException{
+        byte[] mByte = Base64.decode(str.getBytes(),Base64.DEFAULT);
         ByteArrayInputStream bais = new ByteArrayInputStream(mByte);
         ObjectInputStream ois = new ObjectInputStream(bais);
-
-            try {
-                return ois.readObject();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+        try {
+            return ois.readObject();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return null;
 
     }
@@ -101,7 +102,6 @@ public class SerializableUtil {
         try {
             stringList = (List<E>) ois.readObject();
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return stringList;

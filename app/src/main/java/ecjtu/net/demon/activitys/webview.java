@@ -3,23 +3,32 @@ package ecjtu.net.demon.activitys;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 
 import ecjtu.net.demon.R;
+import ecjtu.net.demon.fragment.comment_btn;
+import ecjtu.net.demon.fragment.comment_text;
 import ecjtu.net.demon.utils.ToastMsg;
 
 
@@ -28,15 +37,30 @@ public class webview extends BaseActivity {
     public String title;
     private WebView webView;
     private String url;
-    private ActionBar actionBar;
+    private android.support.v7.app.ActionBar actionBar;
+    private LinearLayout linearLayout;
+    private InputMethodManager imm;
+    private FragmentTransaction transaction;
+    public static comment_text commentText;
+    public static comment_btn commentBtn;
+    public static boolean isComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
-
+        isComment = false;
+        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        linearLayout = (LinearLayout) findViewById(R.id.webview_layout);
+//        linearLayout.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                Log.i("tag", "---------Touch!!!----------");
+//                return false;
+//            }
+//        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setTitle("花椒助手");
+        toolbar.setTitle("日新新闻");
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -53,8 +77,19 @@ public class webview extends BaseActivity {
             public void onReceivedTitle(WebView view, String title) {
                 Log.i("tag", "webview是真的拿到了title");
                 webview.this.title = title;
-                actionBar.setTitle(title);
+                //actionBar.setTitle(title);
                 super.onReceivedTitle(view, title);
+            }
+        });
+        webView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (isComment) {
+                    transaction = getSupportFragmentManager().beginTransaction();
+                    imm.hideSoftInputFromWindow(comment_text.commentText.getWindowToken(), 0);
+                    transaction.replace(R.id.comment_layout, webview.commentBtn).commit();
+                }
+                return false;
             }
         });
         WebSettings ws = webView.getSettings();
@@ -87,13 +122,15 @@ public class webview extends BaseActivity {
 //                }
             }
         });
-
+        transaction = getSupportFragmentManager().beginTransaction();
         webView.setDownloadListener(new myDownLoad());
+        commentBtn = new comment_btn();
+        String commentUrl = url.substring(0,url.length()- 5);
+        commentUrl = commentUrl + "/comment";
+        commentText = new comment_text(this,commentUrl,webView);
+        transaction.add(R.id.comment_layout, commentBtn);
+        transaction.commit();
 
-
-//        title = "你妹妹的点点";
-//
-//        actionBar.setTitle(title);
     }
 
     @Override
@@ -101,6 +138,10 @@ public class webview extends BaseActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_webview, menu);
         return true;
+    }
+
+    public void reloads(){
+        webView.reload();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -111,14 +152,12 @@ public class webview extends BaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.action_refresh) {
-            webView.reload();
-            ToastMsg.builder.display("正在刷新",300);
-            return true;
-        }
+
+//        if (id == R.id.action_refresh) {
+//            webView.reload();
+//            ToastMsg.builder.display("正在刷新",300);
+//            return true;
+//        }
         if (id == R.id.share){
             share(url,title);
         }
@@ -164,5 +203,14 @@ public class webview extends BaseActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d("ActionBar", "OnKey事件");
+        if(isComment){
+            comment_text.onKeyDown(keyCode, event);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

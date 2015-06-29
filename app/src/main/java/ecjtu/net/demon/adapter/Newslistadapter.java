@@ -36,9 +36,10 @@ import ecjtu.net.demon.view.rxViewPager;
  */
 public class Newslistadapter extends BaseAdapter {
 
+    private HashMap<String,Object> content = new HashMap<>();
     private Context context;
-    private ArrayList<HashMap<String, Object>> listItem;// 列表正文的的arraylist
-    private ArrayList<HashMap<String,Object>> slide_articles;// 轮转图的arralist
+    private ArrayList<HashMap<String, Object>> listItem = new ArrayList<>();// 列表正文的的arraylist
+    private ArrayList<HashMap<String,Object>> slide_articles = new ArrayList<>();// 轮转图的arralist
     private LayoutInflater listContainer;
     private View topView;
     private rxViewPager myViewPager;
@@ -57,8 +58,9 @@ public class Newslistadapter extends BaseAdapter {
             return rhss - lhss;
         }
     };
-    public Newslistadapter(Context context, HashMap<String, Object> listItems) {
+    public Newslistadapter(Context context, HashMap<String, Object> content) {
         this.context = context;
+        this.content = content;
         listContainer = LayoutInflater.from(context);
         myTopView = new ArrayList<>();
         myTopViewS = new ArrayList<>();
@@ -76,8 +78,8 @@ public class Newslistadapter extends BaseAdapter {
                 .cacheOnDisk(true)
                 .build();
 
-        this.listItem = (ArrayList<HashMap<String, Object>>) listItems.get("normal_articles");
-        this.slide_articles = (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
+        slide_articles = (ArrayList<HashMap<String, Object>>) content.get("slide_articles");
+        listItem = (ArrayList<HashMap<String, Object>>) content.get("normal_articles");
     }
 
     /** List order not maintained **/
@@ -93,13 +95,19 @@ public class Newslistadapter extends BaseAdapter {
         return newList;
     }
 
-    public void onDateChange(HashMap<String, Object> listItems) {
-        Log.i("tag","onDateChange 被调用");
-        this.listItem.addAll((ArrayList<HashMap<String, Object>>) listItems.get("normal_articles"));
-        this.listItem = (ArrayList<HashMap<String, Object>>) removeDuplicateWithOrder(this.listItem);
-        this.slide_articles =  (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
-        this.notifyDataSetChanged();
+//    public void onDateChange(HashMap<String, Object> listItems) {
+//        Log.i("tag","onDateChange 被调用");
+//        this.listItem.addAll((ArrayList<HashMap<String, Object>>) listItems.get("normal_articles"));
+//        this.listItem = (ArrayList<HashMap<String, Object>>) removeDuplicateWithOrder(this.listItem);
+//        this.slide_articles =  (ArrayList<HashMap<String, Object>>) listItems.get("slide_articles");
+//        this.notifyDataSetChanged();
+//
+//    }
 
+    public void notifyDataSetChanged() {
+        slide_articles = (ArrayList<HashMap<String, Object>>) content.get("slide_articles");
+        listItem = (ArrayList<HashMap<String, Object>>) content.get("normal_articles");
+        super.notifyDataSetChanged();
     }
 
     public ArrayList<HashMap<String,Object>> getListItem() {
@@ -108,10 +116,13 @@ public class Newslistadapter extends BaseAdapter {
     public ArrayList<HashMap<String,Object>> getSlide_articles() {
         return slide_articles;
     }
+    public HashMap<String,Object> getContent() {
+            return content;
+    }
 
     @Override
     public int getCount() {
-        return listItem.size() + 1;
+        return listItem == null ? 0 : listItem.size() + 1;
     }
 
 

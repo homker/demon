@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -51,12 +52,19 @@ public class Tusho_show_card_activity extends BaseActivity {
     private RecyclerView recyclerView;
     private tushuShowCardAdapter adapeter;
     private FullyLinearLayoutManager linearLayoutManager;
-    ArrayList<HashMap<String, Object>> content = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> content = new ArrayList<>();
     private static String pid;
     public static ArrayList<String> urlList = new ArrayList<>();
+    public static Drawable zoomImage;
 
     public static void setPid(String pid) {
         Tusho_show_card_activity.pid = pid;
+    }
+
+    public static void setZoomImage(Drawable image) {
+        if(image!=null) {
+            ((ImageView) zoomView.findViewById(R.id.iv_zoom)).setImageDrawable(image);
+        }
     }
 
     @Override
@@ -78,7 +86,7 @@ public class Tusho_show_card_activity extends BaseActivity {
         int mScreenWidth = localDisplayMetrics.widthPixels;
         LinearLayout.LayoutParams localObject = new LinearLayout.LayoutParams(mScreenWidth, (int) (9.0F * (mScreenWidth / 16.0F)));
         scrollView.setHeaderLayoutParams(localObject);
-
+        setZoomImage(zoomImage);
     }
 
 
@@ -156,9 +164,7 @@ public class Tusho_show_card_activity extends BaseActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
         if (id == android.R.id.home) {
             Intent upIntent = NavUtils.getParentActivityIntent(this);
             if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
@@ -178,7 +184,7 @@ public class Tusho_show_card_activity extends BaseActivity {
     }
 
     private View headView;
-    private View zoomView;
+    private static View zoomView;
     private View contentView;
 
     private void loadViewForCode() {

@@ -59,7 +59,6 @@ public class SharedPreUtil {
         try {
             str = SerializableUtil.obj2Str(user);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         editor.putString(KEY_NAME, str);
@@ -84,10 +83,8 @@ public class SharedPreUtil {
                 }
 
             } catch (StreamCorruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

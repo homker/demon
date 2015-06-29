@@ -39,6 +39,7 @@ public class TushuoFragment extends Fragment {
     private static final int duration = 100;
     private ArrayList<HashMap<String, Object>> content = new ArrayList<>();
     private RecyclerView recyclerView;
+    SwipeRefreshLayout swipeRefreshLayout;
     private final static String url = "http://pic.ecjtu.net/api.php/list";
     private static String lastId;
     private TushuoAdapter adapter;
@@ -58,16 +59,15 @@ public class TushuoFragment extends Fragment {
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
 
-
-        getcontent(url, null, true);
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.tushuo_fresh);
+        adapter = new TushuoAdapter(getActivity(),content);
+        recyclerView.setAdapter(adapter);
+        getcontent(url, null, true,false);
+        swipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.tushuo_fresh);
         swipeRefreshLayout.setColorSchemeColors(R.color.link_text_material_light);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(false);
-                adapter.getContent().clear();
-                getcontent(url, null, false);
+                getcontent(url, null, false,true);
             }
         });
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -75,7 +75,7 @@ public class TushuoFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem == adapter.getItemCount() - 1) {
-                    getcontent(url, lastId, false);
+                    getcontent(url, lastId, false, false);
                 }
             }
 
@@ -88,7 +88,12 @@ public class TushuoFragment extends Fragment {
 
     }
 
-    private ArrayList<HashMap<String,Object>> getcontent(String url , final String lastId , boolean isInit) {
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    private ArrayList<HashMap<String,Object>> getcontent(String url , final String lastId , boolean isInit, final boolean isRefresh) {
 
         if (lastId != null) {
             url = url + "?before=" + lastId;
@@ -101,8 +106,8 @@ public class TushuoFragment extends Fragment {
                 try {
                     JSONArray array = cache.getJSONArray("list");
                     content = jsonArray2Arraylist(array);
-                    adapter = new TushuoAdapter(getActivity(),content);
-                    recyclerView.setAdapter(adapter);
+                    adapter.getContent().addAll(content);
+                    adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -125,8 +130,8 @@ public class TushuoFragment extends Fragment {
                         try {
                             JSONArray list = response.getJSONArray("list");
                             content = jsonArray2Arraylist(list);
-                            adapter = new TushuoAdapter(getActivity(),content);
-                            recyclerView.setAdapter(adapter);
+                            adapter.getContent().addAll(content);
+                            adapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -163,6 +168,10 @@ public class TushuoFragment extends Fragment {
                     try {
                         JSONArray list = response.getJSONArray("list");
                         content = jsonArray2Arraylist(list);
+                        if(isRefresh) {
+                            swipeRefreshLayout.setRefreshing(false);
+                            adapter.getContent().clear();
+                        }
                         adapter.getContent().addAll(content);
                         adapter.notifyDataSetChanged();
                     } catch (JSONException e) {
@@ -175,6 +184,7 @@ public class TushuoFragment extends Fragment {
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     super.onFailure(statusCode, headers, responseString, throwable);
                     ToastMsg.builder.display("网络环境好像不是很好呀~！", duration);
+                    swipeRefreshLayout.setRefreshing(false);
                 }
 
                 @Override
@@ -220,7 +230,7 @@ public class TushuoFragment extends Fragment {
                 item.put("title", jsonObject.getString("title"));
                 item.put("info", jsonObject.getString("count"));
                 item.put("click", jsonObject.getString("click"));
-                item.put("time", jsonObject.getString("pubdate"));
+                item.put("time", TimeStamp2Date(jsonObject.getString("pubdate"),"yyyy-MM-dd"));
                 lastId = jsonObject.getString("pubdate");
                 item.put("pid",jsonObject.getString("pid"));
                 arrayList.add(item);
@@ -230,4 +240,10 @@ public class TushuoFragment extends Fragment {
             }
             return arrayList;
         }
+
+    public String TimeStamp2Date(String timestampString, String formats){
+        Long timestamp = Long.parseLong(timestampString)*1000;
+        String date = new java.text.SimpleDateFormat(formats).format(new java.util.Date(timestamp));
+        return date;
+    }
 }
